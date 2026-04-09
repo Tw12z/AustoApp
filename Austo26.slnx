@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="Core/Austo26.Application/Austo26.Application.csproj" />
+    <Project Path="Core/Austo26.Domain/Austo26.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure/Austo26.Infrastructure/Austo26.Infrastructure.csproj" />
+    <Project Path="Infrastructure/Austo26.Persistence/Austo26.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="Presentation/Austo26.API/Austo26.API.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,6 @@
+@Austo26.API_HostAddress = http://localhost:5202
+
+GET {{Austo26.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

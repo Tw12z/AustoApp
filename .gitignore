@@ -1,0 +1,18 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Node / frontend
+austo-ui/node_modules/
+austo-ui/dist/
+
+# Environment / secrets
+appsettings.Development.json
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
