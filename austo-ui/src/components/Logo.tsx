@@ -11,8 +11,8 @@ export default function Logo({ className = '', style }: LogoProps) {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       x="0px" y="0px"
-      viewBox="0 0 1024 976"
-      enableBackground="new 0 0 1024 976"
+      viewBox="80 315 885 320"
+      enableBackground="new 80 315 885 320"
       xmlSpace="preserve"
       className={className}
       style={style}

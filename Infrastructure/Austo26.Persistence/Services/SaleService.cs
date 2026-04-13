@@ -70,6 +70,19 @@ public class SaleService : ISaleService
     public async Task CancelAsync(Guid id)
     {
         var sale = await _saleRepo.GetByIdWithItemsAsync(id) ?? throw new Exception("Satış bulunamadı.");
+
+        foreach (var item in sale.Items)
+        {
+            var product = await _productRepo.GetByIdAsync(item.ProductId)
+                          ?? throw new Exception($"Ürün bulunamadı: {item.ProductId}");
+            product.IncreaseStock(item.Quantity);
+
+            var reverseMovement = new StockMovement(
+                product.Id, item.Quantity, StockMovementType.Adjustment,
+                description: $"Satış İptal #{sale.Id}", referenceId: sale.Id);
+            await _stockRepo.AddAsync(reverseMovement);
+        }
+
         sale.Cancel();
         await _saleRepo.SaveChangesAsync();
     }

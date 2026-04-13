@@ -229,7 +229,7 @@ export default function Landing() {
             overflow: 'visible',
           }}>
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="shrink-0 cursor-pointer">
-            <Logo className="h-20 w-auto" style={{ color: '#D4AF37' }} />
+            <Logo className="h-8 w-auto" style={{ color: '#D4AF37' }} />
           </button>
           <div className="absolute left-1/2 -translate-x-1/2">
             <NavClock />

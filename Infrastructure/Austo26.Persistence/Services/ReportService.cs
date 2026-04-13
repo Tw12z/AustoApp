@@ -1,6 +1,7 @@
 using Austo26.Application.Abstractions.Services;
 using Austo26.Application.DTOs.Reports;
 using Austo26.Application.Repositories;
+using Austo26.Domain.Transactions;
 
 namespace Austo26.Persistence.Services;
 
@@ -24,7 +25,8 @@ public class ReportService : IReportService
         var dayStart = date.Date;
         var dayEnd   = dayStart.AddDays(1).AddTicks(-1);
 
-        var sales     = (await _saleRepo.GetByDateRangeAsync(dayStart, dayEnd)).ToList();
+        var allSales  = (await _saleRepo.GetByDateRangeAsync(dayStart, dayEnd)).ToList();
+        var sales     = allSales.Where(s => s.Status != TransactionStatus.Cancelled).ToList();
         var purchases = (await _purchaseRepo.GetByDateRangeAsync(dayStart, dayEnd)).ToList();
 
         var salesRevenue  = sales.Sum(s => s.TotalAmountTRY);

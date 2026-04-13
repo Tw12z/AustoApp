@@ -36,7 +36,7 @@ public class SalesController : ControllerBase
         try
         {
             var sale = await _service.CreateAsync(request);
-            return CreatedAtAction(nameof(GetById), new { id = sale.Id }, sale);
+            return CreatedAtAction(nameof(GetById), new { id = sale.Id }, new { id = sale.Id });
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
