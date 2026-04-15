@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import SimpleList from './pages/SimpleList'
+import Locations from './pages/Locations'
 import Customers from './pages/Customers'
 import Suppliers from './pages/Suppliers'
 import Finance from './pages/Finance'
@@ -34,7 +35,7 @@ function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="products"   element={<Products />} />
         <Route path="categories" element={<SimpleList title="Kategoriler" api={categoriesApi} entityLabel="Kategori" />} />
-        <Route path="locations"  element={<SimpleList title="Konumlar" api={locationsApi} entityLabel="Konum" />} />
+        <Route path="locations"  element={<Locations />} />
         <Route path="stock"      element={<Stock />} />
         <Route path="customers"  element={<Customers />} />
         <Route path="suppliers"  element={<Suppliers />} />

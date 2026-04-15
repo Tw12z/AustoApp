@@ -23,6 +23,13 @@ public class StockController : ControllerBase
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
 
+    [HttpPost("adjust")]
+    public async Task<IActionResult> Adjust([FromBody] StockAdjustRequest request)
+    {
+        try { await _service.AdjustAsync(request); return NoContent(); }
+        catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
+    }
+
     [HttpGet("valuation")]
     public async Task<IActionResult> GetValuation() => Ok(await _service.GetValuationAsync());
 }

@@ -7,4 +7,5 @@ public interface IProductRepository : IBaseRepository<Product>
 {
     Task<Product?> GetByIdAsync(Guid id);
     Task<IEnumerable<ProductDto>> GetAllWithDetailsAsync();
+    Task<Product?> GetByBarcodeOrIdAsync(string code);
 }

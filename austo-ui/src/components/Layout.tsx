@@ -123,9 +123,9 @@ export default function Layout() {
         style={{ background: '#0D0D0D', borderRight: '1px solid rgba(212,175,55,0.12)' }}
       >
         {/* Logo */}
-        <div className="flex items-center pl-4 pr-3 py-3.5 shrink-0"
-          style={{ borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0D0D0D' }}>
-          <Logo className="h-9 w-auto" style={{ color: '#D4AF37' }} />
+        <div className="flex items-center pr-3 py-3 shrink-0"
+          style={{ paddingLeft: 26, borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0D0D0D' }}>
+          <Logo className="h-8 w-auto" style={{ color: '#D4AF37' }} />
           <button className="ml-auto lg:hidden text-gray-500 hover:text-gray-300 transition-colors" onClick={() => setSidebarOpen(false)}>
             <X size={16} />
           </button>

@@ -1,4 +1,5 @@
-﻿using Austo26.Domain.Entities.Common;
+﻿using Austo26.Domain.Categories;
+using Austo26.Domain.Entities.Common;
 
 namespace Austo26.Domain.Entities.Locations;
 
@@ -6,6 +7,8 @@ public class Location : BaseEntity
 {
     public string Name { get; private set; }
     public string? Description { get; private set; }
+    public Guid? CategoryId { get; private set; }
+    public Category? Category { get; private set; }
     public bool IsActive { get; private set; }
 
     protected Location()
@@ -13,10 +16,11 @@ public class Location : BaseEntity
         Name = null!;
     }
 
-    public Location(string name, string? description = null)
+    public Location(string name, string? description = null, Guid? categoryId = null)
     {
         SetName(name);
         Description = string.IsNullOrEmpty(description) ? null : description.Trim();
+        CategoryId = categoryId;
         IsActive = true;
     }
 
@@ -28,6 +32,11 @@ public class Location : BaseEntity
     public void ChangeDescription(string? description)
     {
         Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+        Touch();
+    }
+    public void ChangeCategory(Guid? categoryId)
+    {
+        CategoryId = categoryId;
         Touch();
     }
     public void Deactivate()

@@ -287,7 +287,7 @@ export default function Login() {
             {/* Sliding dark panel */}
             <motion.div
               className="absolute top-0 bottom-0 w-1/2 z-10 flex flex-col items-center justify-center p-12 text-center"
-              animate={{ left: isSignUp ? '50%' : '0%' }}
+              animate={{ left: isSignUp ? '0%' : '50%' }}
               transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
               style={{ background: 'linear-gradient(135deg, #050505, #111)' }}
             >

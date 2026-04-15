@@ -11,4 +11,5 @@ public interface IProductService
     Task UpdateAsync(Guid id, UpdateProductRequest request);
     Task DeactivateAsync(Guid id);
     Task<ProductQrDto> GetQRAsync(Guid id);
+    Task<ProductDto?> GetByBarcodeAsync(string code);
 }

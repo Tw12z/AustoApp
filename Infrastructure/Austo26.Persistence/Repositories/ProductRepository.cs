@@ -13,6 +13,17 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     public async Task<Product?> GetByIdAsync(Guid id)
         => await _dbSet.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
 
+    public async Task<Product?> GetByBarcodeOrIdAsync(string code)
+    {
+        // Önce GUID mi kontrol et (mevcut QR kodlar product ID encode ediyor)
+        if (Guid.TryParse(code, out var id))
+            return await _dbSet.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
+
+        // Barcode alanında ara
+        return await _dbSet.Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.Barcode == code && p.IsActive);
+    }
+
     public async Task<IEnumerable<ProductDto>> GetAllWithDetailsAsync()
         => await _dbSet
             .Include(p => p.Category)

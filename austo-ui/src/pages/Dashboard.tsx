@@ -9,7 +9,6 @@ import {
 } from '../api/client'
 import type { DailySummary, FinanceItem, StockValuation, Product, Customer, Sale } from '../types'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import BorderGlow from '../components/BorderGlow'
 
 // ── Formatters ────────────────────────────────────────────
 function fmt(n: number) {
@@ -108,6 +107,7 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
   const [confirming,  setConfirming]  = useState(false)
   const [success,     setSuccess]     = useState(false)
   const [error,       setError]       = useState('')
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -227,9 +227,10 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
       <div className="flex-1 overflow-y-auto px-5 py-3 space-y-1.5" style={{ minHeight: 0 }}>
         {cart.length === 0 || search ? (
           filtered.length > 0 ? filtered.map(p => {
-            const inCart = cart.find(c => c.product.id === p.id)
+            const inCart     = cart.find(c => c.product.id === p.id)
             const outOfStock = p.stockQuantity <= 0
-            const pColor = PURITY_COLOR[p.purity] ?? '#888'
+            const pColor     = PURITY_COLOR[p.purity] ?? '#888'
+
             return (
               <button
                 key={p.id}
@@ -237,15 +238,17 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                 disabled={outOfStock}
                 className="w-full text-left"
                 style={{ opacity: outOfStock ? 0.4 : 1, cursor: outOfStock ? 'not-allowed' : 'pointer' }}
+                onMouseEnter={() => !outOfStock && setHoveredId(p.id)}
+                onMouseLeave={() => setHoveredId(null)}
               >
-                <BorderGlow
-                  backgroundColor={inCart ? '#111' : '#0A0A0A'}
-                  borderRadius={12}
-                  glowRadius={28}
-                  glowIntensity={inCart ? 1.2 : 0.7}
-                  colors={inCart ? ['#D4AF37', '#F5C842', '#AA8500'] : ['#2a2a2a', '#333', '#222']}
-                  style={{ padding: '10px 14px' }}
-                >
+                <div style={{
+                  padding: '10px 14px',
+                  borderRadius: 12,
+                  background: inCart ? '#111' : '#0A0A0A',
+                  border: '1px solid rgba(212,175,55,0.15)',
+                  boxShadow: hoveredId === p.id ? '0 0 0 1px rgba(212,175,55,0.65), 0 0 18px rgba(212,175,55,0.25)' : '0 0 0 1px transparent',
+                  transition: 'box-shadow 0.2s ease',
+                }}>
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
@@ -271,7 +274,7 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                       <Plus size={13} style={{ color: outOfStock ? '#333' : '#D4AF37' }} />
                     </div>
                   </div>
-                </BorderGlow>
+                </div>
               </button>
             )
           }) : (

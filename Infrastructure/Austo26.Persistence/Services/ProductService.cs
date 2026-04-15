@@ -51,6 +51,15 @@ public class ProductService : IProductService
         await _repo.SaveChangesAsync();
     }
 
+    public async Task<ProductDto?> GetByBarcodeAsync(string code)
+    {
+        var p = await _repo.GetByBarcodeOrIdAsync(code);
+        if (p is null) return null;
+        return new ProductDto(p.Id, p.Name, p.CategoryId, p.Category?.Name ?? "Kategorisiz",
+                              p.WeightGram, p.Purity, p.PurchasePrice,
+                              p.SalePrice, p.StockQuantity, p.Barcode, p.IsActive);
+    }
+
     public async Task<ProductQrDto> GetQRAsync(Guid id)
     {
         var product = await _repo.GetByIdAsync(id) ?? throw new Exception("Ürün bulunamadı.");

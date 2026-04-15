@@ -14,6 +14,13 @@ public record StockMovementDto(
     DateTime CreatedAt
 );
 
+public record StockAdjustRequest(
+    Guid ProductId,
+    decimal Quantity,
+    string Direction, // "In" | "Out"
+    string? Notes
+);
+
 public record StockTransferRequest(
     Guid ProductId,
     Guid FromLocationId,

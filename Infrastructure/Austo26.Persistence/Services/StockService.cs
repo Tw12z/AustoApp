@@ -62,6 +62,27 @@ public class StockService : IStockService
         await _stockRepo.SaveChangesAsync();
     }
 
+    public async Task AdjustAsync(StockAdjustRequest request)
+    {
+        var product = await _productRepo.GetByIdAsync(request.ProductId)
+                      ?? throw new Exception("Ürün bulunamadı.");
+
+        if (request.Direction == "In")
+            product.IncreaseStock(request.Quantity);
+        else
+            product.DecreaseStock(request.Quantity);
+
+        var description = request.Notes
+            ?? (request.Direction == "In" ? $"+{request.Quantity} stok girişi" : $"-{request.Quantity} stok çıkışı");
+
+        var movement = new StockMovement(
+            product.Id, request.Quantity, StockMovementType.Adjustment,
+            null, null, description);
+
+        await _stockRepo.AddAsync(movement);
+        await _stockRepo.SaveChangesAsync();
+    }
+
     public async Task<StockValuationDto> GetValuationAsync()
     {
         var products = await _productRepo.GetAllAsync();

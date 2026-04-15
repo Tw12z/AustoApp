@@ -39,6 +39,11 @@ public class AppDbContext : DbContext, IAppDbContext
             e.Property(p => p.StockQuantity).HasPrecision(18, 4);
         });
 
+        modelBuilder.Entity<Location>(e =>
+        {
+            e.HasOne(l => l.Category).WithMany().HasForeignKey(l => l.CategoryId).OnDelete(DeleteBehavior.SetNull);
+        });
+
         modelBuilder.Entity<StockMovement>(e =>
         {
             e.Property(s => s.Quantity).HasPrecision(18, 4);

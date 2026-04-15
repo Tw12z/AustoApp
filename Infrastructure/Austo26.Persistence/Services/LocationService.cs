@@ -12,19 +12,20 @@ public class LocationService : ILocationService
 
     public async Task<IEnumerable<Location>> GetAllAsync() => await _repo.GetAllAsync();
 
-    public async Task<Location> CreateAsync(string name, string? description)
+    public async Task<Location> CreateAsync(string name, string? description, Guid? categoryId)
     {
-        var location = new Location(name, description);
+        var location = new Location(name, description, categoryId);
         await _repo.AddAsync(location);
         await _repo.SaveChangesAsync();
         return location;
     }
 
-    public async Task<Location> UpdateAsync(Guid id, string name, string? description)
+    public async Task<Location> UpdateAsync(Guid id, string name, string? description, Guid? categoryId)
     {
         var location = await _repo.GetByIdAsync(id) ?? throw new Exception("Konum bulunamadı.");
         location.Rename(name);
         location.ChangeDescription(description);
+        location.ChangeCategory(categoryId);
         await _repo.SaveChangesAsync();
         return location;
     }

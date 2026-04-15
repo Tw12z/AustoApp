@@ -47,6 +47,14 @@ public class ProductsController : ControllerBase
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
 
+    [HttpGet("by-barcode")]
+    public async Task<IActionResult> GetByBarcode([FromQuery] string code)
+    {
+        if (string.IsNullOrWhiteSpace(code)) return BadRequest(new { message = "Kod boş olamaz." });
+        var product = await _service.GetByBarcodeAsync(code);
+        return product is null ? NotFound(new { message = "Ürün bulunamadı." }) : Ok(product);
+    }
+
     [HttpGet("{id}/qr")]
     public async Task<IActionResult> GetQR(Guid id)
     {

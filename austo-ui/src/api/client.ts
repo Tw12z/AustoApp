@@ -33,12 +33,13 @@ export const authApi = {
 
 // ── Products ────────────────────────────────────────────
 export const productsApi = {
-  getAll:  ()              => api.get('/products'),
-  getById: (id: string)    => api.get(`/products/${id}`),
-  create:  (data: object)  => api.post('/products', data),
-  update:  (id: string, data: object) => api.put(`/products/${id}`, data),
-  remove:  (id: string)    => api.delete(`/products/${id}`),
-  qr:      (id: string)    => api.get(`/products/${id}/qr`, { responseType: 'blob' }),
+  getAll:        ()              => api.get('/products'),
+  getById:       (id: string)    => api.get(`/products/${id}`),
+  getByBarcode:  (code: string)  => api.get(`/products/by-barcode?code=${encodeURIComponent(code)}`),
+  create:        (data: object)  => api.post('/products', data),
+  update:        (id: string, data: object) => api.put(`/products/${id}`, data),
+  remove:        (id: string)    => api.delete(`/products/${id}`),
+  qr:            (id: string)    => api.get(`/products/${id}/qr`, { responseType: 'blob' }),
 }
 
 // ── Categories ──────────────────────────────────────────
@@ -111,6 +112,7 @@ export const stockApi = {
     return api.get(`/stock/movements?${params}`)
   },
   transfer:     (data: object) => api.post('/stock/transfer', data),
+  adjust:       (data: object) => api.post('/stock/adjust', data),
   getValuation: ()             => api.get('/stock/valuation'),
 }
 

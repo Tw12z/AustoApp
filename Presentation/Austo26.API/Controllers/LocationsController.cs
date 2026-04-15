@@ -20,7 +20,7 @@ public class LocationsController : ControllerBase
     {
         try
         {
-            var location = await _service.CreateAsync(request.Name, request.Description);
+            var location = await _service.CreateAsync(request.Name, request.Description, request.CategoryId);
             return CreatedAtAction(nameof(GetAll), new { id = location.Id }, location);
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
@@ -29,7 +29,7 @@ public class LocationsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] CreateLocationRequest request)
     {
-        try { return Ok(await _service.UpdateAsync(id, request.Name, request.Description)); }
+        try { return Ok(await _service.UpdateAsync(id, request.Name, request.Description, request.CategoryId)); }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
 
