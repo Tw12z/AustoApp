@@ -4,6 +4,7 @@ import { motion, useInView, useMotionValue, useTransform, animate } from 'framer
 import {
   TrendingUp, Package, ShoppingCart, BarChart3,
   QrCode, MapPin, Shield, Zap, Globe, ChevronRight, ArrowRight,
+  ArrowLeftRight, Users, Truck, Wallet, FileText, Settings,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import LogoMarkless from '../components/LogoMarkless'
@@ -30,22 +31,25 @@ const BRANDS = [
 
 /* ── Features ── */
 const features = [
-  { icon: TrendingUp,   title: 'Canlı Altın Fiyatları', desc: 'Gram, çeyrek, yarım ve tam altın fiyatlarını anlık takip edin. USD, EUR, GBP kurları otomatik güncellenir.' },
-  { icon: Package,      title: 'Stok Yönetimi',         desc: "Ürünlerinizi ayar bazında kategorize edin. K8'den K24'e kadar tüm saflık derecelerini yönetin." },
-  { icon: ShoppingCart, title: 'Satış & Alış Takibi',   desc: 'Müşteri ve tedarikçi işlemlerini kolayca kaydedin. Hurdadan alımlara kadar her senaryoyu destekler.' },
-  { icon: BarChart3,    title: 'Gelişmiş Raporlar',     desc: 'Günlük özet, stok değerleme ve kar/zarar raporlarını anında görüntüleyin.' },
-  { icon: QrCode,       title: 'QR Kod Entegrasyonu',   desc: 'Her ürün için otomatik QR kod oluşturun. Barkod ile hızlı ürün takibi yapın.' },
-  { icon: MapPin,       title: 'Çoklu Lokasyon',        desc: 'Vitrin, kasa, kasa altı gibi farklı konumlar arasında stok transferini kolayca yönetin.' },
-  { icon: Shield,       title: 'Güvenli & Rol Bazlı',   desc: 'JWT kimlik doğrulama ile verileriniz güvende. Admin ve personel rolleri ile erişim kontrolü sağlayın.' },
-  { icon: Zap,          title: 'Hızlı & Modern',        desc: '.NET 10 ve React 19 ile inşa edilmiş. Yüksek performanslı, responsive ve tamamen bulut uyumlu.' },
-  { icon: Globe,        title: 'SaaS Hazır',            desc: 'Birden fazla mağazayı tek platformdan yönetin. İster küçük kuyumcu ister büyük zincir — Austo sizin için.' },
+  { icon: TrendingUp,      title: 'Canlı Finans Takibi',     desc: 'Gram, çeyrek, yarım, tam altın ve döviz fiyatlarını anlık izleyin. Günlük, haftalık ve aylık grafiklerle uzun vadeli değişimi takip edin.' },
+  { icon: Package,         title: 'Ürün & Kategori Yönetimi', desc: "Ürünlerinizi kategorilere ayırın, ayar (8k–24k) ve barkod bilgileriyle kayıt altına alın. Aktif/pasif durumu anlık güncelleyin." },
+  { icon: ShoppingCart,    title: 'Hızlı Satış',             desc: 'Dashboard üzerinden tek tıkla satış yapın. Ürün adı ya da barkodla arayın, sepete ekleyin, müşteri seçip tamamlayın.' },
+  { icon: ArrowLeftRight,  title: 'Stok & Transfer',         desc: 'QR/barkod ile stok giriş-çıkış yapın, lokasyonlar arası transfer gerçekleştirin. Tüm hareketler otomatik kaydedilir.' },
+  { icon: MapPin,          title: 'Lokasyon Yönetimi',       desc: 'Vitrin, kasa, kasa altı gibi konumları kategorilere ayırın. Her ürünün hangi lokasyonda olduğunu anlık görün.' },
+  { icon: Users,           title: 'Müşteri & Tedarikçi',     desc: 'Müşteri ve tedarikçi kayıtlarını yönetin. Satış ve alış işlemlerini ilgili kayıtlara bağlayarak geçmiş takibi yapın.' },
+  { icon: Truck,           title: 'Alış Yönetimi',           desc: 'Tedarikçiden yapılan alışları, hurda ve ham madde alımlarını kaydedin. Stok otomatik güncellenir, maliyet hesaplanır.' },
+  { icon: BarChart3,       title: 'Raporlar & Analizler',    desc: 'Günlük özet, satış trendi, stok değerleme ve net kar/zarar raporlarını anında görüntüleyin. İptal edilen satışlar otomatik düşülür.' },
+  { icon: Wallet,          title: 'Finans Modülü',           desc: 'Altın ve döviz fiyatlarını manuel girin ya da canlı fiyat akışını takip edin. İstediğiniz metrikleri seçerek grafiklerde izleyin.' },
+  { icon: QrCode,          title: 'QR Kod Entegrasyonu',     desc: 'Her ürün için barkod tanımlayın. Stok hareketlerini QR okutarak saniyeler içinde gerçekleştirin.' },
+  { icon: Shield,          title: 'Güvenli & Modern',        desc: 'JWT kimlik doğrulama, e-posta doğrulama ve şifre sıfırlama ile güvenli erişim. .NET 10 ve React üzerinde inşa edilmiş.' },
+  { icon: Zap,             title: 'Dashboard & Hızlı Eylemler', desc: 'Tek ekranda günlük satış, alış, net kar ve stok değerini görün. Satış trendini grafikle takip edin, hızlı satışı anında tamamlayın.' },
 ]
 
 const stats = [
-  { value: '9+',   label: 'Temel Modül'     },
-  { value: '100%', label: 'Bulut Uyumlu'    },
-  { value: '24/7', label: 'Canlı Fiyat'     },
-  { value: '∞',    label: 'Ürün Kapasitesi' },
+  { value: '12+',  label: 'Temel Modül'      },
+  { value: '24/7', label: 'Canlı Fiyat'      },
+  { value: 'QR',   label: 'Barkod Desteği'   },
+  { value: '∞',    label: 'Ürün Kapasitesi'  },
 ]
 
 
