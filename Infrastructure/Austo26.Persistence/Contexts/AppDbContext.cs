@@ -20,6 +20,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Location> Locations { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<StockMovement> StockMovements { get; set; }
+    public DbSet<StockItem> StockItems { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
@@ -76,6 +77,14 @@ public class AppDbContext : DbContext, IAppDbContext
             e.Property(p => p.WeightGram).HasPrecision(18, 4);
             e.HasOne(p => p.Supplier).WithMany().HasForeignKey(p => p.SupplierId).OnDelete(DeleteBehavior.SetNull);
             e.HasOne(p => p.Customer).WithMany().HasForeignKey(p => p.CustomerId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<StockItem>(e =>
+        {
+            e.HasIndex(s => s.ItemCode).IsUnique();
+            e.HasOne(s => s.Product).WithMany().HasForeignKey(s => s.ProductId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(s => s.Location).WithMany().HasForeignKey(s => s.LocationId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(s => s.PurchaseTransaction).WithMany().HasForeignKey(s => s.PurchaseTransactionId).OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<GoldPriceLog>(e =>

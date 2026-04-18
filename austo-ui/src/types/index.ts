@@ -150,6 +150,28 @@ export interface StockReport {
   }[]
 }
 
+export interface StockItem {
+  id: string
+  itemCode: string
+  productId: string
+  productName: string
+  purity: number
+  weightGram: number
+  locationId?: string
+  locationName?: string
+  status: number       // 1=Available, 2=Sold, 3=Damaged, 4=Lost
+  purchaseTransactionId?: string
+  notes?: string
+  createdAt: string
+}
+
+export const STOCK_ITEM_STATUS: Record<number, { label: string; cls: string }> = {
+  1: { label: 'Stokta',   cls: 'badge-green' },
+  2: { label: 'Satıldı',  cls: 'badge-red'   },
+  3: { label: 'Hasarlı',  cls: 'badge-yellow' },
+  4: { label: 'Kayıp',    cls: 'badge-gray'  },
+}
+
 export const PURITY_LABELS: Record<number, string> = {
   0: 'Diğer', 8: '8 Ayar', 14: '14 Ayar',
   18: '18 Ayar', 21: '21 Ayar', 22: '22 Ayar', 24: '24 Ayar (Has)',

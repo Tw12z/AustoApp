@@ -31,6 +31,7 @@ public static class PersistenceServiceRegistration
         services.AddScoped<ISaleTransactionRepository, SaleTransactionRepository>();
         services.AddScoped<IPurchaseTransactionRepository, PurchaseTransactionRepository>();
         services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+        services.AddScoped<IStockItemRepository, StockItemRepository>();
 
         // Services
         services.AddScoped<IAuthService, AuthService>();
@@ -43,6 +44,7 @@ public static class PersistenceServiceRegistration
         services.AddScoped<ISaleService, SaleService>();
         services.AddScoped<IPurchaseService, PurchaseService>();
         services.AddScoped<IStockService, StockService>();
+        services.AddScoped<IStockItemService, StockItemService>();
         services.AddScoped<IReportService, ReportService>();
 
         return services;

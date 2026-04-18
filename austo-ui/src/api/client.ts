@@ -116,6 +116,18 @@ export const stockApi = {
   getValuation: ()             => api.get('/stock/valuation'),
 }
 
+// ── StockItems ──────────────────────────────────────────
+export const stockItemsApi = {
+  getAll:      (params?: object)       => api.get('/stock-items', { params }),
+  getById:     (id: string)            => api.get(`/stock-items/${id}`),
+  getByCode:   (code: string)          => api.get(`/stock-items/by-code?code=${encodeURIComponent(code)}`),
+  getByProduct:(id: string)            => api.get(`/stock-items/by-product/${id}`),
+  createBatch: (data: object)          => api.post('/stock-items/batch', data),
+  transfer:    (id: string, data: object) => api.post(`/stock-items/${id}/transfer`, data),
+  damage:      (id: string, data: object) => api.post(`/stock-items/${id}/damage`, data),
+  qr:          (id: string)            => api.get(`/stock-items/${id}/qr`, { responseType: 'blob' }),
+}
+
 // ── Reports ─────────────────────────────────────────────
 export const reportsApi = {
   getDaily: (date?: string) => api.get(`/reports/daily${date ? `?date=${date}` : ''}`),
