@@ -131,32 +131,119 @@ public class AuthService : IAuthService
     // ── Email Templates ────────────────────────────────────────────────────────
 
     private static string BuildVerificationEmail(string name, string link) => $"""
-        <div style="font-family:Inter,sans-serif;background:#0a0a0a;padding:40px;max-width:560px;margin:0 auto;border-radius:12px;border:1px solid rgba(212,175,55,0.2)">
-          <div style="text-align:center;margin-bottom:32px">
-            <h1 style="color:#D4AF37;font-size:28px;margin:0;letter-spacing:2px">AUSTO</h1>
-            <p style="color:#555;font-size:12px;margin:4px 0 0">Kuyumcu Yönetim Sistemi</p>
-          </div>
-          <h2 style="color:#fff;font-size:20px;margin-bottom:8px">Merhaba, {name}</h2>
-          <p style="color:#888;line-height:1.6">Hesabınızı aktifleştirmek için e-posta adresinizi doğrulamanız gerekmektedir.</p>
-          <div style="text-align:center;margin:32px 0">
-            <a href="{link}" style="display:inline-block;background:linear-gradient(135deg,#bf953f,#fcf6ba 20%,#b38728 40%,#fbf5b7 60%,#aa771c 80%,#bf953f);color:#000;font-weight:700;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px">E-postamı Doğrula</a>
-          </div>
-          <p style="color:#555;font-size:12px;text-align:center">Bu bağlantı 24 saat geçerlidir. Eğer bu isteği siz yapmadıysanız bu e-postayı görmezden gelebilirsiniz.</p>
-        </div>
+        <!DOCTYPE html>
+        <html lang="tr">
+        <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <body style="margin:0;padding:0;background:#080808;font-family:'Inter','Helvetica Neue',Arial,sans-serif">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#080808;min-height:100vh">
+            <tr><td align="center" style="padding:48px 16px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
+
+                <!-- HEADER -->
+                <tr><td style="text-align:center;padding-bottom:40px">
+                  <div style="display:inline-block;border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:20px;width:100%">
+                    <div style="font-size:11px;letter-spacing:6px;color:#D4AF37;text-transform:uppercase;margin-bottom:6px">✦ &nbsp; AUSTO &nbsp; ✦</div>
+                    <div style="font-size:11px;letter-spacing:3px;color:#555;text-transform:uppercase">Kuyumcu Yönetim Sistemi</div>
+                  </div>
+                </td></tr>
+
+                <!-- CARD -->
+                <tr><td style="background:linear-gradient(160deg,#141414 0%,#0E0E0E 100%);border:1px solid rgba(212,175,55,0.12);border-radius:16px;padding:40px 40px 32px;position:relative">
+
+                  <!-- Top accent line -->
+                  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37,transparent);border-radius:16px 16px 0 0"></div>
+
+                  <h2 style="color:#F5F5F5;font-size:22px;font-weight:700;margin:0 0 8px">Merhaba, {name}</h2>
+                  <p style="color:#666;font-size:14px;line-height:1.7;margin:0 0 32px">
+                    Austo hesabınız oluşturuldu. Hesabınızı aktifleştirmek için aşağıdaki butona tıklayarak e-posta adresinizi doğrulayın.
+                  </p>
+
+                  <!-- CTA Button -->
+                  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:32px">
+                    <a href="{link}" style="display:inline-block;background:linear-gradient(135deg,#bf953f 0%,#fcf6ba 25%,#b38728 50%,#fbf5b7 75%,#bf953f 100%);color:#000;font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;padding:14px 40px;border-radius:50px;text-decoration:none">
+                      E-postamı Doğrula
+                    </a>
+                  </td></tr></table>
+
+                  <!-- Info row -->
+                  <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(255,255,255,0.05);padding-top:20px"><tr>
+                    <td style="color:#444;font-size:12px;line-height:1.6">
+                      <span style="color:#D4AF3760">⏱</span>&nbsp; Bu bağlantı <strong style="color:#D4AF37">24 saat</strong> geçerlidir.
+                    </td>
+                  </tr></table>
+
+                </td></tr>
+
+                <!-- FOOTER -->
+                <tr><td style="text-align:center;padding-top:28px">
+                  <p style="color:#333;font-size:11px;margin:0 0 6px">Eğer bu isteği siz yapmadıysanız bu e-postayı görmezden gelebilirsiniz.</p>
+                  <p style="color:#2a2a2a;font-size:11px;margin:0">noreply@austodestek.com &nbsp;·&nbsp; Austo Kuyumcu Yönetim Sistemi</p>
+                </td></tr>
+
+              </table>
+            </td></tr>
+          </table>
+        </body></html>
         """;
 
     private static string BuildResetEmail(string name, string link) => $"""
-        <div style="font-family:Inter,sans-serif;background:#0a0a0a;padding:40px;max-width:560px;margin:0 auto;border-radius:12px;border:1px solid rgba(212,175,55,0.2)">
-          <div style="text-align:center;margin-bottom:32px">
-            <h1 style="color:#D4AF37;font-size:28px;margin:0;letter-spacing:2px">AUSTO</h1>
-            <p style="color:#555;font-size:12px;margin:4px 0 0">Kuyumcu Yönetim Sistemi</p>
-          </div>
-          <h2 style="color:#fff;font-size:20px;margin-bottom:8px">Merhaba, {name}</h2>
-          <p style="color:#888;line-height:1.6">Şifrenizi sıfırlamak için aşağıdaki butona tıklayın.</p>
-          <div style="text-align:center;margin:32px 0">
-            <a href="{link}" style="display:inline-block;background:linear-gradient(135deg,#bf953f,#fcf6ba 20%,#b38728 40%,#fbf5b7 60%,#aa771c 80%,#bf953f);color:#000;font-weight:700;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px">Şifremi Sıfırla</a>
-          </div>
-          <p style="color:#555;font-size:12px;text-align:center">Bu bağlantı 1 saat geçerlidir. Eğer bu isteği siz yapmadıysanız bu e-postayı görmezden gelebilirsiniz.</p>
-        </div>
+        <!DOCTYPE html>
+        <html lang="tr">
+        <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <body style="margin:0;padding:0;background:#080808;font-family:'Inter','Helvetica Neue',Arial,sans-serif">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#080808;min-height:100vh">
+            <tr><td align="center" style="padding:48px 16px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
+
+                <!-- HEADER -->
+                <tr><td style="text-align:center;padding-bottom:40px">
+                  <div style="display:inline-block;border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:20px;width:100%">
+                    <div style="font-size:11px;letter-spacing:6px;color:#D4AF37;text-transform:uppercase;margin-bottom:6px">✦ &nbsp; AUSTO &nbsp; ✦</div>
+                    <div style="font-size:11px;letter-spacing:3px;color:#555;text-transform:uppercase">Kuyumcu Yönetim Sistemi</div>
+                  </div>
+                </td></tr>
+
+                <!-- CARD -->
+                <tr><td style="background:linear-gradient(160deg,#141414 0%,#0E0E0E 100%);border:1px solid rgba(212,175,55,0.12);border-radius:16px;padding:40px 40px 32px;position:relative">
+
+                  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37,transparent);border-radius:16px 16px 0 0"></div>
+
+                  <!-- Shield icon area -->
+                  <div style="text-align:center;margin-bottom:24px">
+                    <div style="display:inline-block;width:52px;height:52px;border-radius:50%;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);line-height:52px;font-size:22px">🔐</div>
+                  </div>
+
+                  <h2 style="color:#F5F5F5;font-size:22px;font-weight:700;margin:0 0 8px;text-align:center">Şifre Sıfırlama</h2>
+                  <p style="color:#666;font-size:14px;line-height:1.7;margin:0 0 8px;text-align:center">Merhaba, <strong style="color:#D4AF37">{name}</strong></p>
+                  <p style="color:#666;font-size:14px;line-height:1.7;margin:0 0 32px;text-align:center">
+                    Austo hesabınız için şifre sıfırlama talebinde bulundunuz. Yeni şifrenizi oluşturmak için aşağıdaki butona tıklayın.
+                  </p>
+
+                  <!-- CTA Button -->
+                  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:32px">
+                    <a href="{link}" style="display:inline-block;background:linear-gradient(135deg,#bf953f 0%,#fcf6ba 25%,#b38728 50%,#fbf5b7 75%,#bf953f 100%);color:#000;font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;padding:14px 40px;border-radius:50px;text-decoration:none">
+                      Şifremi Sıfırla
+                    </a>
+                  </td></tr></table>
+
+                  <!-- Info row -->
+                  <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(255,255,255,0.05);padding-top:20px"><tr>
+                    <td style="color:#444;font-size:12px;line-height:1.6">
+                      <span style="color:#D4AF3760">⏱</span>&nbsp; Bu bağlantı <strong style="color:#D4AF37">1 saat</strong> geçerlidir.
+                    </td>
+                  </tr></table>
+
+                </td></tr>
+
+                <!-- FOOTER -->
+                <tr><td style="text-align:center;padding-top:28px">
+                  <p style="color:#333;font-size:11px;margin:0 0 6px">Bu isteği siz yapmadıysanız şifreniz değiştirilmemiştir.</p>
+                  <p style="color:#2a2a2a;font-size:11px;margin:0">noreply@austodestek.com &nbsp;·&nbsp; Austo Kuyumcu Yönetim Sistemi</p>
+                </td></tr>
+
+              </table>
+            </td></tr>
+          </table>
+        </body></html>
         """;
 }

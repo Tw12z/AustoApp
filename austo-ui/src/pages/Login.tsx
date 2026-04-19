@@ -87,7 +87,7 @@ export default function Login() {
 
       {/* Logo */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-10 relative">
-        <Logo className="h-12 w-auto" style={{ color: '#D4AF37' }} />
+        <Logo className="h-12 w-auto cursor-pointer" style={{ color: '#D4AF37' }} onClick={() => navigate('/')} />
       </motion.div>
 
       <AnimatePresence mode="wait">
@@ -291,7 +291,7 @@ export default function Login() {
               transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
               style={{ background: 'linear-gradient(135deg, #050505, #111)' }}
             >
-              <Logo className="h-10 w-auto mb-6" style={{ color: '#D4AF37' }} />
+              <Logo className="h-10 w-auto mb-6 cursor-pointer" style={{ color: '#D4AF37' }} onClick={() => navigate('/')} />
               <h2 className="text-2xl font-bold text-white mb-3">{isSignUp ? 'Tekrar Hoş Geldiniz!' : 'Merhaba!'}</h2>
               <p className="text-sm mb-8 max-w-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 {isSignUp
