@@ -12,6 +12,8 @@ import BorderGlow from '../components/BorderGlow'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import LineWaves from '../components/LineWaves'
 import DashboardMirror from '../components/DashboardMirror'
+import { financeApi } from '../api/client'
+import type { FinanceItem } from '../types'
 
 const GOLD      = '#D4AF37'
 const GOLD_GRAD = 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)'
@@ -285,7 +287,15 @@ function FeatureCarousel() {
 /* ══════════════════════════════════════════════════════ */
 export default function Landing() {
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const [liveRates, setLiveRates] = useState<FinanceItem[]>([])
+
+  useEffect(() => {
+    const load = () => financeApi.getLiveRates().then(r => setLiveRates(r.data)).catch(() => {})
+    load()
+    const id = setInterval(load, 60_000)
+    return () => clearInterval(id)
+  }, [])
 
   return (
     <div style={{ background: '#060606', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
@@ -496,16 +506,32 @@ export default function Landing() {
             { code: 'TAM ALTIN', labelKey: 'layout.ticker.full' },
             { code: 'USD', labelKey: null },
             { code: 'EUR', labelKey: null },
-          ].map((item, i) => (
-            <motion.div key={item.code}
-              initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.4 }}
-              className="rounded-2xl text-center"
-              style={{ background: '#0D0D0D', border: '1px solid rgba(212,175,55,0.12)', padding: '18px 28px', minWidth: 130 }}>
-              <div className="mb-2" style={{ color: '#7D7D7D', fontSize: 11, letterSpacing: '0.12em', fontFamily: CV }}>{item.labelKey ? t(item.labelKey) : item.code}</div>
-              <div className="h-5 w-24 rounded-lg mx-auto shimmer" />
-            </motion.div>
-          ))}
+          ].map((item, i) => {
+            const rate = liveRates.find(r => r.code === item.code)
+            const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+            const isUp = rate ? !rate.changeRate.includes('-') : true
+            return (
+              <motion.div key={item.code}
+                initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.4 }}
+                className="rounded-2xl text-center"
+                style={{ background: '#0D0D0D', border: '1px solid rgba(212,175,55,0.12)', padding: '18px 28px', minWidth: 130 }}>
+                <div className="mb-2" style={{ color: '#7D7D7D', fontSize: 11, letterSpacing: '0.12em', fontFamily: CV }}>{item.labelKey ? t(item.labelKey) : item.code}</div>
+                {rate ? (
+                  <>
+                    <div style={{ color: '#FFFFFF', fontSize: 17, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                      ₺{rate.sellingPrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="mt-1" style={{ color: isUp ? '#22C55E' : '#EF4444', fontSize: 11, fontWeight: 600 }}>
+                      {isUp ? '▲' : '▼'}{rate.changeRate.replace('-', '')}
+                    </div>
+                  </>
+                ) : (
+                  <div className="h-5 w-24 rounded-lg mx-auto shimmer" />
+                )}
+              </motion.div>
+            )
+          })}
         </div>
         <p className="text-center mt-8" style={{ color: '#7D7D7D', fontSize: 12 }}>{t('landing.liveGold.note')}</p>
       </section>

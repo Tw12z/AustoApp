@@ -140,7 +140,7 @@
     },
     "liveGold": {
       "title": "Piyasayı Asla Kaçırmayın",
-      "note": "* Canlı fiyatlar giriş sonrası gösterilir"
+      "note": "* Fiyatlar 60 saniyede bir otomatik güncellenir"
     },
     "cta": {
       "titleLine1": "Kuyumcunuzu",
