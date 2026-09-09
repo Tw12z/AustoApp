@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
 import Landing from './pages/Landing'
@@ -17,7 +18,7 @@ import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 import VerifyEmail from './pages/VerifyEmail'
 import ResetPassword from './pages/ResetPassword'
-import { categoriesApi, locationsApi } from './api/client'
+import { categoriesApi } from './api/client'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -25,6 +26,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AppRoutes() {
+  const { t } = useTranslation()
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -34,7 +36,7 @@ function AppRoutes() {
       <Route path="/app" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="products"   element={<Products />} />
-        <Route path="categories" element={<SimpleList title="Kategoriler" api={categoriesApi} entityLabel="Kategori" />} />
+        <Route path="categories" element={<SimpleList title={t('categories.title')} api={categoriesApi} entityLabel={t('categories.entityLabel')} />} />
         <Route path="locations"  element={<Locations />} />
         <Route path="stock"      element={<Stock />} />
         <Route path="customers"  element={<Customers />} />

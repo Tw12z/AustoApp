@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react'
 import { authApi } from '../api/client'
@@ -7,6 +8,7 @@ import Logo from '../components/Logo'
 import LineWaves from '../components/LineWaves'
 
 export default function ResetPassword() {
+  const { t } = useTranslation()
   const [params] = useSearchParams()
   const token = params.get('token') ?? ''
   const navigate = useNavigate()
@@ -20,8 +22,8 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (newPw !== confirmPw) { setError('Şifreler eşleşmiyor.'); return }
-    if (newPw.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); return }
+    if (newPw !== confirmPw) { setError(t('resetPassword.errors.mismatch')); return }
+    if (newPw.length < 6) { setError(t('resetPassword.errors.tooShort')); return }
     setError('')
     setLoading(true)
     try {
@@ -29,7 +31,7 @@ export default function ResetPassword() {
       setDone(true)
       setTimeout(() => navigate('/login'), 2500)
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Şifre sıfırlama başarısız.')
+      setError(err.response?.data?.message ?? t('resetPassword.errors.failed'))
     } finally {
       setLoading(false)
     }
@@ -53,27 +55,27 @@ export default function ResetPassword() {
                 style={{ background: 'linear-gradient(135deg,#D4AF37,#F5C842)', boxShadow: '0 0 30px rgba(212,175,55,0.4)' }}>
                 <CheckCircle size={32} className="text-black" />
               </div>
-              <h2 className="text-xl font-bold text-white">Şifre Güncellendi!</h2>
-              <p className="text-sm text-center" style={{ color: '#888' }}>Giriş sayfasına yönlendiriliyorsunuz...</p>
+              <h2 className="text-xl font-bold text-white">{t('resetPassword.done.title')}</h2>
+              <p className="text-sm text-center" style={{ color: '#888' }}>{t('resetPassword.done.redirecting')}</p>
             </div>
           ) : (
             <>
-              <h2 className="text-xl font-bold text-white mb-1">Yeni Şifre Belirle</h2>
-              <p className="text-sm mb-6" style={{ color: '#555' }}>Hesabınız için yeni bir şifre oluşturun.</p>
+              <h2 className="text-xl font-bold text-white mb-1">{t('resetPassword.title')}</h2>
+              <p className="text-sm mb-6" style={{ color: '#888' }}>{t('resetPassword.subtitle')}</p>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="label">Yeni Şifre</label>
+                  <label className="label">{t('resetPassword.newPassword')}</label>
                   <div className="relative">
                     <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
                     <input className="input pl-8 pr-9" type={showPw ? 'text' : 'password'}
                       placeholder="••••••••" value={newPw} onChange={e => setNewPw(e.target.value)} required />
-                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)}>
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)} aria-label={showPw ? t('common.hidePassword') : t('common.showPassword')}>
                       {showPw ? <EyeOff size={13} /> : <Eye size={13} />}
                     </button>
                   </div>
                 </div>
                 <div>
-                  <label className="label">Şifre Tekrar</label>
+                  <label className="label">{t('resetPassword.confirmPassword')}</label>
                   <div className="relative">
                     <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
                     <input className="input pl-8" type="password"
@@ -84,7 +86,7 @@ export default function ResetPassword() {
                   style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>}
                 <button type="submit" disabled={loading || !token} className="w-full py-3 rounded-full font-semibold text-black transition-all duration-300 hover:opacity-90 disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
-                  {loading ? 'Güncelleniyor...' : 'Şifremi Güncelle'}
+                  {loading ? t('resetPassword.updating') : t('resetPassword.submit')}
                 </button>
               </form>
             </>

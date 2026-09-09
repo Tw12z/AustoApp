@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Plus, Edit2, Trash2, X, Search, Building2, Phone } from 'lucide-react'
 import { suppliersApi } from '../api/client'
 import type { Supplier } from '../types'
 
 function Modal({ open, onClose, children, title }: any) {
+  const { t } = useTranslation()
   if (!open) return null
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
           <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
+          <button onClick={onClose} aria-label={t('common.close')} className="text-gray-500 hover:text-white"><X size={18} /></button>
         </div>
         {children}
       </div>
@@ -21,6 +23,7 @@ function Modal({ open, onClose, children, title }: any) {
 const empty = { companyName: '', phone: '', contactName: '', email: '', taxNumber: '', notes: '' }
 
 export default function Suppliers() {
+  const { t } = useTranslation()
   const [items, setItems] = useState<Supplier[]>([])
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState<'create' | 'edit' | null>(null)
@@ -50,33 +53,33 @@ export default function Suppliers() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="page-title gold-text">Tedarikçiler</h1>
-        <button className="btn-gold flex items-center gap-2" onClick={openCreate}><Plus size={16} /> Yeni Tedarikçi</button>
+        <h1 className="page-title gold-text">{t('suppliers.pageTitle')}</h1>
+        <button className="btn-gold flex items-center gap-2" onClick={openCreate}><Plus size={16} /> {t('suppliers.newSupplier')}</button>
       </div>
 
       <div className="relative">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#555' }} />
-        <input className="input pl-9" placeholder="Şirket ara..." value={search} onChange={e => setSearch(e.target.value)} />
+        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#888' }} />
+        <input className="input pl-9" placeholder={t('suppliers.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
-              {['Şirket', 'İletişim Kişisi', 'Telefon', 'Durum', ''].map(h => (
-                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: '#555', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.05em' }}>{h}</th>
+              {[t('suppliers.columns.company'), t('suppliers.columns.contactPerson'), t('suppliers.columns.phone'), t('suppliers.columns.status'), ''].map(h => (
+                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: '#888', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.05em' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {loading ? <tr><td colSpan={5} className="px-4 py-8 text-center" style={{ color: '#555' }}>Yükleniyor...</td></tr>
-            : filtered.length === 0 ? <tr><td colSpan={5} className="px-4 py-8 text-center" style={{ color: '#555' }}>Tedarikçi bulunamadı.</td></tr>
+            {loading ? <tr><td colSpan={5} className="px-4 py-8 text-center" style={{ color: '#888' }}>{t('suppliers.loading')}</td></tr>
+            : filtered.length === 0 ? <tr><td colSpan={5} className="px-4 py-8 text-center" style={{ color: '#888' }}>{t('suppliers.noResults')}</td></tr>
             : filtered.map(s => (
               <tr key={s.id} className="table-row">
                 <td className="px-4 py-3"><div className="flex items-center gap-2"><Building2 size={14} style={{ color: '#D4AF37' }} /><span className="font-medium text-white">{s.companyName}</span></div></td>
                 <td className="px-4 py-3" style={{ color: '#888' }}>{s.contactName || '—'}</td>
                 <td className="px-4 py-3"><span className="flex items-center gap-1.5 text-xs" style={{ color: '#888' }}><Phone size={11}/>{s.phone}</span></td>
-                <td className="px-4 py-3"><span className={s.isActive ? 'badge-green' : 'badge-red'}>{s.isActive ? 'Aktif' : 'Pasif'}</span></td>
+                <td className="px-4 py-3"><span className={s.isActive ? 'badge-green' : 'badge-red'}>{s.isActive ? t('common.active') : t('common.inactive')}</span></td>
                 <td className="px-4 py-3">
                   <div className="flex gap-1">
                     <button className="btn-ghost px-2 py-1" onClick={() => openEdit(s)}><Edit2 size={14}/></button>
@@ -89,18 +92,18 @@ export default function Suppliers() {
         </table>
       </div>
 
-      <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? 'Tedarikçi Düzenle' : 'Yeni Tedarikçi'}>
+      <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('suppliers.editTitle') : t('suppliers.newTitle')}>
         <form onSubmit={handleSave}>
           <div className="px-6 py-5 grid grid-cols-2 gap-4">
-            <div className="col-span-2"><label className="label">Şirket Adı</label><input className="input" value={form.companyName} onChange={set('companyName')} required /></div>
-            <div><label className="label">İletişim Kişisi</label><input className="input" value={form.contactName} onChange={set('contactName')} /></div>
-            <div><label className="label">Telefon</label><input className="input" value={form.phone} onChange={set('phone')} required /></div>
-            <div><label className="label">E-posta</label><input className="input" type="email" value={form.email} onChange={set('email')} /></div>
-            <div><label className="label">Vergi No</label><input className="input" value={form.taxNumber} onChange={set('taxNumber')} /></div>
+            <div className="col-span-2"><label className="label">{t('suppliers.form.companyName')}</label><input className="input" value={form.companyName} onChange={set('companyName')} required /></div>
+            <div><label className="label">{t('suppliers.form.contactPerson')}</label><input className="input" value={form.contactName} onChange={set('contactName')} /></div>
+            <div><label className="label">{t('suppliers.form.phone')}</label><input className="input" value={form.phone} onChange={set('phone')} required /></div>
+            <div><label className="label">{t('suppliers.form.email')}</label><input className="input" type="email" value={form.email} onChange={set('email')} /></div>
+            <div><label className="label">{t('suppliers.form.taxNumber')}</label><input className="input" value={form.taxNumber} onChange={set('taxNumber')} /></div>
           </div>
           <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: '1px solid #1A1A1A' }}>
-            <button type="button" className="btn-ghost" onClick={() => setModal(null)}>İptal</button>
-            <button type="submit" className="btn-gold" disabled={saving}>{saving ? 'Kaydediliyor...' : 'Kaydet'}</button>
+            <button type="button" className="btn-ghost" onClick={() => setModal(null)}>{t('suppliers.form.cancel')}</button>
+            <button type="submit" className="btn-gold" disabled={saving}>{saving ? t('suppliers.form.saving') : t('suppliers.form.save')}</button>
           </div>
         </form>
       </Modal>

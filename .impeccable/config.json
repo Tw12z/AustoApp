@@ -1,0 +1,29 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "austo-ui/src/index.css"
+        ],
+        "createdAt": "2026-09-09T15:38:36.649Z",
+        "reason": "Incumbent brand device: DESIGN.md documents gold gradient text (.gold-text class, GOLD_GRAD) as the established signature technique used pervasively across the app pre-existing this session, not introduced by this edit."
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-09-09T15:44:08.598Z",
+        "reason": "Incumbent typeface, documented in DESIGN.md's type pairing (Inter for body/data) from the earlier document pass; predates this session, not newly introduced."
+      },
+      {
+        "rule": "overused-font",
+        "value": "montserrat",
+        "createdAt": "2026-09-09T15:44:08.690Z",
+        "reason": "Incumbent typeface, documented in DESIGN.md's type pairing (Montserrat for headings/labels/nav) from the earlier document pass; predates this session, not newly introduced."
+      }
+    ]
+  }
+}

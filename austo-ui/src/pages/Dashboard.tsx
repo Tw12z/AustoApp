@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   TrendingUp, TrendingDown, ShoppingCart, ShoppingBag,
   Gem, Search, Plus, Minus, X, CheckCircle, Zap, User,
@@ -11,13 +12,13 @@ import type { DailySummary, FinanceItem, StockValuation, Product, Customer, Sale
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 // ── Formatters ────────────────────────────────────────────
-function fmt(n: number) {
-  return '₺' + n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function fmt(n: number, locale = 'tr-TR') {
+  return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
-function fmtShort(n: number) {
+function fmtShort(n: number, locale = 'tr-TR') {
   if (n >= 1_000_000) return '₺' + (n / 1_000_000).toFixed(2) + 'M'
   if (n >= 1_000)     return '₺' + (n / 1_000).toFixed(1)     + 'K'
-  return fmt(n)
+  return fmt(n, locale)
 }
 
 // ── StatCard ──────────────────────────────────────────────
@@ -53,7 +54,7 @@ function StatCard({ label, value, sub, icon: Icon, color = '#D4AF37', loading, i
 
       {/* Label */}
       <div className="relative">
-        <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: '#555' }}>
+        <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: '#888' }}>
           {label}
         </span>
       </div>
@@ -98,6 +99,8 @@ function LiveDot() {
 interface CartItem { product: Product; quantity: number }
 
 function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
+  const { t, i18n } = useTranslation()
+  const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const [products, setProducts]     = useState<Product[]>([])
   const [customers, setCustomers]   = useState<Customer[]>([])
   const [search, setSearch]         = useState('')
@@ -167,14 +170,14 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
       onSaleCompleted()
       setTimeout(() => setSuccess(false), 3000)
     } catch {
-      setError('Satış oluşturulamadı. Stok kontrolü yapın.')
+      setError(t('dashboard.quickSale.saleFailed'))
     } finally {
       setSubmitting(false)
     }
   }
 
   const PURITY_COLOR: Record<number, string> = {
-    8: '#888', 14: '#C8A420', 18: '#D4AF37', 21: '#DDB940', 22: '#EAC84A', 24: '#F5C842', 0: '#555'
+    8: '#888', 14: '#C8A420', 18: '#D4AF37', 21: '#DDB940', 22: '#EAC84A', 24: '#F5C842', 0: '#888'
   }
 
   const [searchOpen, setSearchOpen] = useState(false)
@@ -188,11 +191,11 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
             style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)' }}>
             <Zap size={14} style={{ color: '#D4AF37' }} />
           </div>
-          <span className="text-sm font-semibold text-white">Hızlı Satış</span>
+          <span className="text-sm font-semibold text-white">{t('dashboard.quickSale.title')}</span>
         </div>
         <div className="flex items-center gap-2">
           {cart.length > 0 && (
-            <span className="badge-gold">{cart.length} ürün</span>
+            <span className="badge-gold">{t('dashboard.quickSale.itemsInCart', { count: cart.length })}</span>
           )}
           {/* Search toggle */}
           <div className="flex items-center gap-2">
@@ -203,7 +206,7 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                 background: searchOpen ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.04)',
                 border: `1px solid ${searchOpen ? 'rgba(212,175,55,0.3)' : 'rgba(255,255,255,0.08)'}`,
               }}>
-              <Search size={13} style={{ color: searchOpen ? '#D4AF37' : '#555' }} />
+              <Search size={13} style={{ color: searchOpen ? '#D4AF37' : '#888' }} />
             </button>
             <div className="overflow-hidden transition-all duration-300"
               style={{ width: searchOpen ? 180 : 0, opacity: searchOpen ? 1 : 0 }}>
@@ -211,7 +214,7 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                 <input
                   ref={searchRef}
                   className="input pl-3 text-sm"
-                  placeholder="Ürün adı veya barkod..."
+                  placeholder={t('dashboard.quickSale.searchPlaceholder')}
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   onBlur={() => { if (!search) setSearchOpen(false) }}
@@ -262,14 +265,14 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                       <span className="text-sm text-white truncate font-medium">{p.name}</span>
                     </div>
                     <div className="flex items-center gap-2.5 shrink-0">
-                      <span className="text-xs" style={{ color: p.stockQuantity <= 2 ? '#EF4444' : '#444' }}>
-                        {p.stockQuantity} adet
+                      <span className="text-xs" style={{ color: p.stockQuantity <= 2 ? '#EF4444' : '#7D7D7D' }}>
+                        {t('dashboard.quickSale.unitCount', { count: p.stockQuantity })}
                       </span>
                       <span className="text-sm font-bold" style={{
                         color: '#D4AF37',
                         filter: 'drop-shadow(0 0 4px rgba(212,175,55,0.4))',
                       }}>
-                        {fmtShort(p.salePrice)}
+                        {fmtShort(p.salePrice, priceLocale)}
                       </span>
                       <Plus size={13} style={{ color: outOfStock ? '#333' : '#D4AF37' }} />
                     </div>
@@ -278,8 +281,8 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
               </button>
             )
           }) : (
-            <div className="flex items-center justify-center h-16 text-sm" style={{ color: '#444' }}>
-              Ürün bulunamadı
+            <div className="flex items-center justify-center h-16 text-sm" style={{ color: '#7D7D7D' }}>
+              {t('dashboard.quickSale.noProducts')}
             </div>
           )
         ) : (
@@ -290,8 +293,8 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                 style={{ background: '#0A0A0A', border: '1px solid #1A1A1A' }}>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-white truncate">{c.product.name}</div>
-                  <div className="text-xs mt-0.5" style={{ color: '#555' }}>
-                    {fmtShort(c.product.salePrice)} / adet
+                  <div className="text-xs mt-0.5" style={{ color: '#888' }}>
+                    {t('dashboard.quickSale.perUnit', { price: fmtShort(c.product.salePrice, priceLocale) })}
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -311,20 +314,20 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
                     <Plus size={10} style={{ color: c.quantity >= c.product.stockQuantity ? '#333' : '#888' }} />
                   </button>
                   <button onClick={() => removeFromCart(c.product.id)} className="ml-1">
-                    <X size={13} style={{ color: '#444' }} />
+                    <X size={13} style={{ color: '#7D7D7D' }} />
                   </button>
                 </div>
                 <div className="text-sm font-bold shrink-0 tabular-nums" style={{ color: '#D4AF37' }}>
-                  {fmtShort(c.product.salePrice * c.quantity)}
+                  {fmtShort(c.product.salePrice * c.quantity, priceLocale)}
                 </div>
               </div>
             ))}
             {/* Add more button */}
             <button onClick={() => { setSearch(' '); searchRef.current?.focus() }}
               className="w-full flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs transition-all"
-              style={{ border: '1px dashed #2A2A2A', color: '#555' }}
+              style={{ border: '1px dashed #2A2A2A', color: '#888' }}
               onFocus={() => setSearch('')}>
-              <Plus size={11} /> Ürün ekle
+              <Plus size={11} /> {t('dashboard.quickSale.addProduct')}
             </button>
           </div>
         )}
@@ -336,13 +339,13 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
 
         {/* Customer selector */}
         <div className="flex items-center gap-2">
-          <User size={13} style={{ color: '#555' }} />
+          <User size={13} style={{ color: '#888' }} />
           <select
             className="select text-sm flex-1"
             value={customerId}
             onChange={e => setCustomerId(e.target.value)}
           >
-            <option value="">Müşteri seç (opsiyonel)</option>
+            <option value="">{t('dashboard.quickSale.selectCustomer')}</option>
             {customers.map(c => (
               <option key={c.id} value={c.id}>{c.fullName}</option>
             ))}
@@ -360,20 +363,20 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
         {success ? (
           <div className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold"
             style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#22C55E' }}>
-            <CheckCircle size={16} /> Satış tamamlandı!
+            <CheckCircle size={16} /> {t('dashboard.quickSale.saleCompleted')}
           </div>
         ) : confirming ? (
           <div className="flex items-center gap-2">
             <div className="flex-1 text-sm font-semibold text-white tabular-nums px-3 py-2.5 rounded-xl"
               style={{ background: '#0A0A0A', border: '1px solid #2A2A2A' }}>
-              {fmt(total)} onaylansın mı?
+              {t('dashboard.quickSale.confirmQuestion', { total: fmt(total, priceLocale) })}
             </div>
             <button
               onClick={handleSubmit}
               disabled={submitting}
               className="flex items-center justify-center w-11 h-10 rounded-xl shrink-0 transition-all"
               style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', color: '#22C55E' }}
-              title="Onayla"
+              title={t('dashboard.quickSale.confirm')}
             >
               {submitting
                 ? <span className="animate-spin w-4 h-4 border-2 border-green-800/30 border-t-green-400 rounded-full" />
@@ -384,7 +387,7 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
               disabled={submitting}
               className="flex items-center justify-center w-11 h-10 rounded-xl shrink-0 transition-all"
               style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#EF4444' }}
-              title="Vazgeç"
+              title={t('dashboard.quickSale.cancel')}
             >
               <X size={16} />
             </button>
@@ -396,7 +399,7 @@ function QuickSale({ onSaleCompleted }: { onSaleCompleted: () => void }) {
             className="btn-gold w-full flex items-center justify-center gap-2"
           >
             <ShoppingCart size={15} />
-            {cart.length > 0 ? `Sat — ${fmt(total)}` : 'Sepet boş'}
+            {cart.length > 0 ? t('dashboard.quickSale.sellButton', { total: fmt(total, priceLocale) }) : t('dashboard.quickSale.emptyCart')}
           </button>
         )}
       </div>
@@ -411,17 +414,19 @@ interface SalesPoint { date: string; revenue: number; count: number }
 
 interface SalesTooltipProps { active?: boolean; payload?: Array<{ value: number; payload: SalesPoint }> }
 function SalesTooltip({ active, payload }: SalesTooltipProps) {
+  const { t, i18n } = useTranslation()
   if (!active || !payload?.length) return null
   const d = payload[0]
-  const label = new Date(d.payload.date + 'T00:00:00').toLocaleDateString('tr-TR', {
+  const dateLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+  const label = new Date(d.payload.date + 'T00:00:00').toLocaleDateString(dateLocale, {
     day: 'numeric', month: 'long', year: 'numeric',
   })
   return (
     <div className="rounded-xl px-4 py-3 text-sm"
       style={{ background: '#1A1A1A', border: '1px solid rgba(212,175,55,0.3)' }}>
-      <div className="mb-1.5" style={{ color: '#555', fontSize: 11 }}>{label}</div>
-      <div className="font-bold" style={{ color: '#D4AF37' }}>{fmt(d.value)}</div>
-      <div className="mt-0.5" style={{ color: '#888', fontSize: 11 }}>{d.payload.count} satış</div>
+      <div className="mb-1.5" style={{ color: '#888', fontSize: 11 }}>{label}</div>
+      <div className="font-bold" style={{ color: '#D4AF37' }}>{fmt(d.value, dateLocale)}</div>
+      <div className="mt-0.5" style={{ color: '#888', fontSize: 11 }}>{t('dashboard.salesTrend.salesCount', { count: d.payload.count })}</div>
     </div>
   )
 }
@@ -445,6 +450,8 @@ function buildSalesChartData(sales: Sale[], from: Date, to: Date): SalesPoint[] 
 
 // ── Dashboard ─────────────────────────────────────────────
 export default function Dashboard() {
+  const { t, i18n } = useTranslation()
+  const dateLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const [summary,   setSummary]   = useState<DailySummary | null>(null)
   const [rates,     setRates]     = useState<FinanceItem[]>([])
   const [valuation, setValuation] = useState<StockValuation | null>(null)
@@ -480,7 +487,7 @@ export default function Dashboard() {
   useEffect(() => { loadData() }, [])
   useEffect(() => { loadSalesChart(salesRange) }, [salesRange])
 
-  const today = new Date().toLocaleDateString('tr-TR', {
+  const today = new Date().toLocaleDateString(dateLocale, {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   })
 
@@ -498,13 +505,13 @@ export default function Dashboard() {
         <div className="relative flex items-center justify-between px-6 pt-3.5 pb-3">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <h1 className="text-base font-semibold tracking-wide gold-text">Dashboard</h1>
+              <h1 className="text-base font-semibold tracking-wide gold-text">{t('nav.dashboard')}</h1>
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold"
                 style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22C55E' }}>
-                <LiveDot />Canlı
+                <LiveDot />{t('dashboard.live')}
               </div>
             </div>
-            <p className="text-xs capitalize" style={{ color: '#444' }}>{today}</p>
+            <p className="text-xs capitalize" style={{ color: '#7D7D7D' }}>{today}</p>
           </div>
         </div>
 
@@ -513,22 +520,22 @@ export default function Dashboard() {
 
       {/* ── Stat Cards ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Bugünkü Satış"
-          value={loading ? '—' : fmtShort(summary?.salesRevenueTRY ?? 0)}
-          sub={`${summary?.salesCount ?? 0} işlem · ${(summary?.salesWeightGram ?? 0).toFixed(2)}gr`}
+        <StatCard label={t('dashboard.stats.todaySales')}
+          value={loading ? '—' : fmtShort(summary?.salesRevenueTRY ?? 0, dateLocale)}
+          sub={t('dashboard.stats.todaySalesSub', { count: summary?.salesCount ?? 0, weight: (summary?.salesWeightGram ?? 0).toFixed(2) })}
           icon={ShoppingCart} color="#22C55E" loading={loading} iconRight={5} />
-        <StatCard label="Bugünkü Alış"
-          value={loading ? '—' : fmtShort(summary?.purchasesCostTRY ?? 0)}
-          sub={`${summary?.purchasesCount ?? 0} işlem · ${(summary?.purchasesWeightGram ?? 0).toFixed(2)}gr`}
+        <StatCard label={t('dashboard.stats.todayPurchases')}
+          value={loading ? '—' : fmtShort(summary?.purchasesCostTRY ?? 0, dateLocale)}
+          sub={t('dashboard.stats.todaySalesSub', { count: summary?.purchasesCount ?? 0, weight: (summary?.purchasesWeightGram ?? 0).toFixed(2) })}
           icon={ShoppingBag} color="#3B82F6" loading={loading} />
-        <StatCard label="Tahmini Net Kar"
-          value={loading ? '—' : fmtShort(summary?.netRevenueTRY ?? 0)}
-          sub="Bugünkü net" icon={TrendingUp}
+        <StatCard label={t('dashboard.stats.estimatedNetProfit')}
+          value={loading ? '—' : fmtShort(summary?.netRevenueTRY ?? 0, dateLocale)}
+          sub={t('dashboard.stats.todayNet')} icon={TrendingUp}
           color={!summary || summary.netRevenueTRY >= 0 ? '#22C55E' : '#EF4444'}
           loading={loading} iconRight={5} iconBottom={-58} iconSize={190} />
-        <StatCard label="Stok Değeri"
-          value={loading ? '—' : fmtShort(valuation?.totalEstimatedValueTRY ?? 0)}
-          sub={`${(valuation?.totalWeightGram ?? 0).toFixed(2)}gr toplam`}
+        <StatCard label={t('dashboard.stats.stockValue')}
+          value={loading ? '—' : fmtShort(valuation?.totalEstimatedValueTRY ?? 0, dateLocale)}
+          sub={t('dashboard.stats.totalWeight', { weight: (valuation?.totalWeightGram ?? 0).toFixed(2) })}
           icon={Gem} color="#D4AF37" loading={loading} />
       </div>
 
@@ -545,15 +552,15 @@ export default function Dashboard() {
           {/* Header */}
           <div className="flex items-center justify-between mb-4 shrink-0">
             <div>
-              <span className="label">Satış Trendi</span>
+              <span className="label">{t('dashboard.salesTrend.title')}</span>
               {!salesChartLoading && salesChartData.length > 0 && (
                 <div className="flex items-center gap-3 mt-1.5">
                   <span className="text-lg font-bold text-white tabular-nums">
-                    {fmtShort(salesChartData.reduce((s, d) => s + d.revenue, 0))}
+                    {fmtShort(salesChartData.reduce((s, d) => s + d.revenue, 0), dateLocale)}
                   </span>
                   <span className="text-xs px-2 py-0.5 rounded-full"
                     style={{ background: 'rgba(212,175,55,0.08)', color: '#888', border: '1px solid rgba(212,175,55,0.15)' }}>
-                    {salesChartData.reduce((s, d) => s + d.count, 0)} satış
+                    {t('dashboard.salesTrend.salesCount', { count: salesChartData.reduce((s, d) => s + d.count, 0) })}
                   </span>
                 </div>
               )}
@@ -565,10 +572,10 @@ export default function Dashboard() {
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
                   style={{
                     background:  salesRange === r ? 'rgba(212,175,55,0.15)' : 'transparent',
-                    color:       salesRange === r ? '#D4AF37' : '#444',
+                    color:       salesRange === r ? '#D4AF37' : '#7D7D7D',
                     border:      `1px solid ${salesRange === r ? 'rgba(212,175,55,0.3)' : 'transparent'}`,
                   }}>
-                  {r === '7d' ? '7G' : r === '30d' ? '30G' : '3A'}
+                  {r === '7d' ? t('dashboard.salesTrend.range7d') : r === '30d' ? t('dashboard.salesTrend.range30d') : t('dashboard.salesTrend.range3m')}
                 </button>
               ))}
             </div>
@@ -590,10 +597,10 @@ export default function Dashboard() {
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#444', fontSize: 11 }}
+                  tick={{ fill: '#7D7D7D', fontSize: 11 }}
                   interval={Math.max(0, Math.floor(salesChartData.length / 6) - 1)}
                   tickFormatter={v =>
-                    new Date(v + 'T00:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })
+                    new Date(v + 'T00:00:00').toLocaleDateString(dateLocale, { day: 'numeric', month: 'short' })
                   }
                 />
                 <YAxis hide />
@@ -622,9 +629,9 @@ export default function Dashboard() {
       {/* ── Currency Rates ──────────────────────────────────── */}
       <div className="card p-5">
         <div className="flex items-center justify-between mb-5">
-          <span className="label">Döviz Kurları</span>
+          <span className="label">{t('dashboard.currency.title')}</span>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: '#22C55E' }}>
-            <LiveDot />Canlı
+            <LiveDot />{t('dashboard.live')}
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -638,7 +645,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-bold text-white">
                       {r.code} <span style={{ color: '#333' }}>/</span>{' '}
-                      <span style={{ color: '#555' }}>TRY</span>
+                      <span style={{ color: '#888' }}>TRY</span>
                     </div>
                     <span className={`flex items-center gap-1 text-xs font-semibold ${isUp ? 'badge-green' : 'badge-red'}`}>
                       {isUp ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
@@ -646,7 +653,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="text-2xl font-bold text-white tracking-tight">
-                    ₺{r.sellingPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                    ₺{r.sellingPrice.toLocaleString(dateLocale, { minimumFractionDigits: 2 })}
                   </div>
                   <div className="h-1 rounded-full" style={{ background: '#1A1A1A' }}>
                     <div className="h-1 rounded-full"

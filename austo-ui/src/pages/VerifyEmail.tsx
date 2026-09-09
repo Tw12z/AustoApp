@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { CheckCircle, XCircle, Loader } from 'lucide-react'
 import { authApi } from '../api/client'
@@ -7,17 +8,18 @@ import Logo from '../components/Logo'
 import LineWaves from '../components/LineWaves'
 
 export default function VerifyEmail() {
+  const { t } = useTranslation()
   const [params] = useSearchParams()
   const token = params.get('token') ?? ''
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    if (!token) { setStatus('error'); setMessage('Geçersiz doğrulama bağlantısı.'); return }
+    if (!token) { setStatus('error'); setMessage(t('verifyEmail.invalidLink')); return }
     authApi.verifyEmail(token)
       .then(res => { setStatus('success'); setMessage(res.data.message) })
-      .catch(err => { setStatus('error'); setMessage(err.response?.data?.message ?? 'Doğrulama başarısız.') })
-  }, [token])
+      .catch(err => { setStatus('error'); setMessage(err.response?.data?.message ?? t('verifyEmail.failed')) })
+  }, [token, t])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: '#000' }}>
@@ -34,7 +36,7 @@ export default function VerifyEmail() {
           {status === 'loading' && (
             <div className="flex flex-col items-center gap-4">
               <Loader size={40} className="animate-spin" style={{ color: '#D4AF37' }} />
-              <p className="text-white">Doğrulanıyor...</p>
+              <p className="text-white">{t('verifyEmail.verifying')}</p>
             </div>
           )}
           {status === 'success' && (
@@ -43,17 +45,17 @@ export default function VerifyEmail() {
                 style={{ background: 'linear-gradient(135deg,#D4AF37,#F5C842)', boxShadow: '0 0 30px rgba(212,175,55,0.4)' }}>
                 <CheckCircle size={32} className="text-black" />
               </div>
-              <h2 className="text-xl font-bold text-white">E-posta Doğrulandı!</h2>
+              <h2 className="text-xl font-bold text-white">{t('verifyEmail.successTitle')}</h2>
               <p className="text-sm" style={{ color: '#888' }}>{message}</p>
-              <Link to="/login" className="btn-gold w-full mt-2 text-center">Giriş Yap</Link>
+              <Link to="/login" className="btn-gold w-full mt-2 text-center">{t('verifyEmail.signIn')}</Link>
             </div>
           )}
           {status === 'error' && (
             <div className="flex flex-col items-center gap-4">
               <XCircle size={40} style={{ color: '#EF4444' }} />
-              <h2 className="text-xl font-bold text-white">Doğrulama Başarısız</h2>
+              <h2 className="text-xl font-bold text-white">{t('verifyEmail.errorTitle')}</h2>
               <p className="text-sm" style={{ color: '#888' }}>{message}</p>
-              <Link to="/login" className="btn-outline w-full text-center mt-2">Geri Dön</Link>
+              <Link to="/login" className="btn-outline w-full text-center mt-2">{t('verifyEmail.back')}</Link>
             </div>
           )}
         </div>

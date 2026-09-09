@@ -1,0 +1,664 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "close": "Close",
+    "confirm": "Confirm",
+    "actions": "Actions",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "error": "Error",
+    "success": "Success",
+    "noResults": "No results found",
+    "total": "Total",
+    "date": "Date",
+    "name": "Name",
+    "description": "Description",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this record? This action cannot be undone.",
+    "language": "Language",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "emailPlaceholder": "you@austo.com",
+    "usernameOrEmailPlaceholder": "you@austo.com",
+    "fullNamePlaceholder": "Jordan Smith",
+    "usernamePlaceholder": "username"
+  },
+  "layout": {
+    "ticker": {
+      "gram": "Gram",
+      "quarter": "Quarter",
+      "half": "Half",
+      "full": "Full"
+    },
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "locations": "Locations",
+    "stock": "Stock",
+    "customers": "Customers",
+    "suppliers": "Suppliers",
+    "finance": "Finance",
+    "sales": "Sales",
+    "purchases": "Purchases",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "landing": {
+    "navbar": {
+      "features": "Features",
+      "how": "How It Works",
+      "login": "Sign In"
+    },
+    "hero": {
+      "titleLine1": "The New Standard",
+      "titleLine2": "in Gold Management",
+      "desc": "Digitize your jewelry business end-to-end. Live gold prices, stock tracking, sales & purchase management, reports and more — all on one platform.",
+      "ctaStart": "Get Started",
+      "ctaExplore": "Explore Features",
+      "demo": {
+        "dashboardTitle": "Dashboard",
+        "live": "Live",
+        "todaySales": "Today's Sales",
+        "todayPurchases": "Today's Purchases",
+        "netProfit": "Net Profit",
+        "stockValue": "Stock Value",
+        "quickSale": "Quick Sale",
+        "salesTrend": "Sales Trend",
+        "search": "Search products...",
+        "productsTitle": "Products",
+        "new": "New",
+        "colProduct": "Product",
+        "colPurity": "Purity",
+        "colStock": "Stock",
+        "colPrice": "Price",
+        "stockTitle": "Stock",
+        "totalWeight": "Total Weight",
+        "estValue": "Estimated Value",
+        "scanned": "Scanned",
+        "transferred": "Transferred to Vitrin",
+        "moveIn": "Stock In",
+        "moveOut": "Stock Out",
+        "nav": {
+          "dashboard": "Dashboard",
+          "products": "Products",
+          "stock": "Stock"
+        }
+      }
+    },
+    "marquee": {
+      "trusted": "Trusted Brands & Partners"
+    },
+    "stats": {
+      "coreModules": "Core Modules",
+      "livePrice": "Live Pricing",
+      "barcodeSupport": "Barcode Support",
+      "productCapacity": "Product Capacity"
+    },
+    "features": {
+      "titleLine1": "Everything Jewelers",
+      "titleLine2": "Could Need",
+      "subtitle": "Streamline your operations with features built specifically for the industry.",
+      "items": {
+        "finance": { "title": "Live Finance Tracking", "desc": "Track gram, quarter, half, and full gold along with currency prices in real time. Follow long-term trends with daily, weekly, and monthly charts." },
+        "products": { "title": "Product & Category Management", "desc": "Organize your products into categories, record purity (8k–24k) and barcode details. Update active/inactive status instantly." },
+        "sales": { "title": "Quick Sale", "desc": "Make a sale in one click from the dashboard. Search by product name or barcode, add to cart, select a customer, and complete." },
+        "stock": { "title": "Stock & Transfer", "desc": "Handle stock in/out with QR/barcode scanning and transfer between locations. All movements are recorded automatically." },
+        "locations": { "title": "Location Management", "desc": "Categorize locations like showcase, safe, or under-safe. See at a glance which location every product is in." },
+        "customers": { "title": "Customers & Suppliers", "desc": "Manage customer and supplier records. Link sales and purchase transactions to the right records for full history tracking." },
+        "purchases": { "title": "Purchase Management", "desc": "Record purchases from suppliers, scrap, and raw material buys. Stock updates automatically and cost is calculated." },
+        "reports": { "title": "Reports & Analytics", "desc": "View daily summaries, sales trends, stock valuation, and net profit/loss reports instantly. Cancelled sales are deducted automatically." },
+        "financeModule": { "title": "Finance Module", "desc": "Enter gold and currency prices manually or follow a live price feed. Track the metrics you care about on charts." },
+        "qr": { "title": "QR Code Integration", "desc": "Define a barcode for every product. Perform stock movements in seconds by scanning a QR code." },
+        "secure": { "title": "Secure & Modern", "desc": "Secure access with JWT authentication, email verification, and password reset. Built on .NET 10 and React." },
+        "dashboard": { "title": "Dashboard & Quick Actions", "desc": "See daily sales, purchases, net profit, and stock value on one screen. Track the sales trend on a chart and complete a quick sale instantly." }
+      }
+    },
+    "how": {
+      "title": "Get Started in 3 Steps",
+      "steps": {
+        "account": { "title": "Create an Account", "desc": "Set up your account and define your store in minutes." },
+        "products": { "title": "Add Your Products", "desc": "Enter stock details, purity, and weights into the system." },
+        "manage": { "title": "Start Managing", "desc": "Make sales, review reports, and track your profit." }
+      }
+    },
+    "liveGold": {
+      "title": "Never Miss the Market",
+      "note": "* Live prices are shown after sign-in"
+    },
+    "cta": {
+      "titleLine1": "Digitize Your",
+      "titleLine2": "Jewelry Business",
+      "desc": "Modernize gold management with Austo. Fast setup, easy to use.",
+      "button": "Start for Free"
+    },
+    "footer": {
+      "copyright": "© 2026 Austo · Jewelry Management System",
+      "login": "Sign In →"
+    }
+  },
+  "auth": {
+    "errors": {
+      "loginFailed": "Login failed.",
+      "registerFailed": "Registration failed.",
+      "operationFailed": "Operation failed.",
+      "passwordMismatch": "Passwords do not match."
+    },
+    "forgot": {
+      "back": "Go Back",
+      "title": "Forgot Password",
+      "subtitle": "Enter your email address and we'll send you a reset link.",
+      "email": "Email",
+      "sending": "Sending...",
+      "send": "Send Reset Link"
+    },
+    "forgotSent": {
+      "title": "Email Sent",
+      "messageBefore": "A password reset link has been sent to ",
+      "messageAfter": ".",
+      "devLabel": "Dev:",
+      "devLink": "Reset link →",
+      "backToLogin": "Back to Login"
+    },
+    "registered": {
+      "title": "Your Account Has Been Created!",
+      "messagePrefix": "To sign in, click the verification link sent to",
+      "messageSuffix": ".",
+      "devLabel": "Dev (no SMTP):",
+      "devLink": "Verify email →",
+      "backToLogin": "Back to Login"
+    },
+    "signIn": {
+      "title": "Sign In —",
+      "subtitle": "Access your account",
+      "usernameOrEmail": "Username / Email",
+      "password": "Password",
+      "forgotPassword": "Forgot password? →",
+      "submitting": "Signing in...",
+      "submit": "Sign In"
+    },
+    "signUp": {
+      "title": "Create",
+      "titleAccent": "Account",
+      "subtitle": "Join Austo",
+      "fullName": "Full Name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm",
+      "submitting": "Signing up...",
+      "submit": "Sign Up"
+    },
+    "panel": {
+      "welcomeBackTitle": "Welcome Back!",
+      "welcomeBackDesc": "Sign in with your account to access all features.",
+      "helloTitle": "Hello!",
+      "helloDesc": "Sign up to join the jewelry management system.",
+      "signInButton": "Sign In",
+      "signUpButton": "Sign Up"
+    },
+    "footer": "© 2026 Austo · Jewelry Management System"
+  },
+  "resetPassword": {
+    "errors": {
+      "mismatch": "Passwords do not match.",
+      "tooShort": "Password must be at least 6 characters.",
+      "failed": "Password reset failed."
+    },
+    "done": {
+      "title": "Password Updated!",
+      "redirecting": "Redirecting to the login page..."
+    },
+    "title": "Set a New Password",
+    "subtitle": "Create a new password for your account.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "updating": "Updating...",
+    "submit": "Update Password"
+  },
+  "dashboard": {
+    "live": "Live",
+    "quickSale": {
+      "title": "Quick Sale",
+      "itemsInCart": "{{count}} items",
+      "searchPlaceholder": "Product name or barcode...",
+      "noProducts": "No products found",
+      "unitCount": "{{count}} pcs",
+      "perUnit": "{{price}} / pc",
+      "addProduct": "Add product",
+      "selectCustomer": "Select customer (optional)",
+      "saleCompleted": "Sale completed!",
+      "confirmQuestion": "Confirm {{total}}?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "sellButton": "Sell — {{total}}",
+      "emptyCart": "Cart is empty",
+      "saleFailed": "Could not create sale. Please check stock."
+    },
+    "salesTrend": {
+      "title": "Sales Trend",
+      "salesCount": "{{count}} sales",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range3m": "3M"
+    },
+    "stats": {
+      "todaySales": "Today's Sales",
+      "todaySalesSub": "{{count}} transactions · {{weight}}g",
+      "todayPurchases": "Today's Purchases",
+      "estimatedNetProfit": "Estimated Net Profit",
+      "todayNet": "Today's net",
+      "stockValue": "Stock Value",
+      "totalWeight": "{{weight}}g total"
+    },
+    "currency": {
+      "title": "Currency Rates"
+    }
+  },
+  "enums": {
+    "purity": {
+      "0": "Other", "8": "8k", "14": "14k",
+      "18": "18k", "21": "21k", "22": "22k", "24": "24k (Fine)"
+    },
+    "stockItemStatus": {
+      "1": "In Stock", "2": "Sold", "3": "Damaged", "4": "Lost"
+    },
+    "stockMovementType": {
+      "1": "Purchase", "2": "Sale", "3": "Transfer", "4": "Adjustment", "5": "Shrinkage"
+    },
+    "transactionStatus": {
+      "1": "Completed", "2": "Cancelled", "3": "Pending"
+    },
+    "purchaseSourceType": {
+      "1": "Supplier", "2": "Customer", "3": "Scrap"
+    }
+  },
+  "products": {
+    "pageTitle": "Products",
+    "newProduct": "New Product",
+    "searchPlaceholder": "Search product or category...",
+    "columns": { "product": "Product", "category": "Category", "purity": "Purity", "weight": "Weight", "stock": "Stock", "purchase": "Purchase", "sale": "Sale", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No products found.",
+    "confirmDeactivate": "Deactivate \"{{name}}\"?",
+    "qr": "QR",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "editTitle": "Edit Product",
+    "newTitle": "New Product",
+    "form": {
+      "name": "Product Name",
+      "namePlaceholder": "22k Gold Bracelet",
+      "category": "Category",
+      "selectCategory": "Select",
+      "purity": "Purity",
+      "weight": "Weight (grams)",
+      "stock": "Stock (units)",
+      "purchasePrice": "Purchase Price (₺)",
+      "salePrice": "Sale Price (₺)",
+      "barcode": "Barcode",
+      "barcodeOptional": "Optional",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    }
+  },
+  "locations": {
+    "pageTitle": "Locations",
+    "newLocation": "New Location",
+    "searchPlaceholder": "Search location...",
+    "columns": { "name": "Name", "description": "Description", "category": "Category", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No records found.",
+    "confirmDeactivate": "Deactivate \"{{name}}\"?",
+    "editTitle": "Edit Location",
+    "newTitle": "New Location",
+    "form": {
+      "name": "Name",
+      "description": "Description",
+      "descriptionOptional": "Optional",
+      "category": "Category",
+      "selectCategory": "— Select —",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    }
+  },
+  "customers": {
+    "pageTitle": "Customers",
+    "newCustomer": "New Customer",
+    "searchPlaceholder": "Search by name or phone...",
+    "columns": { "fullName": "Full Name", "contact": "Contact", "taxNumber": "ID / Tax No", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No customers found.",
+    "editTitle": "Edit Customer",
+    "newTitle": "New Customer",
+    "form": {
+      "fullName": "Full Name", "phone": "Phone", "email": "Email",
+      "taxNumber": "ID / Tax No", "notes": "Notes",
+      "cancel": "Cancel", "save": "Save", "saving": "Saving..."
+    }
+  },
+  "suppliers": {
+    "pageTitle": "Suppliers",
+    "newSupplier": "New Supplier",
+    "searchPlaceholder": "Search company...",
+    "columns": { "company": "Company", "contactPerson": "Contact Person", "phone": "Phone", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No suppliers found.",
+    "editTitle": "Edit Supplier",
+    "newTitle": "New Supplier",
+    "form": {
+      "companyName": "Company Name", "contactPerson": "Contact Person", "phone": "Phone",
+      "email": "Email", "taxNumber": "Tax No",
+      "cancel": "Cancel", "save": "Save", "saving": "Saving..."
+    }
+  },
+  "sales": {
+    "pageTitle": "Sales",
+    "newSale": "New Sale",
+    "tabs": { "active": "Sales", "cancelled": "Cancelled" },
+    "columns": { "date": "Date", "customer": "Customer", "amount": "Amount", "weight": "Weight", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No sales records.",
+    "detail": "Detail",
+    "cancel": "Cancel",
+    "confirmCancel": "Cancel this sale?",
+    "retail": "Retail",
+    "createTitle": "New Sale",
+    "form": {
+      "customer": "Customer",
+      "retailPlaceholder": "Retail (unnamed)",
+      "saleDate": "Sale Date",
+      "products": "Products",
+      "addProduct": "+ Add Product",
+      "headerProduct": "Product",
+      "headerQty": "Qty",
+      "headerUnitPrice": "Unit Price",
+      "selectProduct": "Select Product",
+      "unitsSuffix": "in stock",
+      "qtyPlaceholder": "Qty",
+      "unitPricePlaceholder": "Unit Price ₺",
+      "subtotal": "Subtotal:",
+      "extraCosts": "Extra Costs",
+      "addExtra": "+ Add",
+      "extraCostsHint": "You can add VAT, shipping, insurance, etc.",
+      "extraNamePlaceholder": "Name (e.g. VAT)",
+      "ratePlaceholder": "Rate (%)",
+      "amountPlaceholder": "Amount (₺)",
+      "extraTotal": "Extra Cost Total:",
+      "discount": "Discount",
+      "discountRatePlaceholder": "Rate",
+      "discountAmountPlaceholder": "Amount",
+      "notes": "Notes",
+      "notesOptional": "Optional",
+      "grandTotal": "Grand Total",
+      "extraCostSuffix": "extra cost",
+      "discountSuffix": "discount",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "submit": "Save Sale"
+    },
+    "noteLines": {
+      "extraCosts": "Extra costs: ",
+      "discountPct": "{{value}}% discount applied (−{{amount}})",
+      "discountFixed": "{{amount}} discount applied"
+    },
+    "detailModal": {
+      "title": "Sale Detail",
+      "customer": "Customer",
+      "totalAmount": "Total Amount",
+      "totalWeight": "Total Weight",
+      "columns": { "product": "Product", "qty": "Qty", "unitPrice": "Unit Price", "weight": "Weight", "total": "Total" }
+    }
+  },
+  "purchases": {
+    "pageTitle": "Purchases",
+    "newPurchase": "New Purchase",
+    "columns": { "date": "Date", "source": "Source", "supplierCustomer": "Supplier / Customer", "weight": "Weight", "purity": "Purity", "amount": "Amount", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No purchase records.",
+    "confirmCancel": "Cancel this purchase?",
+    "createTitle": "New Purchase",
+    "form": {
+      "sourceType": "Source Type",
+      "sourceSupplier": "Supplier",
+      "sourceCustomer": "Customer (Secondhand)",
+      "sourceScrap": "Scrap Gold",
+      "purchaseDate": "Purchase Date",
+      "supplier": "Supplier",
+      "customer": "Customer",
+      "select": "Select",
+      "weight": "Weight (grams)",
+      "purity": "Purity",
+      "totalAmount": "Total Amount (₺)",
+      "notes": "Notes",
+      "notesOptional": "Optional",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "submit": "Save Purchase"
+    }
+  },
+  "stock": {
+    "pageTitle": "Stock",
+    "stockEntry": "Stock Entry",
+    "qrScan": "Scan QR",
+    "transfer": "Transfer",
+    "entryModal": {
+      "title": "Stock Entry",
+      "product": "Product",
+      "select": "Select",
+      "count": "Count",
+      "location": "Location (Optional)",
+      "locationNotSelected": "Not selected",
+      "notes": "Notes (Optional)",
+      "notesPlaceholder": "Purchase note...",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createPieces": "Create {{count}} Pieces",
+      "createFailed": "Creation failed.",
+      "piecesCreated": "{{count}} pieces created:",
+      "columns": { "code": "CODE", "product": "PRODUCT", "location": "LOCATION" },
+      "printPreviewHint": "Label preview — the browser's print dialog will open",
+      "close": "Close",
+      "printLabels": "Print Labels",
+      "print": "Print"
+    },
+    "scanModal": {
+      "title": "Scan QR",
+      "codeLabel": "Item Code / Scan QR",
+      "placeholder": "AUSTO-00001 or scan QR + Enter",
+      "hint": "USB barcode scanners send Enter automatically",
+      "searching": "...",
+      "search": "Search",
+      "notFound": "Item not found. Check the code.",
+      "transferred": "{{code}} transferred.",
+      "transferFailed": "Transfer failed.",
+      "markedDamaged": "{{code}} marked as damaged.",
+      "markedLost": "{{code}} marked as lost.",
+      "actionFailed": "Operation failed.",
+      "noActionAvailable": "No action can be performed on this item.",
+      "transferAction": "Transfer",
+      "damageAction": "Damaged/Lost",
+      "targetLocation": "Target Location",
+      "notesOptional": "Notes (Optional)",
+      "transferNotePlaceholder": "Transfer note",
+      "back": "Back",
+      "transferring": "Transferring...",
+      "confirmTransfer": "Confirm Transfer",
+      "status": "Status",
+      "damaged": "Damaged",
+      "lost": "Lost",
+      "damageNotePlaceholder": "Description",
+      "saving": "Saving...",
+      "confirm": "Confirm"
+    },
+    "valuation": {
+      "title": "Stock Valuation",
+      "totalWeight": "Total Weight",
+      "estimatedValue": "Estimated Value",
+      "piecesSuffix": "pcs"
+    },
+    "movements": {
+      "title": "Stock Movements",
+      "columns": { "date": "Date", "product": "Product", "type": "Type", "quantity": "Quantity", "location": "Location", "description": "Description" },
+      "loading": "Loading...",
+      "noResults": "No movements."
+    },
+    "transferModal": {
+      "title": "Stock Transfer",
+      "product": "Product",
+      "sourceLocation": "Source Location",
+      "targetLocation": "Target Location",
+      "quantity": "Quantity (Units)",
+      "notes": "Notes",
+      "notesOptional": "Optional",
+      "cancel": "Cancel",
+      "transferring": "Transferring...",
+      "submit": "Transfer"
+    }
+  },
+  "finance": {
+    "pageTitle": "Finance",
+    "refresh": "Refresh",
+    "enterManualPrice": "Enter Manual Price",
+    "liveRates": "Live Rates",
+    "groupGold": "Gold",
+    "groupFx": "Currency",
+    "priceHistory": "Price History",
+    "timeRanges": { "7d": "7D", "30d": "30D", "3m": "3M", "6m": "6M", "1y": "1Y" },
+    "grouping": { "daily": "Daily", "weekly": "Weekly", "monthly": "Monthly" },
+    "noChartData": "No price records found for this period.",
+    "recordHistory": "Record History",
+    "columns": { "date": "Date", "fineBuy": "Fine Buy", "fineSell": "Fine Sell", "k14": "14k Buy/Sell", "k18": "18k Buy/Sell", "k22": "22k Buy/Sell", "source": "Source" },
+    "noResults": "No records found.",
+    "rateCard": { "buy": "Buy" },
+    "metrics": {
+      "fineBuy": "Fine Buy", "fineSell": "Fine Sell",
+      "k14Buy": "14k Buy", "k14Sell": "14k Sell",
+      "k18Buy": "18k Buy", "k18Sell": "18k Sell",
+      "k22Buy": "22k Buy", "k22Sell": "22k Sell",
+      "shortFineBuy": "Fine Buy", "shortFineSell": "Fine Sell",
+      "shortK14Buy": "14k Buy", "shortK14Sell": "14k Sell",
+      "shortK18Buy": "18k Buy", "shortK18Sell": "18k Sell",
+      "shortK22Buy": "22k Buy", "shortK22Sell": "22k Sell"
+    },
+    "modal": {
+      "title": "Enter Manual Gold Price",
+      "fineGoldBuy": "Fine Gold Buy (₺)",
+      "fineGoldSell": "Fine Gold Sell (₺)",
+      "k14Buy": "14k Buy", "k14Sell": "14k Sell",
+      "k18Buy": "18k Buy", "k18Sell": "18k Sell",
+      "k22Buy": "22k Buy", "k22Sell": "22k Sell",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    }
+  },
+  "reports": {
+    "pageTitle": "Reports",
+    "dailySummary": "Daily Summary",
+    "fetch": "Fetch",
+    "cards": {
+      "salesCount": "Sales Count",
+      "salesRevenue": "Sales Revenue",
+      "purchasesCount": "Purchases Count",
+      "purchasesCost": "Purchase Cost"
+    },
+    "netProfitLoss": "Net Profit / Loss",
+    "stockReport": "Stock Report",
+    "productsSuffix": "products",
+    "totalValue": "Total Value",
+    "columns": { "product": "Product", "category": "Category", "purity": "Purity", "weight": "Weight", "stock": "Stock", "totalWeight": "Total Weight", "estimatedValue": "Estimated Value" },
+    "loading": "Loading...",
+    "noStockData": "No stock data."
+  },
+  "settings": {
+    "tabs": { "profile": "Profile", "security": "Security", "notifications": "Notifications", "system": "System" },
+    "pageTitle": "Settings",
+    "pageSubtitle": "Manage your account and application preferences",
+    "profile": {
+      "sectionTitle": "Profile Information",
+      "activeUser": "Active user",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Your name",
+      "email": "Email",
+      "save": "Save",
+      "saved": "Profile information saved."
+    },
+    "security": {
+      "sectionTitle": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "updatePassword": "Update Password",
+      "saved": "Password updated successfully.",
+      "sessionSecurity": "Session Security",
+      "jwtToken": "JWT Token",
+      "jwtDesc": "Auto-refresh active · 24-hour validity",
+      "active": "Active"
+    },
+    "notifications": {
+      "sectionTitle": "Notification Preferences",
+      "sales": { "label": "Sale Notifications", "desc": "Get notified when a new sale is made" },
+      "stock": { "label": "Stock Alerts", "desc": "Send an alert when stock runs low" },
+      "gold": { "label": "Gold Price Alert", "desc": "Notify when a price threshold is crossed" },
+      "email": { "label": "Email Notifications", "desc": "Receive the daily summary report by email" },
+      "save": "Save",
+      "saved": "Notification preferences saved."
+    },
+    "system": {
+      "appearance": "Appearance",
+      "darkMode": { "label": "Dark Mode", "desc": "Black theme (default)" },
+      "languageCurrency": "Language & Currency",
+      "language": "Language",
+      "currency": "Currency",
+      "save": "Save",
+      "saved": "System settings saved.",
+      "about": "About the App",
+      "fields": { "version": "Version", "backend": "Backend", "frontend": "Frontend", "database": "Database" }
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "entityLabel": "Category"
+  },
+  "simpleList": {
+    "newEntity": "New {{entity}}",
+    "editEntity": "Edit {{entity}}",
+    "searchPlaceholder": "Search {{entity}}...",
+    "columns": { "name": "Name", "description": "Description", "status": "Status" },
+    "loading": "Loading...",
+    "noResults": "No records found.",
+    "confirmDeactivate": "Deactivate \"{{name}}\"?",
+    "namePlaceholderOptional": "Optional",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "verifyEmail": {
+    "invalidLink": "Invalid verification link.",
+    "failed": "Verification failed.",
+    "verifying": "Verifying...",
+    "successTitle": "Email Verified!",
+    "signIn": "Sign In",
+    "errorTitle": "Verification Failed",
+    "back": "Go Back"
+  }
+}

@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Plus, QrCode, Search, Edit2, Trash2, X } from 'lucide-react'
 import { productsApi, categoriesApi } from '../api/client'
 import type { Product, Category } from '../types'
-import { PURITY_LABELS } from '../types'
+import { useEnumLabels } from '../hooks/useEnumLabels'
 
 const PURITIES = [0, 8, 14, 18, 21, 22, 24]
 
 function Modal({ open, onClose, title, children }: any) {
+  const { t } = useTranslation()
   if (!open) return null
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
           <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
+          <button onClick={onClose} aria-label={t('common.close')} className="text-gray-500 hover:text-white"><X size={18} /></button>
         </div>
         {children}
       </div>
@@ -24,6 +26,8 @@ function Modal({ open, onClose, title, children }: any) {
 function ProductForm({ initial, categories, onSave, onClose, loading }: {
   initial?: Partial<Product>; categories: Category[]; onSave: (d: any) => void; onClose: () => void; loading: boolean
 }) {
+  const { t } = useTranslation()
+  const { purityLabels } = useEnumLabels()
   const [form, setForm] = useState({
     name: initial?.name ?? '', categoryId: initial?.categoryId ?? '', weightGram: initial?.weightGram ?? 0,
     purity: initial?.purity ?? 14, purchasePrice: initial?.purchasePrice ?? 0,
@@ -38,53 +42,56 @@ function ProductForm({ initial, categories, onSave, onClose, loading }: {
       <div className="px-6 py-5 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <label className="label">Ürün Adı</label>
-            <input className="input" value={form.name} onChange={set('name')} required placeholder="22 Ayar Altın Bilezik" />
+            <label className="label">{t('products.form.name')}</label>
+            <input className="input" value={form.name} onChange={set('name')} required placeholder={t('products.form.namePlaceholder')} />
           </div>
           <div>
-            <label className="label">Kategori</label>
+            <label className="label">{t('products.form.category')}</label>
             <select className="select" value={form.categoryId} onChange={set('categoryId')} required>
-              <option value="">Seçin</option>
+              <option value="">{t('products.form.selectCategory')}</option>
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="label">Ayar</label>
+            <label className="label">{t('products.form.purity')}</label>
             <select className="select" value={form.purity} onChange={setNum('purity')}>
-              {PURITIES.map(p => <option key={p} value={p}>{PURITY_LABELS[p]}</option>)}
+              {PURITIES.map(p => <option key={p} value={p}>{purityLabels[p]}</option>)}
             </select>
           </div>
           <div>
-            <label className="label">Ağırlık (gram)</label>
+            <label className="label">{t('products.form.weight')}</label>
             <input className="input" type="number" step="0.001" min="0" value={form.weightGram} onChange={set('weightGram')} required />
           </div>
           <div>
-            <label className="label">Stok (adet)</label>
+            <label className="label">{t('products.form.stock')}</label>
             <input className="input" type="number" step="0.001" min="0" value={form.stockQuantity} onChange={set('stockQuantity')} required />
           </div>
           <div>
-            <label className="label">Alış Fiyatı (₺)</label>
+            <label className="label">{t('products.form.purchasePrice')}</label>
             <input className="input" type="number" step="0.01" min="0" value={form.purchasePrice} onChange={set('purchasePrice')} required />
           </div>
           <div>
-            <label className="label">Satış Fiyatı (₺)</label>
+            <label className="label">{t('products.form.salePrice')}</label>
             <input className="input" type="number" step="0.01" min="0" value={form.salePrice} onChange={set('salePrice')} required />
           </div>
           <div className="col-span-2">
-            <label className="label">Barkod</label>
-            <input className="input" value={form.barcode} onChange={set('barcode')} placeholder="Opsiyonel" />
+            <label className="label">{t('products.form.barcode')}</label>
+            <input className="input" value={form.barcode} onChange={set('barcode')} placeholder={t('products.form.barcodeOptional')} />
           </div>
         </div>
       </div>
       <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: '1px solid #1A1A1A' }}>
-        <button type="button" className="btn-ghost" onClick={onClose}>İptal</button>
-        <button type="submit" className="btn-gold" disabled={loading}>{loading ? 'Kaydediliyor...' : 'Kaydet'}</button>
+        <button type="button" className="btn-ghost" onClick={onClose}>{t('products.form.cancel')}</button>
+        <button type="submit" className="btn-gold" disabled={loading}>{loading ? t('products.form.saving') : t('products.form.save')}</button>
       </div>
     </form>
   )
 }
 
 export default function Products() {
+  const { t, i18n } = useTranslation()
+  const { purityLabels } = useEnumLabels()
+  const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
@@ -111,7 +118,7 @@ export default function Products() {
   }
 
   const handleDelete = async (p: Product) => {
-    if (!confirm(`"${p.name}" pasif yapılsın mı?`)) return
+    if (!confirm(t('products.confirmDeactivate', { name: p.name }))) return
     await productsApi.remove(p.id); load()
   }
 
@@ -125,16 +132,16 @@ export default function Products() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="page-title gold-text">Ürünler</h1>
+        <h1 className="page-title gold-text">{t('products.pageTitle')}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={() => { setSelected(null); setModal('create') }}>
-          <Plus size={16} /> Yeni Ürün
+          <Plus size={16} /> {t('products.newProduct')}
         </button>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#555' }} />
-        <input className="input pl-9" placeholder="Ürün veya kategori ara..." value={search} onChange={e => setSearch(e.target.value)} />
+        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#888' }} />
+        <input className="input pl-9" placeholder={t('products.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
       {/* Table */}
@@ -143,31 +150,31 @@ export default function Products() {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
-                {['Ürün', 'Kategori', 'Ayar', 'Ağırlık', 'Stok', 'Alış', 'Satış', 'Durum', ''].map(h => (
-                  <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: '#555', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.05em' }}>{h}</th>
+                {[t('products.columns.product'), t('products.columns.category'), t('products.columns.purity'), t('products.columns.weight'), t('products.columns.stock'), t('products.columns.purchase'), t('products.columns.sale'), t('products.columns.status'), ''].map(h => (
+                  <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: '#888', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.05em' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center" style={{ color: '#555' }}>Yükleniyor...</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center" style={{ color: '#888' }}>{t('products.loading')}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center" style={{ color: '#555' }}>Ürün bulunamadı.</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center" style={{ color: '#888' }}>{t('products.noResults')}</td></tr>
               ) : filtered.map(p => (
                 <tr key={p.id} className="table-row">
                   <td className="px-4 py-3 font-medium text-white">{p.name}</td>
                   <td className="px-4 py-3" style={{ color: '#888' }}>{p.categoryName}</td>
-                  <td className="px-4 py-3"><span className="badge-gold">{PURITY_LABELS[p.purity]}</span></td>
+                  <td className="px-4 py-3"><span className="badge-gold">{purityLabels[p.purity]}</span></td>
                   <td className="px-4 py-3" style={{ color: '#888' }}>{p.weightGram.toFixed(3)}gr</td>
                   <td className="px-4 py-3 font-medium text-white">{p.stockQuantity.toFixed(2)}</td>
-                  <td className="px-4 py-3" style={{ color: '#888' }}>₺{p.purchasePrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
-                  <td className="px-4 py-3 font-medium text-white">₺{p.salePrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
-                  <td className="px-4 py-3"><span className={p.isActive ? 'badge-green' : 'badge-red'}>{p.isActive ? 'Aktif' : 'Pasif'}</span></td>
+                  <td className="px-4 py-3" style={{ color: '#888' }}>₺{p.purchasePrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}</td>
+                  <td className="px-4 py-3 font-medium text-white">₺{p.salePrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}</td>
+                  <td className="px-4 py-3"><span className={p.isActive ? 'badge-green' : 'badge-red'}>{p.isActive ? t('common.active') : t('common.inactive')}</span></td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
-                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => handleQR(p)} title="QR"><QrCode size={14} /></button>
-                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => { setSelected(p); setModal('edit') }} title="Düzenle"><Edit2 size={14} /></button>
-                      <button className="btn-danger px-2 py-1 text-xs" onClick={() => handleDelete(p)} title="Pasif"><Trash2 size={14} /></button>
+                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => handleQR(p)} title={t('products.qr')}><QrCode size={14} /></button>
+                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => { setSelected(p); setModal('edit') }} title={t('products.edit')}><Edit2 size={14} /></button>
+                      <button className="btn-danger px-2 py-1 text-xs" onClick={() => handleDelete(p)} title={t('products.deactivate')}><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
@@ -177,7 +184,7 @@ export default function Products() {
         </div>
       </div>
 
-      <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? 'Ürün Düzenle' : 'Yeni Ürün'}>
+      <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('products.editTitle') : t('products.newTitle')}>
         <ProductForm initial={selected ?? undefined} categories={categories} onSave={handleSave} onClose={() => setModal(null)} loading={saving} />
       </Modal>
     </div>

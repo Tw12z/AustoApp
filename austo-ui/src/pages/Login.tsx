@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, User, AtSign, ArrowLeft, MailCheck } from 'lucide-react'
 import { authApi } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LineWaves from '../components/LineWaves'
+import LanguageSwitcher from '../components/LanguageSwitcher'
 
 type View = 'auth' | 'forgot' | 'forgotSent' | 'registered'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { login } = useAuth()
   const [isSignUp, setIsSignUp] = useState(false)
   const [view, setView] = useState<View>('auth')
@@ -36,7 +39,7 @@ export default function Login() {
       login(res.data.accessToken, res.data.userName, res.data.userRole)
       navigate('/app')
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Giriş başarısız.')
+      setError(err.response?.data?.message ?? t('auth.errors.loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -45,7 +48,7 @@ export default function Login() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     resetErrors()
-    if (registerForm.password !== registerForm.confirmPassword) { setError('Şifreler eşleşmiyor.'); return }
+    if (registerForm.password !== registerForm.confirmPassword) { setError(t('auth.errors.passwordMismatch')); return }
     setLoading(true)
     try {
       const res = await authApi.register({ ...registerForm, role: 2 })
@@ -53,7 +56,7 @@ export default function Login() {
       if (res.data.devVerifyToken) setDevToken(res.data.devVerifyToken)
       setView('registered')
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Kayıt başarısız.')
+      setError(err.response?.data?.message ?? t('auth.errors.registerFailed'))
     } finally {
       setLoading(false)
     }
@@ -68,7 +71,7 @@ export default function Login() {
       if (res.data.devResetToken) setDevToken(res.data.devResetToken)
       setView('forgotSent')
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'İşlem başarısız.')
+      setError(err.response?.data?.message ?? t('auth.errors.operationFailed'))
     } finally {
       setLoading(false)
     }
@@ -85,6 +88,11 @@ export default function Login() {
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,0.55) 0%, transparent 100%)' }} />
       </div>
 
+      {/* Language switcher */}
+      <div className="fixed top-5 right-5 z-20">
+        <LanguageSwitcher />
+      </div>
+
       {/* Logo */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-10 relative">
         <Logo className="h-12 w-auto cursor-pointer" style={{ color: '#D4AF37' }} onClick={() => navigate('/')} />
@@ -97,17 +105,17 @@ export default function Login() {
           <motion.div key="forgot" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35 }} className="relative w-full max-w-sm">
             <div className="card p-8">
-              <button onClick={backToAuth} className="flex items-center gap-1.5 text-sm mb-6 transition-colors hover:text-white" style={{ color: '#555' }}>
-                <ArrowLeft size={14} /> Geri Dön
+              <button onClick={backToAuth} className="flex items-center gap-1.5 text-sm mb-6 transition-colors hover:text-white" style={{ color: '#888' }}>
+                <ArrowLeft size={14} /> {t('auth.forgot.back')}
               </button>
-              <h2 className="text-xl font-bold text-white mb-1">Şifremi Unuttum</h2>
-              <p className="text-sm mb-6" style={{ color: '#555' }}>E-posta adresinizi girin, sıfırlama bağlantısı gönderelim.</p>
+              <h2 className="text-xl font-bold text-white mb-1">{t('auth.forgot.title')}</h2>
+              <p className="text-sm mb-6" style={{ color: '#888' }}>{t('auth.forgot.subtitle')}</p>
               <form onSubmit={handleForgot} className="space-y-4">
                 <div>
-                  <label className="label">E-posta</label>
+                  <label className="label">{t('auth.forgot.email')}</label>
                   <div className="relative">
                     <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                    <input className="input pl-8" type="email" placeholder="ornek@austo.com"
+                    <input className="input pl-8" type="email" placeholder={t('common.emailPlaceholder')}
                       value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
                   </div>
                 </div>
@@ -115,7 +123,7 @@ export default function Login() {
                   style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>}
                 <button type="submit" disabled={loading} className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
-                  {loading ? 'Gönderiliyor...' : 'Sıfırlama Bağlantısı Gönder'}
+                  {loading ? t('auth.forgot.sending') : t('auth.forgot.send')}
                 </button>
               </form>
             </div>
@@ -131,17 +139,17 @@ export default function Login() {
                 style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)' }}>
                 <MailCheck size={26} style={{ color: '#D4AF37' }} />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">E-posta Gönderildi</h2>
-              <p className="text-sm mb-6" style={{ color: '#666' }}>
-                <span style={{ color: '#D4AF37' }}>{forgotEmail}</span> adresine şifre sıfırlama bağlantısı gönderildi.
+              <h2 className="text-xl font-bold text-white mb-2">{t('auth.forgotSent.title')}</h2>
+              <p className="text-sm mb-6" style={{ color: '#888' }}>
+                {t('auth.forgotSent.messageBefore')}<span style={{ color: '#D4AF37' }}>{forgotEmail}</span>{t('auth.forgotSent.messageAfter')}
               </p>
               {devToken && (
                 <div className="text-xs px-3 py-2 rounded-lg mb-4 text-left break-all"
                   style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.15)', color: '#888' }}>
-                  <span style={{ color: '#D4AF37' }}>Dev:</span> <a href={`/reset-password?token=${devToken}`} className="underline hover:text-white">Sıfırlama bağlantısı →</a>
+                  <span style={{ color: '#D4AF37' }}>{t('auth.forgotSent.devLabel')}</span> <a href={`/reset-password?token=${devToken}`} className="underline hover:text-white">{t('auth.forgotSent.devLink')}</a>
                 </div>
               )}
-              <button onClick={backToAuth} className="btn-outline w-full">Giriş Sayfasına Dön</button>
+              <button onClick={backToAuth} className="btn-outline w-full">{t('auth.forgotSent.backToLogin')}</button>
             </div>
           </motion.div>
         )}
@@ -155,18 +163,18 @@ export default function Login() {
                 style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)' }}>
                 <MailCheck size={26} style={{ color: '#D4AF37' }} />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">Hesabınız Oluşturuldu!</h2>
-              <p className="text-sm mb-5" style={{ color: '#666' }}>
-                Giriş yapabilmek için <span style={{ color: '#D4AF37' }}>{registerForm.email}</span> adresine gönderilen doğrulama bağlantısına tıklayın.
+              <h2 className="text-xl font-bold text-white mb-2">{t('auth.registered.title')}</h2>
+              <p className="text-sm mb-5" style={{ color: '#888' }}>
+                {t('auth.registered.messagePrefix')} <span style={{ color: '#D4AF37' }}>{registerForm.email}</span>{t('auth.registered.messageSuffix')}
               </p>
               {devToken && (
                 <div className="text-xs px-3 py-2 rounded-lg mb-4 text-left break-all"
                   style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.15)', color: '#888' }}>
-                  <span style={{ color: '#D4AF37' }}>Dev (SMTP yok):</span>{' '}
-                  <a href={`/verify-email?token=${devToken}`} className="underline hover:text-white">E-postayı doğrula →</a>
+                  <span style={{ color: '#D4AF37' }}>{t('auth.registered.devLabel')}</span>{' '}
+                  <a href={`/verify-email?token=${devToken}`} className="underline hover:text-white">{t('auth.registered.devLink')}</a>
                 </div>
               )}
-              <button onClick={backToAuth} className="btn-outline w-full">Giriş Sayfasına Dön</button>
+              <button onClick={backToAuth} className="btn-outline w-full">{t('auth.registered.backToLogin')}</button>
             </div>
           </motion.div>
         )}
@@ -180,31 +188,31 @@ export default function Login() {
             {/* Sign In Form — left */}
             <div className="absolute top-0 left-0 w-1/2 h-full flex items-center justify-center p-10">
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-white mb-1">Giriş Yap — <span style={{ color: '#D4AF37' }}>Austo</span></h2>
-                <p className="text-sm mb-6" style={{ color: '#666' }}>Hesabınıza erişin</p>
+                <h2 className="text-2xl font-bold text-white mb-1">{t('auth.signIn.title')} <span style={{ color: '#D4AF37' }}>Austo</span></h2>
+                <p className="text-sm mb-6" style={{ color: '#888' }}>{t('auth.signIn.subtitle')}</p>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label className="label">Kullanıcı Adı / E-posta</label>
+                    <label className="label">{t('auth.signIn.usernameOrEmail')}</label>
                     <div className="relative">
                       <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" placeholder="kullanici@austo.com"
+                      <input className="input pl-8" placeholder={t('common.usernameOrEmailPlaceholder')}
                         value={loginForm.userNameOrEmail} onChange={e => setLoginForm(f => ({ ...f, userNameOrEmail: e.target.value }))} required />
                     </div>
                   </div>
                   <div>
-                    <label className="label">Şifre</label>
+                    <label className="label">{t('auth.signIn.password')}</label>
                     <div className="relative">
                       <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
                       <input className="input pl-8 pr-9" type={showPw ? 'text' : 'password'} placeholder="••••••••"
                         value={loginForm.password} onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))} required />
-                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)}>
+                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)} aria-label={showPw ? t('common.hidePassword') : t('common.showPassword')}>
                         {showPw ? <EyeOff size={13} /> : <Eye size={13} />}
                       </button>
                     </div>
                   </div>
                   <button type="button" onClick={() => { setView('forgot'); resetErrors() }}
-                    className="text-xs transition-colors hover:text-white" style={{ color: '#555' }}>
-                    Şifremi unuttum →
+                    className="text-xs transition-colors hover:text-white" style={{ color: '#888' }}>
+                    {t('auth.signIn.forgotPassword')}
                   </button>
                   {!isSignUp && error && (
                     <div className="text-sm px-3 py-2 rounded-lg"
@@ -212,7 +220,7 @@ export default function Login() {
                   )}
                   <button type="submit" disabled={loading} className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
                     style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
-                    {loading && !isSignUp ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                    {loading && !isSignUp ? t('auth.signIn.submitting') : t('auth.signIn.submit')}
                   </button>
                 </form>
               </div>
@@ -221,52 +229,52 @@ export default function Login() {
             {/* Sign Up Form — right */}
             <div className="absolute top-0 right-0 w-1/2 h-full flex items-center justify-center p-10">
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-white mb-1">Hesap <span style={{ color: '#D4AF37' }}>Oluştur</span></h2>
-                <p className="text-sm mb-5" style={{ color: '#666' }}>Austo'ya katılın</p>
+                <h2 className="text-2xl font-bold text-white mb-1">{t('auth.signUp.title')} <span style={{ color: '#D4AF37' }}>{t('auth.signUp.titleAccent')}</span></h2>
+                <p className="text-sm mb-5" style={{ color: '#888' }}>{t('auth.signUp.subtitle')}</p>
                 <form onSubmit={handleRegister} className="space-y-3">
                   <div>
-                    <label className="label">Ad Soyad</label>
+                    <label className="label">{t('auth.signUp.fullName')}</label>
                     <div className="relative">
                       <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" placeholder="Ahmet Yılmaz" value={registerForm.fullName}
+                      <input className="input pl-8" placeholder={t('common.fullNamePlaceholder')} value={registerForm.fullName}
                         onChange={e => setRegisterForm(f => ({ ...f, fullName: e.target.value }))} required />
                     </div>
                   </div>
                   <div>
-                    <label className="label">E-posta</label>
+                    <label className="label">{t('auth.signUp.email')}</label>
                     <div className="relative">
                       <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" type="email" placeholder="ornek@austo.com" value={registerForm.email}
+                      <input className="input pl-8" type="email" placeholder={t('common.emailPlaceholder')} value={registerForm.email}
                         onChange={e => setRegisterForm(f => ({ ...f, email: e.target.value }))} required />
                     </div>
                   </div>
                   <div>
-                    <label className="label">Kullanıcı Adı</label>
+                    <label className="label">{t('auth.signUp.username')}</label>
                     <div className="relative">
                       <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" placeholder="kullanici_adi" value={registerForm.userName}
+                      <input className="input pl-8" placeholder={t('common.usernamePlaceholder')} value={registerForm.userName}
                         onChange={e => setRegisterForm(f => ({ ...f, userName: e.target.value }))} required />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="label">Şifre</label>
+                      <label className="label">{t('auth.signUp.password')}</label>
                       <div className="relative">
                         <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
                         <input className="input pl-8 pr-8" type={showPw ? 'text' : 'password'} placeholder="••••••••"
                           value={registerForm.password} onChange={e => setRegisterForm(f => ({ ...f, password: e.target.value }))} required />
-                        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)}>
+                        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)} aria-label={showPw ? t('common.hidePassword') : t('common.showPassword')}>
                           {showPw ? <EyeOff size={12} /> : <Eye size={12} />}
                         </button>
                       </div>
                     </div>
                     <div>
-                      <label className="label">Tekrar</label>
+                      <label className="label">{t('auth.signUp.confirmPassword')}</label>
                       <div className="relative">
                         <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
                         <input className="input pl-8 pr-8" type={showConfirmPw ? 'text' : 'password'} placeholder="••••••••"
                           value={registerForm.confirmPassword} onChange={e => setRegisterForm(f => ({ ...f, confirmPassword: e.target.value }))} required />
-                        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowConfirmPw(v => !v)}>
+                        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowConfirmPw(v => !v)} aria-label={showConfirmPw ? t('common.hidePassword') : t('common.showPassword')}>
                           {showConfirmPw ? <EyeOff size={12} /> : <Eye size={12} />}
                         </button>
                       </div>
@@ -278,7 +286,7 @@ export default function Login() {
                   )}
                   <button type="submit" disabled={loading} className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
                     style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
-                    {loading && isSignUp ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+                    {loading && isSignUp ? t('auth.signUp.submitting') : t('auth.signUp.submit')}
                   </button>
                 </form>
               </div>
@@ -292,18 +300,16 @@ export default function Login() {
               style={{ background: 'linear-gradient(135deg, #050505, #111)' }}
             >
               <Logo className="h-10 w-auto mb-6 cursor-pointer" style={{ color: '#D4AF37' }} onClick={() => navigate('/')} />
-              <h2 className="text-2xl font-bold text-white mb-3">{isSignUp ? 'Tekrar Hoş Geldiniz!' : 'Merhaba!'}</h2>
-              <p className="text-sm mb-8 max-w-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                {isSignUp
-                  ? 'Hesabınızla giriş yaparak tüm özelliklere erişin.'
-                  : 'Kuyumcu yönetim sistemine katılmak için kayıt olun.'}
+              <h2 className="text-2xl font-bold text-white mb-3">{isSignUp ? t('auth.panel.welcomeBackTitle') : t('auth.panel.helloTitle')}</h2>
+              <p className="text-sm mb-8 max-w-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                {isSignUp ? t('auth.panel.welcomeBackDesc') : t('auth.panel.helloDesc')}
               </p>
               <button onClick={() => switchMode(!isSignUp)}
                 className="px-8 py-2.5 rounded-full font-semibold text-sm uppercase tracking-wider transition-all duration-300"
                 style={{ border: '2px solid #D4AF37', color: '#D4AF37', background: 'transparent' }}
                 onMouseEnter={e => { const el = e.currentTarget; el.style.background = '#D4AF37'; el.style.color = '#000' }}
                 onMouseLeave={e => { const el = e.currentTarget; el.style.background = 'transparent'; el.style.color = '#D4AF37' }}>
-                {isSignUp ? 'Giriş Yap' : 'Kayıt Ol'}
+                {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
               </button>
             </motion.div>
           </motion.div>
@@ -311,7 +317,7 @@ export default function Login() {
 
       </AnimatePresence>
 
-      <p className="relative text-center text-xs mt-8" style={{ color: '#222' }}>© 2026 Austo · Kuyumcu Yönetim Sistemi</p>
+      <p className="relative text-center text-xs mt-8" style={{ color: '#888888' }}>{t('auth.footer')}</p>
     </div>
   )
 }

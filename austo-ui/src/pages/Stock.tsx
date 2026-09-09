@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeftRight, QrCode, X, Plus, Minus, Search, Package, Printer, AlertTriangle } from 'lucide-react'
 import { stockApi, stockItemsApi, productsApi, locationsApi } from '../api/client'
 import type { StockMovement, StockValuation, StockItem, Product, Location } from '../types'
-import { STOCK_MOVEMENT_TYPES, STOCK_ITEM_STATUS, PURITY_LABELS } from '../types'
+import { useEnumLabels } from '../hooks/useEnumLabels'
 
 function Modal({ open, onClose, children, title, maxWidth = 440 }: any) {
+  const { t } = useTranslation()
   if (!open) return null
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" style={{ maxWidth }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
           <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
+          <button onClick={onClose} aria-label={t('common.close')} className="text-gray-500 hover:text-white"><X size={18} /></button>
         </div>
         {children}
       </div>
@@ -24,6 +26,8 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
   open: boolean; onClose: () => void; onDone: () => void
   products: Product[]; locations: Location[]
 }) {
+  const { t } = useTranslation()
+  const { purityLabels } = useEnumLabels()
   const [productId, setProductId]   = useState('')
   const [count, setCount]           = useState(1)
   const [locationId, setLocationId] = useState('')
@@ -51,7 +55,7 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
       setCreated(res.data)
       onDone()
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Oluşturma başarısız.')
+      setError(err?.response?.data?.message ?? t('stock.entryModal.createFailed'))
     } finally { setSaving(false) }
   }
 
@@ -77,9 +81,9 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
           <div className="flex items-center gap-2">
             <Package size={16} style={{ color: '#D4AF37' }} />
-            <h2 className="text-base font-semibold text-white">Stok Girişi</h2>
+            <h2 className="text-base font-semibold text-white">{t('stock.entryModal.title')}</h2>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
+          <button onClick={onClose} aria-label={t('common.close')} className="text-gray-500 hover:text-white"><X size={18} /></button>
         </div>
 
         {created.length === 0 ? (
@@ -91,17 +95,17 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
                 </div>
               )}
               <div>
-                <label className="label">Ürün</label>
+                <label className="label">{t('stock.entryModal.product')}</label>
                 <select className="select" value={productId} onChange={e => setProductId(e.target.value)} required>
-                  <option value="">Seçin</option>
+                  <option value="">{t('stock.entryModal.select')}</option>
                   {products.filter(p => p.isActive).map(p => (
-                    <option key={p.id} value={p.id}>{p.name} — {PURITY_LABELS[p.purity]} · {p.weightGram}gr</option>
+                    <option key={p.id} value={p.id}>{p.name} — {purityLabels[p.purity]} · {p.weightGram}gr</option>
                   ))}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Adet</label>
+                  <label className="label">{t('stock.entryModal.count')}</label>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setCount(c => Math.max(1, c-1))}
                       className="w-9 h-9 rounded-lg flex items-center justify-center"
@@ -119,22 +123,22 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
                   </div>
                 </div>
                 <div>
-                  <label className="label">Konum (Opsiyonel)</label>
+                  <label className="label">{t('stock.entryModal.location')}</label>
                   <select className="select" value={locationId} onChange={e => setLocationId(e.target.value)}>
-                    <option value="">Seçilmedi</option>
+                    <option value="">{t('stock.entryModal.locationNotSelected')}</option>
                     {locations.filter(l => l.isActive).map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="label">Notlar (Opsiyonel)</label>
-                <input className="input" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Alış notu..." />
+                <label className="label">{t('stock.entryModal.notes')}</label>
+                <input className="input" value={notes} onChange={e => setNotes(e.target.value)} placeholder={t('stock.entryModal.notesPlaceholder')} />
               </div>
             </div>
             <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop:'1px solid #1A1A1A' }}>
-              <button type="button" className="btn-ghost" onClick={onClose}>İptal</button>
+              <button type="button" className="btn-ghost" onClick={onClose}>{t('stock.entryModal.cancel')}</button>
               <button type="submit" className="btn-gold" disabled={saving}>
-                {saving ? 'Oluşturuluyor...' : `${count} Parça Oluştur`}
+                {saving ? t('stock.entryModal.creating') : t('stock.entryModal.createPieces', { count })}
               </button>
             </div>
           </form>
@@ -142,7 +146,7 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
           /* Başarı + Etiket Yazdırma */
           <div className="px-6 py-5 space-y-4">
             <div className="text-sm px-3 py-2.5 rounded-lg" style={{ background:'rgba(34,197,94,0.1)', color:'#22C55E', border:'1px solid rgba(34,197,94,0.2)' }}>
-              {created.length} parça oluşturuldu: <span className="font-bold">{created[0]?.itemCode}</span>
+              {t('stock.entryModal.piecesCreated', { count: created.length })} <span className="font-bold">{created[0]?.itemCode}</span>
               {created.length > 1 && <> — <span className="font-bold">{created[created.length-1]?.itemCode}</span></>}
             </div>
 
@@ -151,9 +155,9 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ borderBottom:'1px solid #1A1A1A' }}>
-                      <th className="text-left px-4 py-2 font-medium" style={{ color:'#555', fontSize:11 }}>KOD</th>
-                      <th className="text-left px-4 py-2 font-medium" style={{ color:'#555', fontSize:11 }}>ÜRÜN</th>
-                      <th className="text-left px-4 py-2 font-medium" style={{ color:'#555', fontSize:11 }}>KONUM</th>
+                      <th className="text-left px-4 py-2 font-medium" style={{ color:'#888', fontSize:11 }}>{t('stock.entryModal.columns.code')}</th>
+                      <th className="text-left px-4 py-2 font-medium" style={{ color:'#888', fontSize:11 }}>{t('stock.entryModal.columns.product')}</th>
+                      <th className="text-left px-4 py-2 font-medium" style={{ color:'#888', fontSize:11 }}>{t('stock.entryModal.columns.location')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -170,7 +174,7 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
             ) : (
               /* Print önizleme */
               <div>
-                <div className="text-xs mb-3" style={{ color:'#555' }}>Etiket önizlemesi — tarayıcının yazdır diyaloğu açılacak</div>
+                <div className="text-xs mb-3" style={{ color:'#888' }}>{t('stock.entryModal.printPreviewHint')}</div>
                 <div className="grid grid-cols-3 gap-2" id="print-labels">
                   {created.map(item => (
                     <div key={item.id} className="print-label rounded-lg p-2 text-center"
@@ -181,7 +185,7 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
                       }
                       <div style={{ fontSize:9, fontWeight:700, color:'#000', marginTop:4 }}>{item.itemCode}</div>
                       <div style={{ fontSize:8, color:'#333' }}>{item.productName}</div>
-                      <div style={{ fontSize:8, color:'#666' }}>{PURITY_LABELS[item.purity]} · {item.weightGram}gr</div>
+                      <div style={{ fontSize:8, color:'#888' }}>{purityLabels[item.purity]} · {item.weightGram}gr</div>
                     </div>
                   ))}
                 </div>
@@ -189,14 +193,14 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
             )}
 
             <div className="flex justify-end gap-3">
-              <button type="button" className="btn-ghost" onClick={onClose}>Kapat</button>
+              <button type="button" className="btn-ghost" onClick={onClose}>{t('stock.entryModal.close')}</button>
               {!printMode ? (
                 <button type="button" className="btn-gold flex items-center gap-2" onClick={loadQRs}>
-                  <Printer size={15} /> Etiket Yazdır
+                  <Printer size={15} /> {t('stock.entryModal.printLabels')}
                 </button>
               ) : (
                 <button type="button" className="btn-gold flex items-center gap-2" onClick={handlePrint}>
-                  <Printer size={15} /> Yazdır
+                  <Printer size={15} /> {t('stock.entryModal.print')}
                 </button>
               )}
             </div>
@@ -211,6 +215,8 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
 function QRScanModal({ open, onClose, onDone, locations }: {
   open: boolean; onClose: () => void; onDone: () => void; locations: Location[]
 }) {
+  const { t } = useTranslation()
+  const { purityLabels, stockItemStatus } = useEnumLabels()
   const [scanInput, setScanInput]     = useState('')
   const [found, setFound]             = useState<StockItem | null>(null)
   const [action, setAction]           = useState<'transfer' | 'damage' | null>(null)
@@ -239,7 +245,7 @@ function QRScanModal({ open, onClose, onDone, locations }: {
       const res = await stockItemsApi.getByCode(trimmed)
       setFound(res.data)
     } catch {
-      setError('Parça bulunamadı. Kodu kontrol edin.')
+      setError(t('stock.scanModal.notFound'))
     } finally { setSearching(false) }
   }
 
@@ -252,11 +258,11 @@ function QRScanModal({ open, onClose, onDone, locations }: {
     setSaving(true); setError('')
     try {
       await stockItemsApi.transfer(found.id, { toLocationId, notes: notes || null })
-      setSuccess(`${found.itemCode} transfer edildi.`)
+      setSuccess(t('stock.scanModal.transferred', { code: found.itemCode }))
       onDone()
       setTimeout(() => { setFound(null); setScanInput(''); setAction(null); setSuccess(''); inputRef.current?.focus() }, 1400)
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Transfer başarısız.')
+      setError(err?.response?.data?.message ?? t('stock.scanModal.transferFailed'))
     } finally { setSaving(false) }
   }
 
@@ -265,15 +271,17 @@ function QRScanModal({ open, onClose, onDone, locations }: {
     setSaving(true); setError('')
     try {
       await stockItemsApi.damage(found.id, { reason: damageReason, notes: notes || null })
-      setSuccess(`${found.itemCode} ${damageReason === 'Lost' ? 'kayıp' : 'hasarlı'} olarak işaretlendi.`)
+      setSuccess(damageReason === 'Lost'
+        ? t('stock.scanModal.markedLost', { code: found.itemCode })
+        : t('stock.scanModal.markedDamaged', { code: found.itemCode }))
       onDone()
       setTimeout(() => { setFound(null); setScanInput(''); setAction(null); setSuccess(''); inputRef.current?.focus() }, 1400)
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'İşlem başarısız.')
+      setError(err?.response?.data?.message ?? t('stock.scanModal.actionFailed'))
     } finally { setSaving(false) }
   }
 
-  const statusInfo = found ? STOCK_ITEM_STATUS[found.status] : null
+  const statusInfo = found ? stockItemStatus[found.status] : null
 
   if (!open) return null
   return (
@@ -282,32 +290,32 @@ function QRScanModal({ open, onClose, onDone, locations }: {
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom:'1px solid #1A1A1A' }}>
           <div className="flex items-center gap-2">
             <QrCode size={16} style={{ color:'#D4AF37' }} />
-            <h2 className="text-base font-semibold text-white">QR Tara</h2>
+            <h2 className="text-base font-semibold text-white">{t('stock.scanModal.title')}</h2>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
+          <button onClick={onClose} aria-label={t('common.close')} className="text-gray-500 hover:text-white"><X size={18} /></button>
         </div>
 
         <div className="px-6 py-5 space-y-4">
           {/* Scan input */}
           <div>
-            <label className="label">Parça Kodu / QR Okut</label>
+            <label className="label">{t('stock.scanModal.codeLabel')}</label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color:'#555' }} />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color:'#888' }} />
                 <input
                   ref={inputRef}
                   className="input pl-9"
-                  placeholder="AUSTO-00001 veya QR okut + Enter"
+                  placeholder={t('stock.scanModal.placeholder')}
                   value={scanInput}
                   onChange={e => setScanInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                 />
               </div>
               <button type="button" className="btn-outline px-4" onClick={() => handleScan(scanInput)} disabled={searching}>
-                {searching ? '...' : 'Ara'}
+                {searching ? t('stock.scanModal.searching') : t('stock.scanModal.search')}
               </button>
             </div>
-            <p className="text-xs mt-1.5" style={{ color:'#444' }}>USB barkod okuyucu Enter otomatik gönderir</p>
+            <p className="text-xs mt-1.5" style={{ color:'#7D7D7D' }}>{t('stock.scanModal.hint')}</p>
           </div>
 
           {error && (
@@ -329,7 +337,7 @@ function QRScanModal({ open, onClose, onDone, locations }: {
                   <div className="font-mono text-sm font-bold mb-1" style={{ color:'#D4AF37' }}>{found.itemCode}</div>
                   <div className="font-semibold text-white">{found.productName}</div>
                   <div className="text-xs mt-0.5" style={{ color:'#888' }}>
-                    {PURITY_LABELS[found.purity]} · {found.weightGram}gr
+                    {purityLabels[found.purity]} · {found.weightGram}gr
                     {found.locationName && <> · {found.locationName}</>}
                   </div>
                 </div>
@@ -344,19 +352,19 @@ function QRScanModal({ open, onClose, onDone, locations }: {
                   <button type="button" onClick={() => setAction('transfer')}
                     className="py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
                     style={{ background:'rgba(59,130,246,0.1)', border:'1px solid rgba(59,130,246,0.3)', color:'#60A5FA' }}>
-                    <ArrowLeftRight size={14} /> Transfer Et
+                    <ArrowLeftRight size={14} /> {t('stock.scanModal.transferAction')}
                   </button>
                   <button type="button" onClick={() => setAction('damage')}
                     className="py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
                     style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.25)', color:'#EF4444' }}>
-                    <AlertTriangle size={14} /> Hasarlı/Kayıp
+                    <AlertTriangle size={14} /> {t('stock.scanModal.damageAction')}
                   </button>
                 </div>
               )}
 
               {found.status !== 1 && (
-                <div className="text-sm" style={{ color:'#666' }}>
-                  Bu parça üzerinde işlem yapılamaz.
+                <div className="text-sm" style={{ color:'#888' }}>
+                  {t('stock.scanModal.noActionAvailable')}
                 </div>
               )}
 
@@ -364,22 +372,22 @@ function QRScanModal({ open, onClose, onDone, locations }: {
               {action === 'transfer' && (
                 <div className="space-y-3 pt-2" style={{ borderTop:'1px solid #1A1A1A' }}>
                   <div>
-                    <label className="label">Hedef Konum</label>
+                    <label className="label">{t('stock.scanModal.targetLocation')}</label>
                     <select className="select" value={toLocationId} onChange={e => setToLocationId(e.target.value)} required>
-                      <option value="">Seçin</option>
+                      <option value="">{t('stock.entryModal.select')}</option>
                       {locations.filter(l => l.isActive && l.id !== found.locationId).map(l => (
                         <option key={l.id} value={l.id}>{l.name}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="label">Notlar (Opsiyonel)</label>
-                    <input className="input" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Transfer notu" />
+                    <label className="label">{t('stock.scanModal.notesOptional')}</label>
+                    <input className="input" value={notes} onChange={e => setNotes(e.target.value)} placeholder={t('stock.scanModal.transferNotePlaceholder')} />
                   </div>
                   <div className="flex gap-2">
-                    <button type="button" className="btn-ghost" onClick={() => setAction(null)}>Geri</button>
+                    <button type="button" className="btn-ghost" onClick={() => setAction(null)}>{t('stock.scanModal.back')}</button>
                     <button type="button" className="btn-gold flex-1" onClick={handleTransfer} disabled={saving || !toLocationId}>
-                      {saving ? 'Transfer ediliyor...' : 'Transferi Onayla'}
+                      {saving ? t('stock.scanModal.transferring') : t('stock.scanModal.confirmTransfer')}
                     </button>
                   </div>
                 </div>
@@ -389,7 +397,7 @@ function QRScanModal({ open, onClose, onDone, locations }: {
               {action === 'damage' && (
                 <div className="space-y-3 pt-2" style={{ borderTop:'1px solid #1A1A1A' }}>
                   <div>
-                    <label className="label">Durum</label>
+                    <label className="label">{t('stock.scanModal.status')}</label>
                     <div className="grid grid-cols-2 gap-2">
                       {(['Damaged', 'Lost'] as const).map(r => (
                         <button key={r} type="button" onClick={() => setDamageReason(r)}
@@ -397,21 +405,21 @@ function QRScanModal({ open, onClose, onDone, locations }: {
                           style={{
                             background: damageReason === r ? 'rgba(239,68,68,0.15)' : '#111',
                             border: `1px solid ${damageReason === r ? 'rgba(239,68,68,0.4)' : '#222'}`,
-                            color: damageReason === r ? '#EF4444' : '#555',
+                            color: damageReason === r ? '#EF4444' : '#888',
                           }}>
-                          {r === 'Damaged' ? 'Hasarlı' : 'Kayıp'}
+                          {r === 'Damaged' ? t('stock.scanModal.damaged') : t('stock.scanModal.lost')}
                         </button>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <label className="label">Notlar (Opsiyonel)</label>
-                    <input className="input" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Açıklama" />
+                    <label className="label">{t('stock.scanModal.notesOptional')}</label>
+                    <input className="input" value={notes} onChange={e => setNotes(e.target.value)} placeholder={t('stock.scanModal.damageNotePlaceholder')} />
                   </div>
                   <div className="flex gap-2">
-                    <button type="button" className="btn-ghost" onClick={() => setAction(null)}>Geri</button>
+                    <button type="button" className="btn-ghost" onClick={() => setAction(null)}>{t('stock.scanModal.back')}</button>
                     <button type="button" className="btn-gold flex-1" onClick={handleDamage} disabled={saving}>
-                      {saving ? 'Kaydediliyor...' : 'Onayla'}
+                      {saving ? t('stock.scanModal.saving') : t('stock.scanModal.confirm')}
                     </button>
                   </div>
                 </div>
@@ -426,6 +434,9 @@ function QRScanModal({ open, onClose, onDone, locations }: {
 
 // ── Ana Sayfa ─────────────────────────────────────────────────────────────
 export default function Stock() {
+  const { t, i18n } = useTranslation()
+  const { purityLabels, stockMovementTypes } = useEnumLabels()
+  const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const [movements, setMovements]   = useState<StockMovement[]>([])
   const [valuation, setValuation]   = useState<StockValuation | null>(null)
   const [products, setProducts]     = useState<Product[]>([])
@@ -469,16 +480,16 @@ export default function Stock() {
       `}</style>
 
       <div className="flex items-center justify-between">
-        <h1 className="page-title gold-text">Stok</h1>
+        <h1 className="page-title gold-text">{t('stock.pageTitle')}</h1>
         <div className="flex items-center gap-2">
           <button className="btn-outline flex items-center gap-2" onClick={() => setModal('entry')}>
-            <Package size={15} /> Stok Girişi
+            <Package size={15} /> {t('stock.stockEntry')}
           </button>
           <button className="btn-outline flex items-center gap-2" onClick={() => setModal('scan')}>
-            <QrCode size={15} /> QR Tara
+            <QrCode size={15} /> {t('stock.qrScan')}
           </button>
           <button className="btn-gold flex items-center gap-2" onClick={() => setModal('transfer')}>
-            <ArrowLeftRight size={16} /> Transfer
+            <ArrowLeftRight size={16} /> {t('stock.transfer')}
           </button>
         </div>
       </div>
@@ -486,23 +497,23 @@ export default function Stock() {
       {/* Valuation */}
       {valuation && (
         <div className="card p-5">
-          <h2 className="text-sm font-semibold mb-4" style={{ color:'#888', textTransform:'uppercase', letterSpacing:'.05em' }}>Stok Değerleme</h2>
+          <h2 className="text-sm font-semibold mb-4" style={{ color:'#888', textTransform:'uppercase', letterSpacing:'.05em' }}>{t('stock.valuation.title')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
             <div className="rounded-lg p-3" style={{ background:'#0A0A0A', border:'1px solid #1A1A1A' }}>
-              <div className="text-xs mb-1" style={{ color:'#555' }}>Toplam Ağırlık</div>
+              <div className="text-xs mb-1" style={{ color:'#888' }}>{t('stock.valuation.totalWeight')}</div>
               <div className="font-bold text-white">{valuation.totalWeightGram.toFixed(3)}gr</div>
             </div>
             <div className="rounded-lg p-3" style={{ background:'#0A0A0A', border:'1px solid rgba(212,175,55,0.2)' }}>
-              <div className="text-xs mb-1" style={{ color:'#555' }}>Tahmini Değer</div>
-              <div className="font-bold gold-text">₺{valuation.totalEstimatedValueTRY.toLocaleString('tr-TR', { minimumFractionDigits:2 })}</div>
+              <div className="text-xs mb-1" style={{ color:'#888' }}>{t('stock.valuation.estimatedValue')}</div>
+              <div className="font-bold gold-text">₺{valuation.totalEstimatedValueTRY.toLocaleString(priceLocale, { minimumFractionDigits:2 })}</div>
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {valuation.byPurity.map(b => (
               <div key={b.purity} className="rounded-lg p-3 text-center" style={{ background:'#0A0A0A', border:'1px solid #1A1A1A' }}>
-                <div className="badge-gold mb-1" style={{ display:'inline-block' }}>{PURITY_LABELS[b.purity]}</div>
+                <div className="badge-gold mb-1" style={{ display:'inline-block' }}>{purityLabels[b.purity]}</div>
                 <div className="text-sm font-semibold text-white mt-1">{b.totalWeightGram.toFixed(2)}gr</div>
-                <div className="text-xs" style={{ color:'#555' }}>{b.totalPiecesCount.toFixed(0)} adet</div>
+                <div className="text-xs" style={{ color:'#888' }}>{b.totalPiecesCount.toFixed(0)} {t('stock.valuation.piecesSuffix')}</div>
               </div>
             ))}
           </div>
@@ -512,26 +523,26 @@ export default function Stock() {
       {/* Movements */}
       <div className="card overflow-hidden">
         <div className="px-5 py-4" style={{ borderBottom:'1px solid #1A1A1A' }}>
-          <h2 className="text-sm font-semibold" style={{ color:'#888', textTransform:'uppercase', letterSpacing:'.05em' }}>Stok Hareketleri</h2>
+          <h2 className="text-sm font-semibold" style={{ color:'#888', textTransform:'uppercase', letterSpacing:'.05em' }}>{t('stock.movements.title')}</h2>
         </div>
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom:'1px solid #1A1A1A' }}>
-              {['Tarih','Ürün','Tür','Miktar','Konum','Açıklama'].map(h => (
-                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color:'#555', fontSize:11, textTransform:'uppercase', letterSpacing:'.05em' }}>{h}</th>
+              {[t('stock.movements.columns.date'), t('stock.movements.columns.product'), t('stock.movements.columns.type'), t('stock.movements.columns.quantity'), t('stock.movements.columns.location'), t('stock.movements.columns.description')].map(h => (
+                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color:'#888', fontSize:11, textTransform:'uppercase', letterSpacing:'.05em' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading
-              ? <tr><td colSpan={6} className="px-4 py-8 text-center" style={{ color:'#555' }}>Yükleniyor...</td></tr>
+              ? <tr><td colSpan={6} className="px-4 py-8 text-center" style={{ color:'#888' }}>{t('stock.movements.loading')}</td></tr>
               : movements.length === 0
-                ? <tr><td colSpan={6} className="px-4 py-8 text-center" style={{ color:'#555' }}>Hareket yok.</td></tr>
+                ? <tr><td colSpan={6} className="px-4 py-8 text-center" style={{ color:'#888' }}>{t('stock.movements.noResults')}</td></tr>
                 : movements.map(m => (
                   <tr key={m.id} className="table-row">
-                    <td className="px-4 py-3" style={{ color:'#888' }}>{new Date(m.createdAt).toLocaleDateString('tr-TR')}</td>
+                    <td className="px-4 py-3" style={{ color:'#888' }}>{new Date(m.createdAt).toLocaleDateString(priceLocale)}</td>
                     <td className="px-4 py-3 font-medium text-white">{m.productName}</td>
-                    <td className="px-4 py-3"><span className={typeColor[m.type] ?? 'badge-gray'}>{STOCK_MOVEMENT_TYPES[m.type]}</span></td>
+                    <td className="px-4 py-3"><span className={typeColor[m.type] ?? 'badge-gray'}>{stockMovementTypes[m.type]}</span></td>
                     <td className="px-4 py-3 font-medium text-white">{m.quantity.toFixed(3)}</td>
                     <td className="px-4 py-3" style={{ color:'#888' }}>
                       {m.locationName ?? '—'}
@@ -561,44 +572,44 @@ export default function Stock() {
         locations={locations}
       />
 
-      <Modal open={modal === 'transfer'} onClose={() => setModal(null)} title="Stok Transferi">
+      <Modal open={modal === 'transfer'} onClose={() => setModal(null)} title={t('stock.transferModal.title')}>
         <form onSubmit={handleTransfer}>
           <div className="px-6 py-5 space-y-4">
             <div>
-              <label className="label">Ürün</label>
+              <label className="label">{t('stock.transferModal.product')}</label>
               <select className="select" value={form.productId} onChange={set('productId')} required>
-                <option value="">Seçin</option>
+                <option value="">{t('stock.entryModal.select')}</option>
                 {products.filter(p => p.isActive).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="label">Kaynak Konum</label>
+                <label className="label">{t('stock.transferModal.sourceLocation')}</label>
                 <select className="select" value={form.fromLocationId} onChange={set('fromLocationId')} required>
-                  <option value="">Seçin</option>
+                  <option value="">{t('stock.entryModal.select')}</option>
                   {locations.filter(l => l.isActive).map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="label">Hedef Konum</label>
+                <label className="label">{t('stock.transferModal.targetLocation')}</label>
                 <select className="select" value={form.toLocationId} onChange={set('toLocationId')} required>
-                  <option value="">Seçin</option>
+                  <option value="">{t('stock.entryModal.select')}</option>
                   {locations.filter(l => l.isActive && l.id !== form.fromLocationId).map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                 </select>
               </div>
             </div>
             <div>
-              <label className="label">Miktar (Adet)</label>
+              <label className="label">{t('stock.transferModal.quantity')}</label>
               <input className="input" type="number" step="0.001" min="0.001" value={form.quantity} onChange={set('quantity')} required />
             </div>
             <div>
-              <label className="label">Notlar</label>
-              <input className="input" value={form.notes} onChange={set('notes')} placeholder="Opsiyonel" />
+              <label className="label">{t('stock.transferModal.notes')}</label>
+              <input className="input" value={form.notes} onChange={set('notes')} placeholder={t('stock.transferModal.notesOptional')} />
             </div>
           </div>
           <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop:'1px solid #1A1A1A' }}>
-            <button type="button" className="btn-ghost" onClick={() => setModal(null)}>İptal</button>
-            <button type="submit" className="btn-gold" disabled={saving}>{saving ? 'Transfer ediliyor...' : 'Transferi Yap'}</button>
+            <button type="button" className="btn-ghost" onClick={() => setModal(null)}>{t('stock.transferModal.cancel')}</button>
+            <button type="submit" className="btn-gold" disabled={saving}>{saving ? t('stock.transferModal.transferring') : t('stock.transferModal.submit')}</button>
           </div>
         </form>
       </Modal>

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T15:20:29Z",
+  "title": "Design System: Austo",
+  "extensions": {
+    "colorMeta": {
+      "gold": { "role": "primary", "displayName": "Gold", "canonical": "#D4AF37", "tonalRamp": ["#2A2000", "#473805", "#6B5408", "#92740A", "#B8960C", "#D4AF37", "#F5C842", "#FDE68A"] },
+      "gold-light": { "role": "primary", "displayName": "Gold Light", "canonical": "#F5C842", "tonalRamp": ["#2A2000", "#473805", "#6B5408", "#92740A", "#B8960C", "#D4AF37", "#F5C842", "#FEF3C7"] },
+      "gold-deep": { "role": "primary", "displayName": "Gold Deep", "canonical": "#B8960C", "tonalRamp": ["#2A2000", "#473805", "#6B5408", "#92740A", "#B8960C", "#D4AF37", "#F5C842", "#FDE68A"] },
+      "void": { "role": "neutral", "displayName": "Void", "canonical": "#0A0A0A", "tonalRamp": ["#0A0A0A", "#111111", "#141414", "#1A1A1A", "#222222", "#2A2A2A", "#555555", "#888888"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#111111", "tonalRamp": ["#0A0A0A", "#0D0D0D", "#111111", "#141414", "#161616", "#1A1A1A", "#222222", "#2A2A2A"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#E5E5E5", "tonalRamp": ["#3a3a3a", "#555555", "#7D7D7D", "#888888", "#AAAAAA", "#CCCCCC", "#E5E5E5", "#FFFFFF"] },
+      "ink-bright": { "role": "neutral", "displayName": "Ink Bright", "canonical": "#FFFFFF", "tonalRamp": ["#555555", "#7D7D7D", "#888888", "#AAAAAA", "#CCCCCC", "#E5E5E5", "#F5F5F5", "#FFFFFF"] },
+      "positive": { "role": "success", "displayName": "Positive Green", "canonical": "#22C55E", "tonalRamp": ["#052e16", "#14532d", "#166534", "#15803d", "#16a34a", "#22C55E", "#4ade80", "#86efac"] },
+      "negative": { "role": "danger", "displayName": "Negative Red", "canonical": "#EF4444", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#EF4444", "#f87171", "#fca5a5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing-page hero headlines only; Playfair Display, sometimes italic." },
+      "headline": { "displayName": "Headline / Page Title", "purpose": "In-app page titles (.page-title class)." },
+      "body": { "displayName": "Body", "purpose": "Paragraph copy, table cells, form inputs, buttons." },
+      "label": { "displayName": "Label", "purpose": "Uppercase wide-tracked labels: form fields, badges, ticker codes, stat-card eyebrows." }
+    },
+    "shadows": [
+      { "name": "gold-glow-rest", "value": "0 0 20px rgba(212,175,55,0.15)", "purpose": "Default gold ambient bloom for elevated resting surfaces." },
+      { "name": "gold-glow-hover", "value": "0 0 0 1px rgba(212,175,55,0.65), 0 0 18px rgba(212,175,55,0.25)", "purpose": "Card / sidebar-item / button hover response — the system's primary depth cue." },
+      { "name": "gold-glow-emphasis", "value": "0 0 40px rgba(212,175,55,0.25)", "purpose": "Larger bloom for emphasized or attention-seeking elements (e.g. pulse-gold animation peak)." },
+      { "name": "input-focus-ring", "value": "0 0 0 3px rgba(212,175,55,0.08)", "purpose": "Soft focus ring on inputs/selects, paired with a gold border-color shift." },
+      { "name": "modal-elevation", "value": "0 25px 60px rgba(0,0,0,0.7), 0 0 40px rgba(212,175,55,0.08)", "purpose": "The one true drop-shadow in the system, reserved for modal dialogs to separate them from page content." }
+    ],
+    "motion": [
+      { "name": "pulse-gold", "value": "pulse-gold 2s ease-in-out infinite", "purpose": "Ambient glow pulse for live/active indicators." },
+      { "name": "sweepglow", "value": "sweepglow 6s linear infinite", "purpose": "Conic-gradient light sweep circling brand marks / logo glow." },
+      { "name": "scan-move", "value": "scan-move 3.2s ease-in-out infinite", "purpose": "Laser scan-line traveling across a border, used for 'processing / live' states." },
+      { "name": "ticker-scroll", "value": "ticker-scroll 55s linear infinite", "purpose": "Header live-price ticker horizontal marquee, pauses on hover." },
+      { "name": "hover-transition", "value": "all 0.2s ease / transform 0.1s", "purpose": "Standard interactive transition speed — precise and restrained, no springy easing." }
+    ],
+    "breakpoints": [
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Gold-gradient primary action button.",
+      "html": "<button class=\"ds-btn-primary\">Save Changes</button>",
+      "css": ".ds-btn-primary { background: linear-gradient(135deg, #D4AF37, #F5C842); color: #0A0A0A; font-weight: 600; font-size: 14px; border-radius: 8px; padding: 10px 20px; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s; } .ds-btn-primary:hover { opacity: 0.9; box-shadow: 0 0 20px rgba(212,175,55,0.35); transform: translateY(-1px); } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action, transparent with gold border.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { background: transparent; color: #D4AF37; border: 1px solid rgba(212,175,55,0.4); font-weight: 500; font-size: 14px; border-radius: 8px; padding: 9px 20px; cursor: pointer; transition: all 0.2s; } .ds-btn-outline:hover { background: rgba(212,175,55,0.08); border-color: #D4AF37; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field with gold focus ring.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search products…\" />",
+      "css": ".ds-input { background: #0A0A0A; border: 1px solid #2A2A2A; border-radius: 8px; padding: 10px 14px; color: #E5E5E5; width: 100%; font-size: 14px; font-family: 'Inter', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; outline: none; } .ds-input::placeholder { color: #888888; } .ds-input:focus { border-color: rgba(212,175,55,0.5); box-shadow: 0 0 0 3px rgba(212,175,55,0.08); }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Dashboard KPI tile with top glow accent line and watermark icon.",
+      "html": "<div class=\"ds-stat-card\"><div class=\"ds-stat-accent\"></div><span class=\"ds-stat-label\">Daily Revenue</span><div class=\"ds-stat-value\">₺48,250.00</div></div>",
+      "css": ".ds-stat-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; border-radius: 16px; overflow: hidden; background: linear-gradient(160deg,#161616 0%,#0E0E0E 100%); border: 1px solid rgba(212,175,55,0.08); padding: 20px 20px 16px; min-height: 130px; transition: all 0.3s; } .ds-stat-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(212,175,55,0.33), transparent); } .ds-stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888888; font-family: 'Montserrat', sans-serif; } .ds-stat-value { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1; color: #F5F5F5; font-variant-numeric: tabular-nums; margin-top: 8px; }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "sidebar-item",
+      "description": "Vertical nav row; active/hover state glows exactly like a card.",
+      "html": "<a class=\"ds-sidebar-item ds-sidebar-item--active\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg><span>Dashboard</span></a>",
+      "css": ".ds-sidebar-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; color: #888888; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: all 0.15s; font-family: 'Inter', sans-serif; } .ds-sidebar-item:hover, .ds-sidebar-item--active { background: rgba(212,175,55,0.1); color: #D4AF37; box-shadow: 0 0 0 1px rgba(212,175,55,0.65), 0 0 18px rgba(212,175,55,0.25); }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge-gold",
+      "description": "Pill status badge in semantic or brand color.",
+      "html": "<span class=\"ds-badge ds-badge--gold\">Active</span>",
+      "css": ".ds-badge { display: inline-block; border-radius: 9999px; padding: 2px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; } .ds-badge--gold { background: rgba(212,175,55,0.15); color: #D4AF37; border: 1px solid rgba(212,175,55,0.3); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Vault",
+    "overview": "Austo reads as a secure, low-light interior built to hold something precious. Surfaces sit almost black — the interface recedes so nothing competes with the data or the gold itself. Gold is not a decorative accent applied on top; it is the ambient signature that runs through the whole system — hairline borders, dividers, icon strokes, the sidebar's active state, the live-rate ticker, the hover glow on every card. It is everywhere in small doses rather than reserved for a handful of \"special\" moments, but it never fills a surface — it traces edges, catches light, and signals liveness.\n\nDepth in this system is not built from drop shadows. It's built from light: a soft gold bloom under hover states, a conic-gradient \"sweep\" that circles a logo mark, a laser-thin \"scan\" line that travels across borders, a cursor-tracking edge glow (BorderGlow) that lights the nearest edge of a card as the pointer approaches. Surfaces are flat at rest, and glow is how the interface tells you something is alive, active, or worth your attention.\n\nTypography pairs an editorial serif (Playfair Display) for hero-scale display moments with a geometric sans (Montserrat) for structural headings, labels, and navigation, and a humanist sans (Inter) for body copy and data. Interactive elements stay precise and restrained: buttons and inputs are quiet at rest, respond with a controlled gold glow and a 1px lift on hover, and never bounce, overshoot, or perform beyond the interaction that earned it. Austo explicitly is not a generic light, blue-accent SaaS dashboard.",
+    "keyCharacteristics": [
+      "Near-black void surfaces (#0A0A0A) paired with pure white (#FFFFFF) as the standard high-emphasis text color — the contrast between them, not a muted off-white, is the point",
+      "Gold as ambient signature: borders, icon strokes, dividers, and glow carry it everywhere, but never as a fill",
+      "Depth = light, not shadow: glow, sweep, and scan animations are the elevation system",
+      "Serif display (Playfair Display) for hero moments; geometric sans (Montserrat) for structure; humanist sans (Inter) for body/data",
+      "Precise, restrained interaction: controlled hover response, never playful or bouncy",
+      "Explicit anti-reference: generic light-mode SaaS dashboards (blue accents, uniform card grids, flat Material Design)"
+    ],
+    "rules": [
+      { "name": "The No-Fill Rule", "body": "Gold and the semantic colors appear as translucent tints, borders, strokes, and gradients — never as an opaque fill covering a large surface. A gold-filled button gradient is the one sanctioned exception, and even there it fades to Void text, not white.", "section": "colors" },
+      { "name": "The Ambient Signature Rule", "body": "Unlike a \"rare accent\" system, gold is allowed to appear on nearly every surface — sidebar, header, cards, badges, dividers — as long as it stays translucent or confined to edges/icons/text. Restraint comes from opacity and placement, not from scarcity of appearances.", "section": "colors" },
+      { "name": "The Tabular Numerals Rule", "body": "Any number that updates live (prices, the clock, stat values) uses tabular-nums — the Vault's ticking data must never cause layout jitter.", "section": "typography" },
+      { "name": "The Flat-at-Rest Rule", "body": "No card, button, or panel carries a resting shadow. Every glow effect is a response to hover, focus, active state, or live data — never a static decoration.", "section": "elevation" },
+      { "name": "The Light-Is-Depth Rule", "body": "When a new surface needs to feel \"elevated,\" reach for a gold glow bloom or the BorderGlow pattern before reaching for a conventional drop shadow. Depth in the Vault comes from light catching an edge, not from a surface casting a shadow.", "section": "elevation" },
+      { "name": "The Legible Floor Rule", "body": "Any text that conveys information — not pure decoration — must clear 4.5:1 contrast against its background (3:1 for large/bold text). Ink Muted (#888888) is the darkest gray permitted for real text; anything darker is for borders, dividers, and non-text decoration only.", "section": "colors" }
+    ],
+    "dos": [
+      "Do keep new surfaces flat at rest and add depth only as a response to hover/focus/live-state, using gold glow or BorderGlow rather than conventional shadows.",
+      "Do use translucent gold (8–30% opacity) for borders, fills, and tints rather than solid/opaque gold outside of gradient buttons.",
+      "Do pair Playfair Display (hero/display only) with Montserrat (structure/labels) and Inter (body/data) — don't introduce a fourth typeface.",
+      "Do use tabular-nums on any figure that updates live.",
+      "Do keep hover/focus responses controlled and quick (150–300ms) — a lift of 1px, a glow bloom, a border-color shift; nothing bouncy or springy.",
+      "Do use pure white (#FFFFFF) as the standard color for headings and other high-emphasis text — it is the default bright ink, not a rare exception.",
+      "Do keep any real text (labels, captions, timestamps, empty/loading states) at Ink Muted (#888888) or brighter; never ship informational text below 4.5:1 contrast against Void."
+    ],
+    "donts": [
+      "Don't let this read as a generic light-mode SaaS dashboard — no blue accent color, no uniform white card grid, no flat Material Design defaults.",
+      "Don't fill a large surface with opaque gold; gold traces edges and lights icons/text, it doesn't paint backgrounds.",
+      "Don't add a conventional box-shadow drop-shadow for elevation — reach for the glow/BorderGlow language instead.",
+      "Don't use a kicker/eyebrow label above a heading — the heading carries its own weight.",
+      "Don't give buttons, cards, or inputs bouncy/springy motion — interaction stays precise and restrained, not playful."
+    ]
+  }
+}

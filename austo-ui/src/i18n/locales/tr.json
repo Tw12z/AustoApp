@@ -1,0 +1,664 @@
+{
+  "common": {
+    "loading": "Yükleniyor...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "close": "Kapat",
+    "confirm": "Onayla",
+    "actions": "İşlemler",
+    "status": "Durum",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "yes": "Evet",
+    "no": "Hayır",
+    "back": "Geri",
+    "next": "İleri",
+    "submit": "Gönder",
+    "error": "Hata",
+    "success": "Başarılı",
+    "noResults": "Sonuç bulunamadı",
+    "total": "Toplam",
+    "date": "Tarih",
+    "name": "Ad",
+    "description": "Açıklama",
+    "confirmDeleteTitle": "Silmeyi Onayla",
+    "confirmDeleteMessage": "Bu kaydı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "language": "Dil",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle",
+    "emailPlaceholder": "ornek@austo.com",
+    "usernameOrEmailPlaceholder": "kullanici@austo.com",
+    "fullNamePlaceholder": "Ahmet Yılmaz",
+    "usernamePlaceholder": "kullanici_adi"
+  },
+  "layout": {
+    "ticker": {
+      "gram": "Gram",
+      "quarter": "Çeyrek",
+      "half": "Yarım",
+      "full": "Tam"
+    },
+    "openMenu": "Menüyü aç",
+    "closeMenu": "Menüyü kapat"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "products": "Ürünler",
+    "categories": "Kategoriler",
+    "locations": "Konumlar",
+    "stock": "Stok",
+    "customers": "Müşteriler",
+    "suppliers": "Tedarikçiler",
+    "finance": "Finans",
+    "sales": "Satış",
+    "purchases": "Alışlar",
+    "reports": "Raporlar",
+    "settings": "Ayarlar",
+    "logout": "Çıkış"
+  },
+  "landing": {
+    "navbar": {
+      "features": "Özellikler",
+      "how": "Nasıl Çalışır",
+      "login": "Giriş Yap"
+    },
+    "hero": {
+      "titleLine1": "Altın Yönetiminde",
+      "titleLine2": "Yeni Standart",
+      "desc": "Kuyumcunuzu uçtan uca dijitalleştirin. Canlı altın fiyatları, stok takibi, satış & alış yönetimi, raporlar ve daha fazlası — tek platformda.",
+      "ctaStart": "Hemen Başla",
+      "ctaExplore": "Özellikleri Keşfet",
+      "demo": {
+        "dashboardTitle": "Panel",
+        "live": "Canlı",
+        "todaySales": "Bugünkü Satış",
+        "todayPurchases": "Bugünkü Alış",
+        "netProfit": "Net Kâr",
+        "stockValue": "Stok Değeri",
+        "quickSale": "Hızlı Satış",
+        "salesTrend": "Satış Trendi",
+        "search": "Ürün ara...",
+        "productsTitle": "Ürünler",
+        "new": "Yeni",
+        "colProduct": "Ürün",
+        "colPurity": "Ayar",
+        "colStock": "Stok",
+        "colPrice": "Fiyat",
+        "stockTitle": "Stok",
+        "totalWeight": "Toplam Gramaj",
+        "estValue": "Tahmini Değer",
+        "scanned": "Okundu",
+        "transferred": "Vitrine transfer edildi",
+        "moveIn": "Stok Giriş",
+        "moveOut": "Stok Çıkış",
+        "nav": {
+          "dashboard": "Panel",
+          "products": "Ürünler",
+          "stock": "Stok"
+        }
+      }
+    },
+    "marquee": {
+      "trusted": "Güvenilen Markalar & İş Ortakları"
+    },
+    "stats": {
+      "coreModules": "Temel Modül",
+      "livePrice": "Canlı Fiyat",
+      "barcodeSupport": "Barkod Desteği",
+      "productCapacity": "Ürün Kapasitesi"
+    },
+    "features": {
+      "titleLine1": "Kuyumcular İçin",
+      "titleLine2": "Her Şey Düşünüldü",
+      "subtitle": "Sektöre özel geliştirilen özelliklerle işlerinizi kolaylaştırın.",
+      "items": {
+        "finance": { "title": "Canlı Finans Takibi", "desc": "Gram, çeyrek, yarım, tam altın ve döviz fiyatlarını anlık izleyin. Günlük, haftalık ve aylık grafiklerle uzun vadeli değişimi takip edin." },
+        "products": { "title": "Ürün & Kategori Yönetimi", "desc": "Ürünlerinizi kategorilere ayırın, ayar (8k–24k) ve barkod bilgileriyle kayıt altına alın. Aktif/pasif durumu anlık güncelleyin." },
+        "sales": { "title": "Hızlı Satış", "desc": "Dashboard üzerinden tek tıkla satış yapın. Ürün adı ya da barkodla arayın, sepete ekleyin, müşteri seçip tamamlayın." },
+        "stock": { "title": "Stok & Transfer", "desc": "QR/barkod ile stok giriş-çıkış yapın, lokasyonlar arası transfer gerçekleştirin. Tüm hareketler otomatik kaydedilir." },
+        "locations": { "title": "Lokasyon Yönetimi", "desc": "Vitrin, kasa, kasa altı gibi konumları kategorilere ayırın. Her ürünün hangi lokasyonda olduğunu anlık görün." },
+        "customers": { "title": "Müşteri & Tedarikçi", "desc": "Müşteri ve tedarikçi kayıtlarını yönetin. Satış ve alış işlemlerini ilgili kayıtlara bağlayarak geçmiş takibi yapın." },
+        "purchases": { "title": "Alış Yönetimi", "desc": "Tedarikçiden yapılan alışları, hurda ve ham madde alımlarını kaydedin. Stok otomatik güncellenir, maliyet hesaplanır." },
+        "reports": { "title": "Raporlar & Analizler", "desc": "Günlük özet, satış trendi, stok değerleme ve net kar/zarar raporlarını anında görüntüleyin. İptal edilen satışlar otomatik düşülür." },
+        "financeModule": { "title": "Finans Modülü", "desc": "Altın ve döviz fiyatlarını manuel girin ya da canlı fiyat akışını takip edin. İstediğiniz metrikleri seçerek grafiklerde izleyin." },
+        "qr": { "title": "QR Kod Entegrasyonu", "desc": "Her ürün için barkod tanımlayın. Stok hareketlerini QR okutarak saniyeler içinde gerçekleştirin." },
+        "secure": { "title": "Güvenli & Modern", "desc": "JWT kimlik doğrulama, e-posta doğrulama ve şifre sıfırlama ile güvenli erişim. .NET 10 ve React üzerinde inşa edilmiş." },
+        "dashboard": { "title": "Dashboard & Hızlı Eylemler", "desc": "Tek ekranda günlük satış, alış, net kar ve stok değerini görün. Satış trendini grafikle takip edin, hızlı satışı anında tamamlayın." }
+      }
+    },
+    "how": {
+      "title": "3 Adımda Başlayın",
+      "steps": {
+        "account": { "title": "Hesap Oluşturun", "desc": "Dakikalar içinde hesabınızı oluşturun ve mağazanızı tanımlayın." },
+        "products": { "title": "Ürünlerinizi Ekleyin", "desc": "Stok bilgilerini, ayar ve gramajları sisteme girin." },
+        "manage": { "title": "Yönetmeye Başlayın", "desc": "Satış yapın, raporları inceleyin ve kârınızı takip edin." }
+      }
+    },
+    "liveGold": {
+      "title": "Piyasayı Asla Kaçırmayın",
+      "note": "* Canlı fiyatlar giriş sonrası gösterilir"
+    },
+    "cta": {
+      "titleLine1": "Kuyumcunuzu",
+      "titleLine2": "Dijitalleştirin",
+      "desc": "Austo ile altın yönetimini modernleştirin. Hızlı kurulum, kolay kullanım.",
+      "button": "Ücretsiz Başla"
+    },
+    "footer": {
+      "copyright": "© 2026 Austo · Kuyumcu Yönetim Sistemi",
+      "login": "Giriş Yap →"
+    }
+  },
+  "auth": {
+    "errors": {
+      "loginFailed": "Giriş başarısız.",
+      "registerFailed": "Kayıt başarısız.",
+      "operationFailed": "İşlem başarısız.",
+      "passwordMismatch": "Şifreler eşleşmiyor."
+    },
+    "forgot": {
+      "back": "Geri Dön",
+      "title": "Şifremi Unuttum",
+      "subtitle": "E-posta adresinizi girin, sıfırlama bağlantısı gönderelim.",
+      "email": "E-posta",
+      "sending": "Gönderiliyor...",
+      "send": "Sıfırlama Bağlantısı Gönder"
+    },
+    "forgotSent": {
+      "title": "E-posta Gönderildi",
+      "messageBefore": "",
+      "messageAfter": " adresine şifre sıfırlama bağlantısı gönderildi.",
+      "devLabel": "Dev:",
+      "devLink": "Sıfırlama bağlantısı →",
+      "backToLogin": "Giriş Sayfasına Dön"
+    },
+    "registered": {
+      "title": "Hesabınız Oluşturuldu!",
+      "messagePrefix": "Giriş yapabilmek için",
+      "messageSuffix": " adresine gönderilen doğrulama bağlantısına tıklayın.",
+      "devLabel": "Dev (SMTP yok):",
+      "devLink": "E-postayı doğrula →",
+      "backToLogin": "Giriş Sayfasına Dön"
+    },
+    "signIn": {
+      "title": "Giriş Yap —",
+      "subtitle": "Hesabınıza erişin",
+      "usernameOrEmail": "Kullanıcı Adı / E-posta",
+      "password": "Şifre",
+      "forgotPassword": "Şifremi unuttum →",
+      "submitting": "Giriş yapılıyor...",
+      "submit": "Giriş Yap"
+    },
+    "signUp": {
+      "title": "Hesap",
+      "titleAccent": "Oluştur",
+      "subtitle": "Austo'ya katılın",
+      "fullName": "Ad Soyad",
+      "email": "E-posta",
+      "username": "Kullanıcı Adı",
+      "password": "Şifre",
+      "confirmPassword": "Tekrar",
+      "submitting": "Kayıt yapılıyor...",
+      "submit": "Kayıt Ol"
+    },
+    "panel": {
+      "welcomeBackTitle": "Tekrar Hoş Geldiniz!",
+      "welcomeBackDesc": "Hesabınızla giriş yaparak tüm özelliklere erişin.",
+      "helloTitle": "Merhaba!",
+      "helloDesc": "Kuyumcu yönetim sistemine katılmak için kayıt olun.",
+      "signInButton": "Giriş Yap",
+      "signUpButton": "Kayıt Ol"
+    },
+    "footer": "© 2026 Austo · Kuyumcu Yönetim Sistemi"
+  },
+  "resetPassword": {
+    "errors": {
+      "mismatch": "Şifreler eşleşmiyor.",
+      "tooShort": "Şifre en az 6 karakter olmalıdır.",
+      "failed": "Şifre sıfırlama başarısız."
+    },
+    "done": {
+      "title": "Şifre Güncellendi!",
+      "redirecting": "Giriş sayfasına yönlendiriliyorsunuz..."
+    },
+    "title": "Yeni Şifre Belirle",
+    "subtitle": "Hesabınız için yeni bir şifre oluşturun.",
+    "newPassword": "Yeni Şifre",
+    "confirmPassword": "Şifre Tekrar",
+    "updating": "Güncelleniyor...",
+    "submit": "Şifremi Güncelle"
+  },
+  "dashboard": {
+    "live": "Canlı",
+    "quickSale": {
+      "title": "Hızlı Satış",
+      "itemsInCart": "{{count}} ürün",
+      "searchPlaceholder": "Ürün adı veya barkod...",
+      "noProducts": "Ürün bulunamadı",
+      "unitCount": "{{count}} adet",
+      "perUnit": "{{price}} / adet",
+      "addProduct": "Ürün ekle",
+      "selectCustomer": "Müşteri seç (opsiyonel)",
+      "saleCompleted": "Satış tamamlandı!",
+      "confirmQuestion": "{{total}} onaylansın mı?",
+      "confirm": "Onayla",
+      "cancel": "Vazgeç",
+      "sellButton": "Sat — {{total}}",
+      "emptyCart": "Sepet boş",
+      "saleFailed": "Satış oluşturulamadı. Stok kontrolü yapın."
+    },
+    "salesTrend": {
+      "title": "Satış Trendi",
+      "salesCount": "{{count}} satış",
+      "range7d": "7G",
+      "range30d": "30G",
+      "range3m": "3A"
+    },
+    "stats": {
+      "todaySales": "Bugünkü Satış",
+      "todaySalesSub": "{{count}} işlem · {{weight}}gr",
+      "todayPurchases": "Bugünkü Alış",
+      "estimatedNetProfit": "Tahmini Net Kar",
+      "todayNet": "Bugünkü net",
+      "stockValue": "Stok Değeri",
+      "totalWeight": "{{weight}}gr toplam"
+    },
+    "currency": {
+      "title": "Döviz Kurları"
+    }
+  },
+  "enums": {
+    "purity": {
+      "0": "Diğer", "8": "8 Ayar", "14": "14 Ayar",
+      "18": "18 Ayar", "21": "21 Ayar", "22": "22 Ayar", "24": "24 Ayar (Has)"
+    },
+    "stockItemStatus": {
+      "1": "Stokta", "2": "Satıldı", "3": "Hasarlı", "4": "Kayıp"
+    },
+    "stockMovementType": {
+      "1": "Satın Alma", "2": "Satış", "3": "Transfer", "4": "Düzeltme", "5": "Fire"
+    },
+    "transactionStatus": {
+      "1": "Tamamlandı", "2": "İptal", "3": "Bekliyor"
+    },
+    "purchaseSourceType": {
+      "1": "Tedarikçi", "2": "Müşteri", "3": "Hurda"
+    }
+  },
+  "products": {
+    "pageTitle": "Ürünler",
+    "newProduct": "Yeni Ürün",
+    "searchPlaceholder": "Ürün veya kategori ara...",
+    "columns": { "product": "Ürün", "category": "Kategori", "purity": "Ayar", "weight": "Ağırlık", "stock": "Stok", "purchase": "Alış", "sale": "Satış", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Ürün bulunamadı.",
+    "confirmDeactivate": "\"{{name}}\" pasif yapılsın mı?",
+    "qr": "QR",
+    "edit": "Düzenle",
+    "deactivate": "Pasif",
+    "editTitle": "Ürün Düzenle",
+    "newTitle": "Yeni Ürün",
+    "form": {
+      "name": "Ürün Adı",
+      "namePlaceholder": "22 Ayar Altın Bilezik",
+      "category": "Kategori",
+      "selectCategory": "Seçin",
+      "purity": "Ayar",
+      "weight": "Ağırlık (gram)",
+      "stock": "Stok (adet)",
+      "purchasePrice": "Alış Fiyatı (₺)",
+      "salePrice": "Satış Fiyatı (₺)",
+      "barcode": "Barkod",
+      "barcodeOptional": "Opsiyonel",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor..."
+    }
+  },
+  "locations": {
+    "pageTitle": "Konumlar",
+    "newLocation": "Yeni Konum",
+    "searchPlaceholder": "Konum ara...",
+    "columns": { "name": "Ad", "description": "Açıklama", "category": "Kategori", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Kayıt bulunamadı.",
+    "confirmDeactivate": "\"{{name}}\" pasif yapılsın mı?",
+    "editTitle": "Düzenle Konum",
+    "newTitle": "Yeni Konum",
+    "form": {
+      "name": "Ad",
+      "description": "Açıklama",
+      "descriptionOptional": "Opsiyonel",
+      "category": "Kategori",
+      "selectCategory": "— Seçiniz —",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor..."
+    }
+  },
+  "customers": {
+    "pageTitle": "Müşteriler",
+    "newCustomer": "Yeni Müşteri",
+    "searchPlaceholder": "İsim veya telefon ara...",
+    "columns": { "fullName": "Ad Soyad", "contact": "İletişim", "taxNumber": "TC / Vergi No", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Müşteri bulunamadı.",
+    "editTitle": "Müşteri Düzenle",
+    "newTitle": "Yeni Müşteri",
+    "form": {
+      "fullName": "Ad Soyad", "phone": "Telefon", "email": "E-posta",
+      "taxNumber": "TC / Vergi No", "notes": "Notlar",
+      "cancel": "İptal", "save": "Kaydet", "saving": "Kaydediliyor..."
+    }
+  },
+  "suppliers": {
+    "pageTitle": "Tedarikçiler",
+    "newSupplier": "Yeni Tedarikçi",
+    "searchPlaceholder": "Şirket ara...",
+    "columns": { "company": "Şirket", "contactPerson": "İletişim Kişisi", "phone": "Telefon", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Tedarikçi bulunamadı.",
+    "editTitle": "Tedarikçi Düzenle",
+    "newTitle": "Yeni Tedarikçi",
+    "form": {
+      "companyName": "Şirket Adı", "contactPerson": "İletişim Kişisi", "phone": "Telefon",
+      "email": "E-posta", "taxNumber": "Vergi No",
+      "cancel": "İptal", "save": "Kaydet", "saving": "Kaydediliyor..."
+    }
+  },
+  "sales": {
+    "pageTitle": "Satış",
+    "newSale": "Yeni Satış",
+    "tabs": { "active": "Satışlar", "cancelled": "İptal Edilenler" },
+    "columns": { "date": "Tarih", "customer": "Müşteri", "amount": "Tutar", "weight": "Ağırlık", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Satış kaydı yok.",
+    "detail": "Detay",
+    "cancel": "İptal",
+    "confirmCancel": "Bu satış iptal edilsin mi?",
+    "retail": "Perakende",
+    "createTitle": "Yeni Satış",
+    "form": {
+      "customer": "Müşteri",
+      "retailPlaceholder": "Perakende (isimsiz)",
+      "saleDate": "Satış Tarihi",
+      "products": "Ürünler",
+      "addProduct": "+ Ürün Ekle",
+      "headerProduct": "Ürün",
+      "headerQty": "Adet",
+      "headerUnitPrice": "Birim Fiyat",
+      "selectProduct": "Ürün Seç",
+      "unitsSuffix": "adet",
+      "qtyPlaceholder": "Adet",
+      "unitPricePlaceholder": "Birim Fiyat ₺",
+      "subtotal": "Ara Toplam:",
+      "extraCosts": "Ek Masraflar",
+      "addExtra": "+ Ekle",
+      "extraCostsHint": "KDV, nakliye, sigorta vb. ekleyebilirsiniz.",
+      "extraNamePlaceholder": "İsim (örn: KDV)",
+      "ratePlaceholder": "Oran (%)",
+      "amountPlaceholder": "Tutar (₺)",
+      "extraTotal": "Ek Masraf Toplamı:",
+      "discount": "İndirim",
+      "discountRatePlaceholder": "Oran",
+      "discountAmountPlaceholder": "Tutar",
+      "notes": "Notlar",
+      "notesOptional": "Opsiyonel",
+      "grandTotal": "Genel Toplam",
+      "extraCostSuffix": "ek masraf",
+      "discountSuffix": "indirim",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "submit": "Satışı Kaydet"
+    },
+    "noteLines": {
+      "extraCosts": "Ek masraflar: ",
+      "discountPct": "%{{value}} indirim uygulandı (−{{amount}})",
+      "discountFixed": "{{amount}} indirim uygulandı"
+    },
+    "detailModal": {
+      "title": "Satış Detayı",
+      "customer": "Müşteri",
+      "totalAmount": "Toplam Tutar",
+      "totalWeight": "Toplam Ağırlık",
+      "columns": { "product": "Ürün", "qty": "Adet", "unitPrice": "Birim Fiyat", "weight": "Ağırlık", "total": "Toplam" }
+    }
+  },
+  "purchases": {
+    "pageTitle": "Alışlar",
+    "newPurchase": "Yeni Alış",
+    "columns": { "date": "Tarih", "source": "Kaynak", "supplierCustomer": "Tedarikçi / Müşteri", "weight": "Ağırlık", "purity": "Ayar", "amount": "Tutar", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Alış kaydı yok.",
+    "confirmCancel": "Bu alış iptal edilsin mi?",
+    "createTitle": "Yeni Alış",
+    "form": {
+      "sourceType": "Kaynak Türü",
+      "sourceSupplier": "Tedarikçi",
+      "sourceCustomer": "Müşteri (İkinci El)",
+      "sourceScrap": "Hurda Altın",
+      "purchaseDate": "Alış Tarihi",
+      "supplier": "Tedarikçi",
+      "customer": "Müşteri",
+      "select": "Seçin",
+      "weight": "Ağırlık (gram)",
+      "purity": "Ayar",
+      "totalAmount": "Toplam Tutar (₺)",
+      "notes": "Notlar",
+      "notesOptional": "Opsiyonel",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "submit": "Alışı Kaydet"
+    }
+  },
+  "stock": {
+    "pageTitle": "Stok",
+    "stockEntry": "Stok Girişi",
+    "qrScan": "QR Tara",
+    "transfer": "Transfer",
+    "entryModal": {
+      "title": "Stok Girişi",
+      "product": "Ürün",
+      "select": "Seçin",
+      "count": "Adet",
+      "location": "Konum (Opsiyonel)",
+      "locationNotSelected": "Seçilmedi",
+      "notes": "Notlar (Opsiyonel)",
+      "notesPlaceholder": "Alış notu...",
+      "cancel": "İptal",
+      "creating": "Oluşturuluyor...",
+      "createPieces": "{{count}} Parça Oluştur",
+      "createFailed": "Oluşturma başarısız.",
+      "piecesCreated": "{{count}} parça oluşturuldu:",
+      "columns": { "code": "KOD", "product": "ÜRÜN", "location": "KONUM" },
+      "printPreviewHint": "Etiket önizlemesi — tarayıcının yazdır diyaloğu açılacak",
+      "close": "Kapat",
+      "printLabels": "Etiket Yazdır",
+      "print": "Yazdır"
+    },
+    "scanModal": {
+      "title": "QR Tara",
+      "codeLabel": "Parça Kodu / QR Okut",
+      "placeholder": "AUSTO-00001 veya QR okut + Enter",
+      "hint": "USB barkod okuyucu Enter otomatik gönderir",
+      "searching": "...",
+      "search": "Ara",
+      "notFound": "Parça bulunamadı. Kodu kontrol edin.",
+      "transferred": "{{code}} transfer edildi.",
+      "transferFailed": "Transfer başarısız.",
+      "markedDamaged": "{{code}} hasarlı olarak işaretlendi.",
+      "markedLost": "{{code}} kayıp olarak işaretlendi.",
+      "actionFailed": "İşlem başarısız.",
+      "noActionAvailable": "Bu parça üzerinde işlem yapılamaz.",
+      "transferAction": "Transfer Et",
+      "damageAction": "Hasarlı/Kayıp",
+      "targetLocation": "Hedef Konum",
+      "notesOptional": "Notlar (Opsiyonel)",
+      "transferNotePlaceholder": "Transfer notu",
+      "back": "Geri",
+      "transferring": "Transfer ediliyor...",
+      "confirmTransfer": "Transferi Onayla",
+      "status": "Durum",
+      "damaged": "Hasarlı",
+      "lost": "Kayıp",
+      "damageNotePlaceholder": "Açıklama",
+      "saving": "Kaydediliyor...",
+      "confirm": "Onayla"
+    },
+    "valuation": {
+      "title": "Stok Değerleme",
+      "totalWeight": "Toplam Ağırlık",
+      "estimatedValue": "Tahmini Değer",
+      "piecesSuffix": "adet"
+    },
+    "movements": {
+      "title": "Stok Hareketleri",
+      "columns": { "date": "Tarih", "product": "Ürün", "type": "Tür", "quantity": "Miktar", "location": "Konum", "description": "Açıklama" },
+      "loading": "Yükleniyor...",
+      "noResults": "Hareket yok."
+    },
+    "transferModal": {
+      "title": "Stok Transferi",
+      "product": "Ürün",
+      "sourceLocation": "Kaynak Konum",
+      "targetLocation": "Hedef Konum",
+      "quantity": "Miktar (Adet)",
+      "notes": "Notlar",
+      "notesOptional": "Opsiyonel",
+      "cancel": "İptal",
+      "transferring": "Transfer ediliyor...",
+      "submit": "Transferi Yap"
+    }
+  },
+  "finance": {
+    "pageTitle": "Finans",
+    "refresh": "Güncelle",
+    "enterManualPrice": "Manuel Fiyat Gir",
+    "liveRates": "Canlı Fiyatlar",
+    "groupGold": "Altın",
+    "groupFx": "Döviz",
+    "priceHistory": "Fiyat Geçmişi",
+    "timeRanges": { "7d": "7G", "30d": "30G", "3m": "3A", "6m": "6A", "1y": "1Y" },
+    "grouping": { "daily": "Günlük", "weekly": "Haftalık", "monthly": "Aylık" },
+    "noChartData": "Bu dönem için fiyat kaydı bulunamadı.",
+    "recordHistory": "Kayıt Geçmişi",
+    "columns": { "date": "Tarih", "fineBuy": "Has Alış", "fineSell": "Has Satış", "k14": "14k Al/Sat", "k18": "18k Al/Sat", "k22": "22k Al/Sat", "source": "Kaynak" },
+    "noResults": "Kayıt bulunamadı.",
+    "rateCard": { "buy": "Alış" },
+    "metrics": {
+      "fineBuy": "Has Alış", "fineSell": "Has Satış",
+      "k14Buy": "14k Alış", "k14Sell": "14k Satış",
+      "k18Buy": "18k Alış", "k18Sell": "18k Satış",
+      "k22Buy": "22k Alış", "k22Sell": "22k Satış",
+      "shortFineBuy": "Has Al", "shortFineSell": "Has Sat",
+      "shortK14Buy": "14k Al", "shortK14Sell": "14k Sat",
+      "shortK18Buy": "18k Al", "shortK18Sell": "18k Sat",
+      "shortK22Buy": "22k Al", "shortK22Sell": "22k Sat"
+    },
+    "modal": {
+      "title": "Manuel Altın Fiyatı Gir",
+      "fineGoldBuy": "Has Altın Alış (₺)",
+      "fineGoldSell": "Has Altın Satış (₺)",
+      "k14Buy": "14 Ayar Alış", "k14Sell": "14 Ayar Satış",
+      "k18Buy": "18 Ayar Alış", "k18Sell": "18 Ayar Satış",
+      "k22Buy": "22 Ayar Alış", "k22Sell": "22 Ayar Satış",
+      "cancel": "İptal",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet"
+    }
+  },
+  "reports": {
+    "pageTitle": "Raporlar",
+    "dailySummary": "Günlük Özet",
+    "fetch": "Getir",
+    "cards": {
+      "salesCount": "Satış Adedi",
+      "salesRevenue": "Satış Geliri",
+      "purchasesCount": "Alış Adedi",
+      "purchasesCost": "Alış Maliyeti"
+    },
+    "netProfitLoss": "Net Kar / Zarar",
+    "stockReport": "Stok Raporu",
+    "productsSuffix": "ürün",
+    "totalValue": "Toplam Değer",
+    "columns": { "product": "Ürün", "category": "Kategori", "purity": "Ayar", "weight": "Ağırlık", "stock": "Stok", "totalWeight": "Toplam Ağırlık", "estimatedValue": "Tahmini Değer" },
+    "loading": "Yükleniyor...",
+    "noStockData": "Stok verisi yok."
+  },
+  "settings": {
+    "tabs": { "profile": "Profil", "security": "Güvenlik", "notifications": "Bildirimler", "system": "Sistem" },
+    "pageTitle": "Ayarlar",
+    "pageSubtitle": "Hesabınızı ve uygulama tercihlerinizi yönetin",
+    "profile": {
+      "sectionTitle": "Profil Bilgileri",
+      "activeUser": "Aktif kullanıcı",
+      "fullName": "Ad Soyad",
+      "fullNamePlaceholder": "Adınız",
+      "email": "E-posta",
+      "save": "Kaydet",
+      "saved": "Profil bilgileri kaydedildi."
+    },
+    "security": {
+      "sectionTitle": "Şifre Değiştir",
+      "currentPassword": "Mevcut Şifre",
+      "newPassword": "Yeni Şifre",
+      "confirmNewPassword": "Yeni Şifre Tekrar",
+      "updatePassword": "Şifreyi Güncelle",
+      "saved": "Şifre başarıyla güncellendi.",
+      "sessionSecurity": "Oturum Güvenliği",
+      "jwtToken": "JWT Token",
+      "jwtDesc": "Otomatik yenileme aktif · 24 saat geçerlilik",
+      "active": "Aktif"
+    },
+    "notifications": {
+      "sectionTitle": "Bildirim Tercihleri",
+      "sales": { "label": "Satış Bildirimleri", "desc": "Yeni satış yapıldığında bildirim al" },
+      "stock": { "label": "Stok Uyarıları", "desc": "Stok azaldığında uyarı gönder" },
+      "gold": { "label": "Altın Fiyat Alarmı", "desc": "Fiyat eşiği aşıldığında bildir" },
+      "email": { "label": "E-posta Bildirimleri", "desc": "Günlük özet raporunu e-posta ile al" },
+      "save": "Kaydet",
+      "saved": "Bildirim tercihleri kaydedildi."
+    },
+    "system": {
+      "appearance": "Görünüm",
+      "darkMode": { "label": "Karanlık Mod", "desc": "Siyah tema (varsayılan)" },
+      "languageCurrency": "Dil & Para Birimi",
+      "language": "Dil",
+      "currency": "Para Birimi",
+      "save": "Kaydet",
+      "saved": "Sistem ayarları kaydedildi.",
+      "about": "Uygulama Hakkında",
+      "fields": { "version": "Versiyon", "backend": "Backend", "frontend": "Frontend", "database": "Veritabanı" }
+    }
+  },
+  "categories": {
+    "title": "Kategoriler",
+    "entityLabel": "Kategori"
+  },
+  "simpleList": {
+    "newEntity": "Yeni {{entity}}",
+    "editEntity": "Düzenle {{entity}}",
+    "searchPlaceholder": "{{entity}} ara...",
+    "columns": { "name": "Ad", "description": "Açıklama", "status": "Durum" },
+    "loading": "Yükleniyor...",
+    "noResults": "Kayıt bulunamadı.",
+    "confirmDeactivate": "\"{{name}}\" pasif yapılsın mı?",
+    "namePlaceholderOptional": "Opsiyonel",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor..."
+  },
+  "verifyEmail": {
+    "invalidLink": "Geçersiz doğrulama bağlantısı.",
+    "failed": "Doğrulama başarısız.",
+    "verifying": "Doğrulanıyor...",
+    "successTitle": "E-posta Doğrulandı!",
+    "signIn": "Giriş Yap",
+    "errorTitle": "Doğrulama Başarısız",
+    "back": "Geri Dön"
+  }
+}

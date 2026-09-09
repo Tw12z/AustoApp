@@ -1,14 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion'
 import {
   TrendingUp, Package, ShoppingCart, BarChart3,
-  QrCode, MapPin, Shield, Zap, Globe, ChevronRight, ArrowRight,
-  ArrowLeftRight, Users, Truck, Wallet, FileText, Settings,
+  QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
+  ArrowLeftRight, Users, Truck, Wallet,
 } from 'lucide-react'
 import Logo from '../components/Logo'
-import LogoMarkless from '../components/LogoMarkless'
 import BorderGlow from '../components/BorderGlow'
+import LanguageSwitcher from '../components/LanguageSwitcher'
+import LineWaves from '../components/LineWaves'
+import DashboardMirror from '../components/DashboardMirror'
 
 const GOLD      = '#D4AF37'
 const GOLD_GRAD = 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)'
@@ -31,38 +34,104 @@ const BRANDS = [
 
 /* ── Features ── */
 const features = [
-  { icon: TrendingUp,      title: 'Canlı Finans Takibi',     desc: 'Gram, çeyrek, yarım, tam altın ve döviz fiyatlarını anlık izleyin. Günlük, haftalık ve aylık grafiklerle uzun vadeli değişimi takip edin.' },
-  { icon: Package,         title: 'Ürün & Kategori Yönetimi', desc: "Ürünlerinizi kategorilere ayırın, ayar (8k–24k) ve barkod bilgileriyle kayıt altına alın. Aktif/pasif durumu anlık güncelleyin." },
-  { icon: ShoppingCart,    title: 'Hızlı Satış',             desc: 'Dashboard üzerinden tek tıkla satış yapın. Ürün adı ya da barkodla arayın, sepete ekleyin, müşteri seçip tamamlayın.' },
-  { icon: ArrowLeftRight,  title: 'Stok & Transfer',         desc: 'QR/barkod ile stok giriş-çıkış yapın, lokasyonlar arası transfer gerçekleştirin. Tüm hareketler otomatik kaydedilir.' },
-  { icon: MapPin,          title: 'Lokasyon Yönetimi',       desc: 'Vitrin, kasa, kasa altı gibi konumları kategorilere ayırın. Her ürünün hangi lokasyonda olduğunu anlık görün.' },
-  { icon: Users,           title: 'Müşteri & Tedarikçi',     desc: 'Müşteri ve tedarikçi kayıtlarını yönetin. Satış ve alış işlemlerini ilgili kayıtlara bağlayarak geçmiş takibi yapın.' },
-  { icon: Truck,           title: 'Alış Yönetimi',           desc: 'Tedarikçiden yapılan alışları, hurda ve ham madde alımlarını kaydedin. Stok otomatik güncellenir, maliyet hesaplanır.' },
-  { icon: BarChart3,       title: 'Raporlar & Analizler',    desc: 'Günlük özet, satış trendi, stok değerleme ve net kar/zarar raporlarını anında görüntüleyin. İptal edilen satışlar otomatik düşülür.' },
-  { icon: Wallet,          title: 'Finans Modülü',           desc: 'Altın ve döviz fiyatlarını manuel girin ya da canlı fiyat akışını takip edin. İstediğiniz metrikleri seçerek grafiklerde izleyin.' },
-  { icon: QrCode,          title: 'QR Kod Entegrasyonu',     desc: 'Her ürün için barkod tanımlayın. Stok hareketlerini QR okutarak saniyeler içinde gerçekleştirin.' },
-  { icon: Shield,          title: 'Güvenli & Modern',        desc: 'JWT kimlik doğrulama, e-posta doğrulama ve şifre sıfırlama ile güvenli erişim. .NET 10 ve React üzerinde inşa edilmiş.' },
-  { icon: Zap,             title: 'Dashboard & Hızlı Eylemler', desc: 'Tek ekranda günlük satış, alış, net kar ve stok değerini görün. Satış trendini grafikle takip edin, hızlı satışı anında tamamlayın.' },
+  { icon: TrendingUp,      key: 'finance' },
+  { icon: Package,         key: 'products' },
+  { icon: ShoppingCart,    key: 'sales' },
+  { icon: ArrowLeftRight,  key: 'stock' },
+  { icon: MapPin,          key: 'locations' },
+  { icon: Users,           key: 'customers' },
+  { icon: Truck,           key: 'purchases' },
+  { icon: BarChart3,       key: 'reports' },
+  { icon: Wallet,          key: 'financeModule' },
+  { icon: QrCode,          key: 'qr' },
+  { icon: Shield,          key: 'secure' },
+  { icon: Zap,             key: 'dashboard' },
 ]
 
 const stats = [
-  { value: '12+',  label: 'Temel Modül'      },
-  { value: '24/7', label: 'Canlı Fiyat'      },
-  { value: 'QR',   label: 'Barkod Desteği'   },
-  { value: '∞',    label: 'Ürün Kapasitesi'  },
+  { value: '12+',  key: 'coreModules'     },
+  { value: '24/7', key: 'livePrice'       },
+  { value: 'QR',   key: 'barcodeSupport'  },
+  { value: '∞',    key: 'productCapacity' },
 ]
 
 
-/* ── Helpers ── */
-function Pill({ children }: { children: React.ReactNode }) {
+/* ── Floating gold bars ──
+   The source composite (public/backgroundforherosec.png) is one flat image
+   holding 6 gold bars scattered on a pure-black field. Each bar gets its own
+   small, independently-sized container anchored near its own corner of the
+   hero, showing just its slice of the shared image via background-size /
+   background-position percentages computed from that slice's own pixel box
+   — not clip-path over an object-cover copy of the whole image. That's the
+   part that matters for responsiveness: object-cover crops the source image
+   differently depending on the HERO's aspect ratio, so on a narrow/tall
+   mobile viewport most bars were cropped away entirely. Percentage
+   background-size/position is relative to each bar's own tiny box only, so
+   the crop is correct at any container size — desktop, tablet, or phone —
+   with no dependency on the hero's shape. Each container's aspect-ratio is
+   pinned to its own crop box so the photo never distorts, and its width is
+   a clamp() so it scales fluidly between a sane min and max. */
+interface BarSpec {
+  aspect: string
+  bgSize: string
+  bgPos: string
+  anchor: React.CSSProperties
+  widthClamp: string
+  duration: number; delay: number; distance: number; rotate: number
+}
+const GOLD_BARS: BarSpec[] = [
+  { aspect: '745/550', bgSize: '417% 250%',   bgPos: '0% 0%',       anchor: { top: '2%', left: '-2%' },    widthClamp: 'clamp(150px, 21vw, 340px)', duration: 17, delay: 0,   distance: 14, rotate: 2.2  },
+  { aspect: '341/179', bgSize: '909% 769%',   bgPos: '25.8% 0%',    anchor: { top: '0%', left: '19%' },    widthClamp: 'clamp(64px, 8.5vw, 140px)', duration: 12, delay: 1.4, distance: 9,  rotate: -4   },
+  { aspect: '435/261', bgSize: '714% 526%',   bgPos: '79.1% 0%',    anchor: { top: '2%', right: '20%' },   widthClamp: 'clamp(72px, 9.5vw, 160px)', duration: 14, delay: 0.6, distance: 10, rotate: 3.5  },
+  { aspect: '497/413', bgSize: '625% 333%',   bgPos: '100% 0%',     anchor: { top: '-1%', right: '-3%' },  widthClamp: 'clamp(150px, 20vw, 320px)', duration: 20, delay: 2.1, distance: 16, rotate: -2.6 },
+  { aspect: '528/275', bgSize: '588% 500%',   bgPos: '9.6% 95%',    anchor: { bottom: '6%', left: '-1%' }, widthClamp: 'clamp(115px, 16vw, 250px)', duration: 15, delay: 0.9, distance: 12, rotate: 3    },
+  { aspect: '745/454', bgSize: '417% 303%',   bgPos: '100% 97%',    anchor: { bottom: '4%', right: '-2%' },widthClamp: 'clamp(155px, 21vw, 330px)', duration: 19, delay: 1.7, distance: 13, rotate: -2.2 },
+]
+
+function FloatingGoldBars() {
   return (
-    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
-      style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.22)', color: GOLD, fontFamily: CV }}>
-      {children}
+    <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" aria-hidden>
+      {GOLD_BARS.map((bar, i) => (
+        <div key={i}
+          style={{
+            position: 'absolute', ...bar.anchor,
+            width: bar.widthClamp, aspectRatio: bar.aspect,
+            backgroundImage: 'url(/backgroundforherosec.png)',
+            backgroundSize: bar.bgSize, backgroundPosition: bar.bgPos, backgroundRepeat: 'no-repeat',
+            opacity: 0.4, filter: 'brightness(0.72) saturate(1.25)',
+            animation: `bar-float-${i % 3} ${bar.duration}s ease-in-out ${bar.delay}s infinite`,
+            '--bar-distance': `${bar.distance}px`,
+            '--bar-rotate': `${bar.rotate}deg`,
+          } as React.CSSProperties} />
+      ))}
     </div>
   )
 }
 
+/* ── Vault-door headline reveal ──
+   A line of the hero headline sits behind a hard-edged mask; a bright gold
+   beam sweeps left-to-right and the text is only ever visible just behind
+   it, as if a bar of light is cutting the line out of the dark — the same
+   language as the system's scan-border effect, applied once, with intent,
+   to the one line the visitor should remember. Not a generic fade-up. */
+function VaultReveal({ children, delay = 0, center = false }: { children: React.ReactNode; delay?: number; center?: boolean }) {
+  return (
+    <span className="relative block overflow-hidden" style={{ width: 'fit-content', margin: center ? '0 auto' : undefined }}>
+      <motion.span className="block"
+        initial={{ clipPath: 'inset(0 100% 0 0)' }} animate={{ clipPath: 'inset(0 0% 0 0)' }}
+        transition={{ duration: 0.85, delay, ease: [0.65, 0, 0.15, 1] }}>
+        {children}
+      </motion.span>
+      <motion.span aria-hidden className="absolute top-0 bottom-0 pointer-events-none"
+        style={{ width: 5, background: '#fffde0', filter: 'drop-shadow(0 0 6px rgba(255,240,180,1)) drop-shadow(0 0 22px rgba(212,175,55,0.9))' }}
+        initial={{ left: '-2%', opacity: 1 }}
+        animate={{ left: '102%', opacity: [1, 1, 0] }}
+        transition={{ duration: 0.85, delay, ease: [0.65, 0, 0.15, 1], opacity: { duration: 0.85, delay, times: [0, 0.82, 1] } }} />
+    </span>
+  )
+}
+
+/* ── Helpers ── */
 function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
@@ -137,6 +206,7 @@ interface FeatureCardProps {
 }
 
 function FeatureCard({ f, index, x, isDragging, onClickSnap }: FeatureCardProps) {
+  const { t } = useTranslation()
   const cardCenter = index * CARD_STEP + CARD_W / 2
 
   const scale = useTransform(x, xVal => {
@@ -165,8 +235,8 @@ function FeatureCard({ f, index, x, isDragging, onClickSnap }: FeatureCardProps)
             filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 6px #D4AF37) drop-shadow(0 0 14px rgba(212,175,55,0.9)) drop-shadow(0 0 28px rgba(212,175,55,0.5))',
           }} />
         </div>
-        <h3 style={{ color: '#fff', fontSize: 14, fontFamily: CV, fontWeight: 600, letterSpacing: '0.01em', marginBottom: 10 }}>{f.title}</h3>
-        <p style={{ color: '#4a4a4a', fontSize: 13.5, lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+        <h3 style={{ color: '#fff', fontSize: 14, fontFamily: CV, fontWeight: 600, letterSpacing: '0.01em', marginBottom: 10 }}>{t(`landing.features.items.${f.key}.title`)}</h3>
+        <p style={{ color: '#888888', fontSize: 13.5, lineHeight: 1.65, margin: 0 }}>{t(`landing.features.items.${f.key}.desc`)}</p>
       </BorderGlow>
     </motion.div>
   )
@@ -205,7 +275,7 @@ function FeatureCarousel() {
         onDragEnd={handleDragEnd}
       >
         {features.map((f, i) => (
-          <FeatureCard key={f.title} f={f} index={i} x={x} isDragging={isDragging} onClickSnap={snapTo} />
+          <FeatureCard key={f.key} f={f} index={i} x={x} isDragging={isDragging} onClickSnap={snapTo} />
         ))}
       </motion.div>
     </div>
@@ -215,6 +285,7 @@ function FeatureCarousel() {
 /* ══════════════════════════════════════════════════════ */
 export default function Landing() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div style={{ background: '#060606', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
@@ -239,12 +310,13 @@ export default function Landing() {
             <NavClock />
           </div>
           <div className="hidden md:flex items-center gap-5">
-            <a href="#features" className="text-sm font-medium transition-colors hover:text-white" style={{ color: '#666' }}>Özellikler</a>
-            <a href="#how"      className="text-sm font-medium transition-colors hover:text-white" style={{ color: '#666' }}>Nasıl Çalışır</a>
+            <a href="#features" className="text-sm font-medium transition-colors hover:text-white" style={{ color: '#888' }}>{t('landing.navbar.features')}</a>
+            <a href="#how"      className="text-sm font-medium transition-colors hover:text-white" style={{ color: '#888' }}>{t('landing.navbar.how')}</a>
+            <LanguageSwitcher />
             <Link to="/login"
               className="shrink-0 text-sm px-5 py-2 rounded-full font-semibold transition-all duration-300 hover:opacity-90"
               style={{ background: GOLD_GRAD, color: '#000', boxShadow: '0 0 16px rgba(212,175,55,0.25)' }}>
-              Giriş Yap
+              {t('landing.navbar.login')}
             </Link>
           </div>
         </nav>
@@ -254,92 +326,70 @@ export default function Landing() {
       <section className="relative overflow-hidden"
         style={{ minHeight: '100vh', background: '#000' }}>
 
-        {/* Gold bars background */}
-        <img src="/backgroundforherosec.png" aria-hidden
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
-          style={{ opacity: 0.25, filter: 'brightness(0.6) saturate(1.2)', animation: 'barsdrift 20s ease-in-out infinite', transformOrigin: 'center' }} />
+        {/* Atmosphere — animated gold waveform breathing behind everything else, so the
+            black never reads as flat/empty even where the bars and glow don't reach. */}
+        <div className="absolute inset-0 pointer-events-none">
+          <LineWaves className="absolute inset-0" color="#D4AF37" lineCount={20} amplitude={46} opacity={0.16} speed={0.28} />
+        </div>
 
-        {/* Radial glow left-biased */}
+        {/* Gold bars background — six independently floating bars cropped from one source image */}
+        <FloatingGoldBars />
+
+        {/* Radial glow, centered — anchors the atmosphere behind the now-centered headline */}
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse 50% 60% at 25% 55%, rgba(212,175,55,0.07) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 38%, rgba(212,175,55,0.09) 0%, transparent 70%)' }} />
 
-        {/* Two-column layout */}
-        <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center gap-12"
-          style={{ minHeight: '100vh', paddingTop: '7rem', paddingBottom: '4rem' }}>
+        {/* Second glow, low and wide — pulses gently in sync with the product's own "live"
+            idea, seated behind where the dashboard mirror emerges below. */}
+        <motion.div className="absolute inset-0 pointer-events-none"
+          animate={{ opacity: [0.5, 0.85, 0.5] }} transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
+          style={{ background: 'radial-gradient(ellipse 55% 40% at 50% 78%, rgba(212,175,55,0.1) 0%, transparent 72%)' }} />
 
-          {/* ── Left: content ── */}
-          <div className="flex-1 flex flex-col items-start text-left">
-            <motion.h1
-              initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.1 }}
+        {/* Centered content, dashboard mirror bleeding in below */}
+        <div className="relative z-10 flex flex-col items-center"
+          style={{ minHeight: '100vh', paddingTop: '8.5rem', paddingBottom: '4rem' }}>
+
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto px-6 md:px-10" style={{ zIndex: 2 }}>
+            <h1
               className="mb-7"
-              style={{ fontFamily: CV, fontSize: 'clamp(2.6rem, 3vw + 1rem, 5rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-              <span style={{ background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap', display: 'block' }}>
-                Altın Yönetiminde
-              </span>
-              <span className="text-white">Yeni Standart</span>
-            </motion.h1>
+              style={{ fontFamily: CV, fontSize: 'clamp(2.7rem, 3.4vw + 1rem, 5.5rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>
+              <VaultReveal delay={0.15} center>
+                <span style={{ background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
+                  {t('landing.hero.titleLine1')}
+                </span>
+              </VaultReveal>
+              <VaultReveal delay={0.38} center>
+                <span className="text-white">{t('landing.hero.titleLine2')}</span>
+              </VaultReveal>
+            </h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.2 }}
-              className="mb-12 leading-relaxed"
-              style={{ color: 'rgba(255,255,255,0.45)', fontSize: 'clamp(1rem, 1.1vw + 0.2rem, 1.2rem)', maxWidth: 480, fontFamily: PF, fontStyle: 'italic' }}>
-              Kuyumcunuzu uçtan uca dijitalleştirin. Canlı altın fiyatları, stok takibi,
-              satış &amp; alış yönetimi, raporlar ve daha fazlası — tek platformda.
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.85 }}
+              className="mb-10 leading-relaxed mx-auto"
+              style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(1rem, 1.1vw + 0.2rem, 1.2rem)', maxWidth: 540, fontFamily: PF, fontStyle: 'italic' }}>
+              {t('landing.hero.desc')}
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.3 }}
-              className="flex items-center gap-4 flex-wrap">
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.05 }}
+              className="flex items-center justify-center gap-4 flex-wrap">
               <button onClick={() => navigate('/login')}
                 className="flex items-center gap-2.5 px-9 py-4 rounded-full font-semibold text-black transition-all duration-300 hover:scale-105"
                 style={{ background: GOLD_GRAD, fontSize: 16, boxShadow: '0 0 48px rgba(212,175,55,0.35)' }}>
-                Hemen Başla <ArrowRight size={17} />
+                {t('landing.hero.ctaStart')} <ArrowRight size={17} />
               </button>
               <a href="#features"
                 className="flex items-center gap-2 px-8 py-4 rounded-full font-medium text-white transition-all duration-300 hover:bg-white/10"
                 style={{ border: '1px solid rgba(255,255,255,0.12)', fontSize: 15 }}>
-                Özellikleri Keşfet <ChevronRight size={15} />
+                {t('landing.hero.ctaExplore')} <ChevronRight size={15} />
               </a>
             </motion.div>
           </div>
 
-          {/* ── Right: animated logo ── */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 0.2 }}
-            className="flex-1 flex items-center justify-center pointer-events-none select-none"
-            style={{ minWidth: 0 }}>
-            <div style={{ position: 'relative', width: '100%', maxWidth: 580 }}>
-
-              {/* Black base */}
-              <LogoMarkless style={{ color: '#000', width: '100%', height: 'auto', display: 'block' }} />
-
-              {/* Dim outline */}
-              <LogoMarkless strokeOnly style={{
-                color: 'rgba(212,175,55,0.06)',
-                width: '100%', height: 'auto', display: 'block',
-                position: 'absolute', inset: 0,
-              }} />
-
-              {/* Soft glow bloom around the laser */}
-              <div className="scan-border-glow">
-                <LogoMarkless strokeOnly style={{
-                  color: '#D4AF37',
-                  width: '100%', height: 'auto', display: 'block',
-                  filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.9)) drop-shadow(0 0 24px rgba(212,175,55,0.5))',
-                }} />
-              </div>
-
-              {/* Tight bright laser line */}
-              <div className="scan-border-layer">
-                <LogoMarkless strokeOnly style={{
-                  color: '#fffde0',
-                  width: '100%', height: 'auto', display: 'block',
-                  filter: 'drop-shadow(0 0 2px rgba(255,255,220,1)) drop-shadow(0 0 8px rgba(255,240,100,1)) drop-shadow(0 0 20px rgba(212,175,55,0.9))',
-                }} />
-              </div>
-
-            </div>
-          </motion.div>
+          {/* ── Dashboard mirror — bleeds in from below, full view on scroll ── */}
+          <div className="w-full px-4 md:px-10">
+            <DashboardMirror />
+          </div>
 
         </div>
       </section>
@@ -348,8 +398,8 @@ export default function Landing() {
       <section className="py-12 marquee-wrap"
         style={{ borderTop: '1px solid rgba(212,175,55,0.1)', borderBottom: '1px solid rgba(212,175,55,0.1)', background: 'rgba(212,175,55,0.015)' }}>
         <p className="text-center text-xs tracking-widest mb-7 uppercase"
-          style={{ color: '#444', fontFamily: CV, letterSpacing: '0.2em' }}>
-          Güvenilen Markalar &amp; İş Ortakları
+          style={{ color: '#7D7D7D', fontFamily: CV, letterSpacing: '0.2em' }}>
+          {t('landing.marquee.trusted')}
         </p>
         <div className="marquee-track">
           {[...BRANDS, ...BRANDS].map((b, i) => (
@@ -374,11 +424,11 @@ export default function Landing() {
       <section style={{ borderBottom: '1px solid rgba(212,175,55,0.08)' }}>
         <div className="max-w-5xl mx-auto px-8 py-20 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
           {stats.map((s, i) => (
-            <FadeIn key={s.label} delay={i * 0.1}>
+            <FadeIn key={s.key} delay={i * 0.1}>
               <div className="mb-2" style={{ fontFamily: CV, fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 800, background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.1 }}>
                 {s.value}
               </div>
-              <div style={{ color: '#555', fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{s.label}</div>
+              <div style={{ color: '#888', fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{t(`landing.stats.${s.key}`)}</div>
             </FadeIn>
           ))}
         </div>
@@ -387,15 +437,14 @@ export default function Landing() {
       {/* ── FEATURES ── */}
       <section id="features" style={{ paddingTop: '7rem', paddingBottom: '7rem' }}>
         <FadeIn className="text-center mb-14 px-6 md:px-10">
-          <Pill>Özellikler</Pill>
           <h2 style={{ fontFamily: CV, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
-            Kuyumcular İçin<br />
+            {t('landing.features.titleLine1')}<br />
             <span style={{ background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Her Şey Düşünüldü
+              {t('landing.features.titleLine2')}
             </span>
           </h2>
-          <p style={{ color: '#555', fontSize: 15, maxWidth: 480, margin: '0 auto', fontFamily: PF, fontStyle: 'italic' }}>
-            Sektöre özel geliştirilen özelliklerle işlerinizi kolaylaştırın.
+          <p style={{ color: '#888', fontSize: 15, maxWidth: 480, margin: '0 auto', fontFamily: PF, fontStyle: 'italic' }}>
+            {t('landing.features.subtitle')}
           </p>
         </FadeIn>
 
@@ -407,9 +456,8 @@ export default function Landing() {
       <section id="how" className="px-6 md:px-10" style={{ paddingTop: '7rem', paddingBottom: '7rem', borderTop: '1px solid rgba(212,175,55,0.07)' }}>
         <div className="max-w-5xl mx-auto">
           <FadeIn className="text-center mb-16">
-            <Pill>Nasıl Çalışır</Pill>
             <h2 style={{ fontFamily: CV, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 700, lineHeight: 1.2 }}>
-              3 Adımda Başlayın
+              {t('landing.how.title')}
             </h2>
           </FadeIn>
 
@@ -417,17 +465,17 @@ export default function Landing() {
             <div className="hidden md:block absolute top-10 left-[22%] right-[22%] h-px"
               style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.25), transparent)' }} />
             {[
-              { step: '01', title: 'Hesap Oluşturun',     desc: 'Dakikalar içinde hesabınızı oluşturun ve mağazanızı tanımlayın.' },
-              { step: '02', title: 'Ürünlerinizi Ekleyin', desc: 'Stok bilgilerini, ayar ve gramajları sisteme girin.' },
-              { step: '03', title: 'Yönetmeye Başlayın',  desc: 'Satış yapın, raporları inceleyin ve kârınızı takip edin.' },
+              { step: '01', key: 'account' },
+              { step: '02', key: 'products' },
+              { step: '03', key: 'manage' },
             ].map((s, i) => (
               <FadeIn key={s.step} delay={i * 0.15} className="text-center px-4">
                 <div className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center"
                   style={{ background: 'rgba(212,175,55,0.07)', border: '1px solid rgba(212,175,55,0.18)', color: GOLD, fontFamily: CV, fontSize: 20, fontWeight: 700 }}>
                   {s.step}
                 </div>
-                <h3 className="text-white mb-3" style={{ fontSize: 16, fontFamily: CV, fontWeight: 600 }}>{s.title}</h3>
-                <p style={{ color: '#4a4a4a', fontSize: 14, lineHeight: 1.7 }}>{s.desc}</p>
+                <h3 className="text-white mb-3" style={{ fontSize: 16, fontFamily: CV, fontWeight: 600 }}>{t(`landing.how.steps.${s.key}.title`)}</h3>
+                <p style={{ color: '#888888', fontSize: 14, lineHeight: 1.7 }}>{t(`landing.how.steps.${s.key}.desc`)}</p>
               </FadeIn>
             ))}
           </div>
@@ -438,22 +486,28 @@ export default function Landing() {
       <section className="px-6 md:px-10 overflow-hidden"
         style={{ paddingTop: '5rem', paddingBottom: '5rem', background: 'rgba(212,175,55,0.02)', borderTop: '1px solid rgba(212,175,55,0.08)', borderBottom: '1px solid rgba(212,175,55,0.08)' }}>
         <FadeIn className="text-center mb-10">
-          <p className="uppercase tracking-widest mb-3" style={{ color: GOLD, fontSize: 11, fontFamily: CV, letterSpacing: '0.22em' }}>Anlık Altın Takibi</p>
-          <h3 style={{ fontFamily: CV, fontSize: 'clamp(1.4rem, 2.8vw, 2rem)', fontWeight: 700 }}>Piyasayı Asla Kaçırmayın</h3>
+          <h3 style={{ fontFamily: CV, fontSize: 'clamp(1.4rem, 2.8vw, 2rem)', fontWeight: 700 }}>{t('landing.liveGold.title')}</h3>
         </FadeIn>
         <div className="flex gap-4 justify-center flex-wrap max-w-4xl mx-auto">
-          {['GRAM ALTIN', 'ÇEYREK ALTIN', 'YARIM ALTIN', 'TAM ALTIN', 'USD', 'EUR'].map((label, i) => (
-            <motion.div key={label}
+          {[
+            { code: 'GRAM ALTIN', labelKey: 'layout.ticker.gram' },
+            { code: 'ÇEYREK ALTIN', labelKey: 'layout.ticker.quarter' },
+            { code: 'YARIM ALTIN', labelKey: 'layout.ticker.half' },
+            { code: 'TAM ALTIN', labelKey: 'layout.ticker.full' },
+            { code: 'USD', labelKey: null },
+            { code: 'EUR', labelKey: null },
+          ].map((item, i) => (
+            <motion.div key={item.code}
               initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.4 }}
               className="rounded-2xl text-center"
               style={{ background: '#0D0D0D', border: '1px solid rgba(212,175,55,0.12)', padding: '18px 28px', minWidth: 130 }}>
-              <div className="mb-2" style={{ color: '#444', fontSize: 11, letterSpacing: '0.12em', fontFamily: CV }}>{label}</div>
+              <div className="mb-2" style={{ color: '#7D7D7D', fontSize: 11, letterSpacing: '0.12em', fontFamily: CV }}>{item.labelKey ? t(item.labelKey) : item.code}</div>
               <div className="h-5 w-24 rounded-lg mx-auto shimmer" />
             </motion.div>
           ))}
         </div>
-        <p className="text-center mt-8" style={{ color: '#2a2a2a', fontSize: 12 }}>* Canlı fiyatlar giriş sonrası gösterilir</p>
+        <p className="text-center mt-8" style={{ color: '#7D7D7D', fontSize: 12 }}>{t('landing.liveGold.note')}</p>
       </section>
 
       {/* ── CTA ── */}
@@ -463,18 +517,18 @@ export default function Landing() {
           style={{ background: 'radial-gradient(ellipse 55% 65% at 50% 50%, rgba(212,175,55,0.055) 0%, transparent 68%)' }} />
         <FadeIn>
           <h2 className="mb-5" style={{ fontFamily: CV, fontSize: 'clamp(2rem, 4.5vw, 3.6rem)', fontWeight: 800, lineHeight: 1.1 }}>
-            Kuyumcunuzu<br />
+            {t('landing.cta.titleLine1')}<br />
             <span style={{ background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Dijitalleştirin
+              {t('landing.cta.titleLine2')}
             </span>
           </h2>
-          <p className="mb-12 mx-auto" style={{ color: '#444', fontSize: 15, maxWidth: 400, fontFamily: PF, fontStyle: 'italic', lineHeight: 1.8 }}>
-            Austo ile altın yönetimini modernleştirin. Hızlı kurulum, kolay kullanım.
+          <p className="mb-12 mx-auto" style={{ color: '#7D7D7D', fontSize: 15, maxWidth: 400, fontFamily: PF, fontStyle: 'italic', lineHeight: 1.8 }}>
+            {t('landing.cta.desc')}
           </p>
           <button onClick={() => navigate('/login')}
             className="inline-flex items-center gap-3 rounded-full font-semibold text-black transition-all duration-300 hover:scale-105"
             style={{ background: GOLD_GRAD, fontSize: 17, padding: '18px 52px', boxShadow: '0 0 60px rgba(212,175,55,0.28)' }}>
-            Ücretsiz Başla <ArrowRight size={18} />
+            {t('landing.cta.button')} <ArrowRight size={18} />
           </button>
         </FadeIn>
       </section>
@@ -483,8 +537,8 @@ export default function Landing() {
       <footer className="flex flex-col md:flex-row items-center justify-between gap-4 px-10 md:px-16 py-8"
         style={{ borderTop: '1px solid rgba(212,175,55,0.07)' }}>
         <Logo className="h-8 w-auto" style={{ color: GOLD, opacity: 0.55 }} />
-        <p style={{ color: '#2e2e2e', fontSize: 12 }}>© 2026 Austo · Kuyumcu Yönetim Sistemi</p>
-        <Link to="/login" className="transition-colors hover:text-white" style={{ color: '#3a3a3a', fontSize: 13 }}>Giriş Yap →</Link>
+        <p style={{ color: '#2e2e2e', fontSize: 12 }}>{t('landing.footer.copyright')}</p>
+        <Link to="/login" className="transition-colors hover:text-white" style={{ color: '#888888', fontSize: 13 }}>{t('landing.footer.login')}</Link>
       </footer>
 
     </div>

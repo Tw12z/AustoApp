@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Package, Tag, MapPin, ArrowLeftRight,
   Users, Truck, TrendingUp, ShoppingCart, ShoppingBag,
@@ -9,17 +10,20 @@ import { useAuth } from '../context/AuthContext'
 import { financeApi } from '../api/client'
 import type { FinanceItem } from '../types'
 import Logo from './Logo'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const TICKER_CODES  = ['GRAM ALTIN', 'ÇEYREK ALTIN', 'YARIM ALTIN', 'TAM ALTIN', 'USD', 'EUR', 'GBP']
-const TICKER_LABELS: Record<string, string> = {
-  'GRAM ALTIN': 'Gram', 'ÇEYREK ALTIN': 'Çeyrek', 'YARIM ALTIN': 'Yarım',
-  'TAM ALTIN': 'Tam', 'USD': 'USD', 'EUR': 'EUR', 'GBP': 'GBP',
+const TICKER_LABEL_KEYS: Record<string, string> = {
+  'GRAM ALTIN': 'layout.ticker.gram', 'ÇEYREK ALTIN': 'layout.ticker.quarter', 'YARIM ALTIN': 'layout.ticker.half',
+  'TAM ALTIN': 'layout.ticker.full', 'USD': 'USD', 'EUR': 'EUR', 'GBP': 'GBP',
 }
 
 function HeaderTicker({ items }: { items: FinanceItem[] }) {
+  const { t, i18n } = useTranslation()
   const filtered = items.filter(i => TICKER_CODES.includes(i.code))
   if (!filtered.length) return null
   const repeated = [...filtered, ...filtered, ...filtered, ...filtered]
+  const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   return (
     <div className="flex-1 overflow-hidden min-w-0"
       style={{
@@ -33,15 +37,16 @@ function HeaderTicker({ items }: { items: FinanceItem[] }) {
         {repeated.map((item, i) => {
           const isUp  = !item.changeRate.includes('-')
           const isGold = !['USD', 'EUR', 'GBP'].includes(item.code)
+          const labelKey = TICKER_LABEL_KEYS[item.code]
           return (
             <div key={i} className="flex items-center shrink-0">
               <div className="flex items-center gap-1.5 px-4 cursor-default">
                 <span className="text-[9px] font-semibold tracking-widest uppercase"
-                  style={{ color: isGold ? '#D4AF37' : '#666' }}>
-                  {TICKER_LABELS[item.code]}
+                  style={{ color: isGold ? '#D4AF37' : '#888' }}>
+                  {isGold ? t(labelKey) : labelKey}
                 </span>
                 <span className="text-[11px] font-medium tabular-nums" style={{ color: '#AAA' }}>
-                  ₺{item.sellingPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                  ₺{item.sellingPrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}
                 </span>
                 <span className="text-[9px] font-semibold tabular-nums"
                   style={{ color: isUp ? '#22C55E' : '#EF4444' }}>
@@ -58,38 +63,40 @@ function HeaderTicker({ items }: { items: FinanceItem[] }) {
 }
 
 const nav = [
-  { to: '/app',             icon: LayoutDashboard, label: 'Dashboard',    end: true },
-  { to: '/app/products',   icon: Package,         label: 'Ürünler'            },
-  { to: '/app/categories', icon: Tag,             label: 'Kategoriler'        },
-  { to: '/app/locations',  icon: MapPin,          label: 'Konumlar'           },
-  { to: '/app/stock',      icon: ArrowLeftRight,  label: 'Stok'               },
-  { to: '/app/customers',  icon: Users,           label: 'Müşteriler'         },
-  { to: '/app/suppliers',  icon: Truck,           label: 'Tedarikçiler'       },
-  { to: '/app/finance',    icon: TrendingUp,      label: 'Finans'             },
-  { to: '/app/sales',      icon: ShoppingCart,    label: 'Satış'              },
-  { to: '/app/purchases',  icon: ShoppingBag,     label: 'Alışlar'            },
-  { to: '/app/reports',    icon: BarChart3,       label: 'Raporlar'           },
+  { to: '/app',             icon: LayoutDashboard, key: 'dashboard', end: true },
+  { to: '/app/products',   icon: Package,         key: 'products'    },
+  { to: '/app/categories', icon: Tag,             key: 'categories'  },
+  { to: '/app/locations',  icon: MapPin,          key: 'locations'   },
+  { to: '/app/stock',      icon: ArrowLeftRight,  key: 'stock'       },
+  { to: '/app/customers',  icon: Users,           key: 'customers'   },
+  { to: '/app/suppliers',  icon: Truck,           key: 'suppliers'   },
+  { to: '/app/finance',    icon: TrendingUp,      key: 'finance'     },
+  { to: '/app/sales',      icon: ShoppingCart,    key: 'sales'       },
+  { to: '/app/purchases',  icon: ShoppingBag,     key: 'purchases'   },
+  { to: '/app/reports',    icon: BarChart3,       key: 'reports'     },
 ]
 
 function Clock() {
+  const { i18n } = useTranslation()
   const [time, setTime] = useState(new Date())
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(t)
   }, [])
+  const dateLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const hh   = time.getHours().toString().padStart(2, '0')
   const mm   = time.getMinutes().toString().padStart(2, '0')
   const ss   = time.getSeconds().toString().padStart(2, '0')
-  const weekday = time.toLocaleDateString('tr-TR', { weekday: 'long' })
-  const dayMonth = time.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })
+  const weekday = time.toLocaleDateString(dateLocale, { weekday: 'long' })
+  const dayMonth = time.toLocaleDateString(dateLocale, { day: 'numeric', month: 'long' })
   return (
     <div className="flex flex-col items-end gap-0.5">
       <div className="tabular-nums font-light tracking-[0.1em] leading-none"
         style={{ color: '#D4AF37', fontSize: 15, fontFamily: "'Montserrat', sans-serif" }}>
         {hh}<span style={{ color: 'rgba(212,175,55,0.4)' }}>:</span>{mm}
-        <span style={{ color: '#6A6A6A', fontSize: 11, marginLeft: 4 }}>{ss}</span>
+        <span style={{ color: '#888888', fontSize: 11, marginLeft: 4 }}>{ss}</span>
       </div>
-      <div className="text-[10px] tracking-[0.08em] uppercase" style={{ color: '#6A6A6A' }}>
+      <div className="text-[10px] tracking-[0.08em] uppercase" style={{ color: '#888888' }}>
         {weekday} · {dayMonth}
       </div>
     </div>
@@ -97,6 +104,7 @@ function Clock() {
 }
 
 export default function Layout() {
+  const { t } = useTranslation()
   const { userName, userRole, logout } = useAuth()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -126,14 +134,14 @@ export default function Layout() {
         <div className="flex items-center pr-3 py-3 shrink-0"
           style={{ paddingLeft: 26, borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0D0D0D' }}>
           <Logo className="h-8 w-auto" style={{ color: '#D4AF37' }} />
-          <button className="ml-auto lg:hidden text-gray-500 hover:text-gray-300 transition-colors" onClick={() => setSidebarOpen(false)}>
+          <button className="ml-auto lg:hidden text-gray-500 hover:text-gray-300 transition-colors" onClick={() => setSidebarOpen(false)} aria-label={t('layout.closeMenu')}>
             <X size={16} />
           </button>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {nav.map(({ to, icon: Icon, label, end }) => (
+          {nav.map(({ to, icon: Icon, key, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -142,7 +150,7 @@ export default function Layout() {
               onClick={() => setSidebarOpen(false)}
             >
               <Icon size={16} />
-              <span>{label}</span>
+              <span>{t(`nav.${key}`)}</span>
             </NavLink>
           ))}
         </nav>
@@ -151,7 +159,7 @@ export default function Layout() {
         <div className="px-3 pb-3" style={{ borderTop: '1px solid rgba(212,175,55,0.1)' }}>
           <NavLink to="/app/settings" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''} mt-1`} onClick={() => setSidebarOpen(false)}>
             <Settings size={16} />
-            <span>Ayarlar</span>
+            <span>{t('nav.settings')}</span>
           </NavLink>
           <div className="flex items-center gap-3 px-3 py-3 rounded-lg mt-1" style={{ background: '#111' }}>
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8960C)', color: '#0A0A0A' }}>
@@ -161,7 +169,7 @@ export default function Layout() {
               <div className="text-sm font-medium text-white truncate">{userName}</div>
               <div className="text-xs" style={{ color: '#D4AF37' }}>{userRole}</div>
             </div>
-            <button onClick={handleLogout} className="text-gray-600 hover:text-red-400 transition-colors" title="Çıkış">
+            <button onClick={handleLogout} className="text-gray-600 hover:text-red-400 transition-colors" title={t('nav.logout')} aria-label={t('nav.logout')}>
               <LogOut size={15} />
             </button>
           </div>
@@ -171,10 +179,11 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="flex items-center gap-4 px-6 py-3.5 shrink-0" style={{ borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0A0A0A' }}>
-          <button className="lg:hidden text-gray-400 hover:text-gold-400" onClick={() => setSidebarOpen(true)}>
+          <button className="lg:hidden text-gray-400 hover:text-gold-400" onClick={() => setSidebarOpen(true)} aria-label={t('layout.openMenu')}>
             <Menu size={20} />
           </button>
           <HeaderTicker items={rates} />
+          <LanguageSwitcher />
           <Clock />
         </header>
 

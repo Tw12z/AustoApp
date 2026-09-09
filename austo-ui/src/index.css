@@ -42,7 +42,7 @@
   .btn-danger:hover { background:rgba(239,68,68,0.2); border-color:#EF4444; }
   .input { background:#0A0A0A; border:1px solid #2A2A2A; border-radius:8px; padding:10px 14px; color:#E5E5E5; width:100%; font-size:14px; transition:border-color .2s,box-shadow .2s; outline:none; font-family:inherit; }
   .input:focus { border-color:rgba(212,175,55,0.5); box-shadow:0 0 0 3px rgba(212,175,55,0.08); }
-  .input::placeholder { color:#555; }
+  .input::placeholder { color:#888; }
   .select { background:#0A0A0A; border:1px solid #2A2A2A; border-radius:8px; padding:10px 14px; color:#E5E5E5; width:100%; font-size:14px; outline:none; cursor:pointer; transition:border-color .2s; font-family:inherit; }
   .select:focus { border-color:rgba(212,175,55,0.5); }
   .label { font-size:12px; font-weight:500; color:#888; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; display:block; }
@@ -90,7 +90,22 @@
     75%  { background-position: 50% 0% }
     100% { background-position: 0% 50% }
   }
-  @keyframes barsdrift { 0%,100%{transform:scale(1.04) translate(0,0)} 25%{transform:scale(1.06) translate(-8px,-6px)} 50%{transform:scale(1.04) translate(6px,8px)} 75%{transform:scale(1.06) translate(-4px,5px)} }
+  /* Independent float loops for the hero's cropped gold-bar sprites — three
+     distinct paths (drift diagonally / bob vertically / tilt-and-drift) so
+     six bars sharing them in rotation never read as one synced plate. */
+  @keyframes bar-float-0 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50%      { transform: translate(calc(var(--bar-distance) * 0.6), calc(var(--bar-distance) * -1)) rotate(var(--bar-rotate)); }
+  }
+  @keyframes bar-float-1 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(calc(var(--bar-distance) * -1)) rotate(calc(var(--bar-rotate) * -1)); }
+  }
+  @keyframes bar-float-2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33%      { transform: translate(calc(var(--bar-distance) * -0.7), calc(var(--bar-distance) * 0.4)) rotate(var(--bar-rotate)); }
+    66%      { transform: translate(calc(var(--bar-distance) * 0.3), calc(var(--bar-distance) * -0.8)) rotate(calc(var(--bar-rotate) * -0.6)); }
+  }
   @keyframes scan-move {
     0%   { --scan-pos: -5%;  opacity: 0; }
     10%  { --scan-pos: 8%;   opacity: 1; }
