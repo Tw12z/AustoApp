@@ -1,17 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import {
   TrendingUp, Package, ShoppingCart, BarChart3,
   QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
   ArrowLeftRight, Users, Truck, Wallet,
 } from 'lucide-react'
 import Logo from '../components/Logo'
-import BorderGlow from '../components/BorderGlow'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import LineWaves from '../components/LineWaves'
 import DashboardMirror from '../components/DashboardMirror'
+import CardSwap, { Card } from '../components/CardSwap'
 import { financeApi } from '../api/client'
 import type { FinanceItem } from '../types'
 
@@ -147,6 +147,43 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
   )
 }
 
+/* ── How It Works connecting path ──
+   Replaces a plain straight fade-line with a single irregular gold curve
+   threading through the three step numbers — asymmetric (no two bends
+   share an amplitude), eye-catching without adding a second color or a
+   second element: still just one thin traced line, drawn in on scroll,
+   with a small light pulse traveling along it afterward (the same
+   "traveling glow signals liveness" language as the scan-border effect
+   and the live ticker elsewhere in the system). */
+function HowItWorksPath() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const d = 'M0,40 C10,14 21,58 36,36 C48,8 56,62 71,30 C81,50 91,18 100,40'
+  return (
+    <svg ref={ref} className="hidden md:block absolute top-0 left-[22%] right-[22%]"
+      viewBox="0 0 100 80" preserveAspectRatio="none" style={{ width: '56%', height: 80 }}>
+      <defs>
+        <linearGradient id="howPathGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#D4AF37" stopOpacity="0" />
+          <stop offset="50%" stopColor="#D4AF37" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <motion.path d={d} fill="none" stroke="url(#howPathGrad)" strokeWidth="1.2" vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
+        transition={{ duration: 1.4, ease: [0.65, 0, 0.15, 1] }} />
+      {inView && (
+        <motion.path d={d} fill="none" stroke="#F5C842" strokeWidth="1.6" strokeLinecap="round"
+          vectorEffect="non-scaling-stroke" pathLength={1} strokeDasharray="0.06 1"
+          style={{ filter: 'drop-shadow(0 0 3px rgba(245,200,66,0.9))' }}
+          initial={{ pathOffset: 0, opacity: 0 }}
+          animate={{ pathOffset: 1, opacity: [0, 1, 1, 0] }}
+          transition={{ pathOffset: { duration: 3.2, delay: 1.5, repeat: Infinity, ease: 'linear' }, opacity: { duration: 3.2, delay: 1.5, repeat: Infinity, times: [0, 0.05, 0.9, 1], ease: 'linear' } }} />
+      )}
+    </svg>
+  )
+}
+
 /* ── Navbar clock ── */
 function NavClock() {
   const [time, setTime] = useState(new Date())
@@ -194,93 +231,26 @@ function NavClock() {
   )
 }
 
-/* ── Feature carousel ── */
-const CARD_W = 380
-const CARD_GAP = 28
-const CARD_STEP = CARD_W + CARD_GAP
-
-interface FeatureCardProps {
-  f: typeof features[0]
-  index: number
-  x: ReturnType<typeof useMotionValue<number>>
-  isDragging: boolean
-  onClickSnap: (i: number) => void
-}
-
-function FeatureCard({ f, index, x, isDragging, onClickSnap }: FeatureCardProps) {
+/* ── Feature card content (shared by every CardSwap face) ── */
+function FeatureCardContent({ f }: { f: typeof features[0] }) {
   const { t } = useTranslation()
-  const cardCenter = index * CARD_STEP + CARD_W / 2
-
-  const scale = useTransform(x, xVal => {
-    const dist = Math.abs(window.innerWidth / 2 - (xVal + cardCenter))
-    return Math.max(0.75, 1.12 - (dist / CARD_STEP) * 0.22)
-  })
-  const opacity = useTransform(x, xVal => {
-    const dist = Math.abs(window.innerWidth / 2 - (xVal + cardCenter))
-    return Math.max(0.18, 1 - (dist / CARD_STEP) * 0.5)
-  })
   return (
-    <motion.div
-      onClick={() => !isDragging && onClickSnap(index)}
-      style={{ scale, opacity, width: CARD_W, flexShrink: 0, cursor: 'pointer' }}
-    >
-      <BorderGlow style={{ padding: 28 }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20,
-          background: 'rgba(212,175,55,0.04)',
-          border: '1px solid rgba(212,175,55,0.2)',
-          boxShadow: '0 0 8px rgba(212,175,55,0.15), inset 0 0 8px rgba(212,175,55,0.06)',
-        }}>
-          <f.icon size={19} style={{
-            color: '#fffbe0',
-            filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 6px #D4AF37) drop-shadow(0 0 14px rgba(212,175,55,0.9)) drop-shadow(0 0 28px rgba(212,175,55,0.5))',
-          }} />
-        </div>
-        <h3 style={{ color: '#fff', fontSize: 14, fontFamily: CV, fontWeight: 600, letterSpacing: '0.01em', marginBottom: 10 }}>{t(`landing.features.items.${f.key}.title`)}</h3>
-        <p style={{ color: '#888888', fontSize: 13.5, lineHeight: 1.65, margin: 0 }}>{t(`landing.features.items.${f.key}.desc`)}</p>
-      </BorderGlow>
-    </motion.div>
-  )
-}
-
-function FeatureCarousel() {
-  const [activeIndex, setActiveIndex] = useState(1)
-  const [isDragging, setIsDragging] = useState(false)
-  const x = useMotionValue(0)
-
-  const snapTo = (idx: number) => {
-    const clamped = Math.max(0, Math.min(features.length - 1, idx))
-    setActiveIndex(clamped)
-    animate(x, window.innerWidth / 2 - (clamped * CARD_STEP + CARD_W / 2), {
-      type: 'spring', stiffness: 380, damping: 36,
-    })
-  }
-
-  useEffect(() => { snapTo(activeIndex) }, [])
-
-  const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-    setIsDragging(false)
-    if (info.offset.x < -60 || info.velocity.x < -300) snapTo(activeIndex + 1)
-    else if (info.offset.x > 60 || info.velocity.x > 300) snapTo(activeIndex - 1)
-    else snapTo(activeIndex)
-  }
-
-  return (
-    <div style={{ overflow: 'hidden', paddingTop: 24, paddingBottom: 40 }}>
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: -9999, right: 9999 }}
-        dragElastic={0}
-        style={{ x, display: 'flex', gap: CARD_GAP, width: 'max-content', cursor: isDragging ? 'grabbing' : 'grab' }}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={handleDragEnd}
-      >
-        {features.map((f, i) => (
-          <FeatureCard key={f.key} f={f} index={i} x={x} isDragging={isDragging} onClickSnap={snapTo} />
-        ))}
-      </motion.div>
-    </div>
+    <>
+      <div style={{
+        width: 44, height: 44, borderRadius: 12,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(212,175,55,0.04)',
+        border: '1px solid rgba(212,175,55,0.2)',
+        boxShadow: '0 0 8px rgba(212,175,55,0.15), inset 0 0 8px rgba(212,175,55,0.06)',
+      }}>
+        <f.icon size={19} style={{
+          color: '#fffbe0',
+          filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 6px #D4AF37) drop-shadow(0 0 14px rgba(212,175,55,0.9)) drop-shadow(0 0 28px rgba(212,175,55,0.5))',
+        }} />
+      </div>
+      <h3 style={{ color: '#fff', fontSize: 17, fontFamily: CV, fontWeight: 600, letterSpacing: '0.01em', margin: 0 }}>{t(`landing.features.items.${f.key}.title`)}</h3>
+      <p style={{ color: '#888888', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{t(`landing.features.items.${f.key}.desc`)}</p>
+    </>
   )
 }
 
@@ -458,8 +428,18 @@ export default function Landing() {
           </p>
         </FadeIn>
 
-        {/* Draggable carousel */}
-        <FeatureCarousel />
+        {/* Card-swap stack */}
+        <div className="flex justify-center px-6 md:px-10" style={{ paddingTop: 340, paddingBottom: 60 }}>
+          <div style={{ height: 340, width: 340, position: 'relative' }}>
+            <CardSwap width={340} height={340} cardDistance={22} verticalDistance={26} delay={4200} pauseOnHover>
+              {features.map(f => (
+                <Card key={f.key}>
+                  <FeatureCardContent f={f} />
+                </Card>
+              ))}
+            </CardSwap>
+          </div>
+        </div>
       </section>
 
       {/* ── HOW IT WORKS ── */}
@@ -472,8 +452,7 @@ export default function Landing() {
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            <div className="hidden md:block absolute top-10 left-[22%] right-[22%] h-px"
-              style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.25), transparent)' }} />
+            <HowItWorksPath />
             {[
               { step: '01', key: 'account' },
               { step: '02', key: 'products' },
