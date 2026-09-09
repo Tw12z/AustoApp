@@ -6,6 +6,7 @@ import {
   TrendingUp, Package, ShoppingCart, BarChart3,
   QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
   ArrowLeftRight, Users, Truck, Wallet,
+  UserPlus, PackagePlus, Rocket,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import BorderGlow from '../components/BorderGlow'
@@ -56,6 +57,14 @@ const stats = [
   { value: 'QR',   key: 'barcodeSupport'  },
   { value: '∞',    key: 'productCapacity' },
 ]
+
+/* ── How-it-works: asymmetric 3-step path ── */
+const HOW_STEPS = [
+  { key: 'account',  num: '01', icon: UserPlus },
+  { key: 'products', num: '02', icon: PackagePlus },
+  { key: 'manage',   num: '03', icon: Rocket },
+]
+const HOW_OFFSETS = ['md:mt-0', 'md:mt-20', 'md:mt-8']
 
 
 /* ── Floating gold bars ──
@@ -144,6 +153,42 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
       transition={{ duration: 0.65, delay, ease: 'easeOut' }}>
       {children}
     </motion.div>
+  )
+}
+
+/* ── How-it-works connecting path (desktop only, draws on scroll-into-view) ── */
+function HowPath() {
+  const ref = useRef<SVGPathElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  return (
+    <svg className="hidden md:block absolute pointer-events-none" viewBox="0 0 1000 260"
+      preserveAspectRatio="none" style={{ top: -20, left: 0, width: '100%', height: 260 }}>
+      <defs>
+        <linearGradient id="howPathGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="rgba(212,175,55,0.05)" />
+          <stop offset="50%" stopColor="rgba(212,175,55,0.55)" />
+          <stop offset="100%" stopColor="rgba(212,175,55,0.05)" />
+        </linearGradient>
+      </defs>
+      <motion.path
+        ref={ref}
+        d="M 166,70 C 320,70 340,215 500,195 C 660,178 700,55 834,110"
+        fill="none"
+        stroke="url(#howPathGrad)"
+        strokeWidth={1.4}
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={inView ? { pathLength: 1, opacity: 1 } : {}}
+        transition={{ duration: 1.5, ease: 'easeInOut' }}
+      />
+      {[[166, 70], [500, 195], [834, 110]].map(([cx, cy], i) => (
+        <motion.circle key={i} cx={cx} cy={cy} r={4} fill={GOLD}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={inView ? { opacity: 0.9, scale: 1 } : {}}
+          transition={{ duration: 0.4, delay: 0.3 + i * 0.45 }}
+        />
+      ))}
+    </svg>
   )
 }
 
@@ -463,31 +508,38 @@ export default function Landing() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how" className="px-6 md:px-10" style={{ paddingTop: '7rem', paddingBottom: '7rem', borderTop: '1px solid rgba(212,175,55,0.07)' }}>
+      <section id="how" className="px-6 md:px-10 overflow-hidden" style={{ paddingTop: '8rem', paddingBottom: '8rem', borderTop: '1px solid rgba(212,175,55,0.07)' }}>
         <div className="max-w-5xl mx-auto">
-          <FadeIn className="text-center mb-16">
+          <FadeIn className="text-center mb-20">
             <h2 style={{ fontFamily: CV, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 700, lineHeight: 1.2 }}>
               {t('landing.how.title')}
             </h2>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            <div className="hidden md:block absolute top-10 left-[22%] right-[22%] h-px"
-              style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.25), transparent)' }} />
-            {[
-              { step: '01', key: 'account' },
-              { step: '02', key: 'products' },
-              { step: '03', key: 'manage' },
-            ].map((s, i) => (
-              <FadeIn key={s.step} delay={i * 0.15} className="text-center px-4">
-                <div className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-                  style={{ background: 'rgba(212,175,55,0.07)', border: '1px solid rgba(212,175,55,0.18)', color: GOLD, fontFamily: CV, fontSize: 20, fontWeight: 700 }}>
-                  {s.step}
-                </div>
-                <h3 className="text-white mb-3" style={{ fontSize: 16, fontFamily: CV, fontWeight: 600 }}>{t(`landing.how.steps.${s.key}.title`)}</h3>
-                <p style={{ color: '#888888', fontSize: 14, lineHeight: 1.7 }}>{t(`landing.how.steps.${s.key}.desc`)}</p>
-              </FadeIn>
-            ))}
+          <div className="relative">
+            <HowPath />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-6 relative">
+              {HOW_STEPS.map((s, i) => (
+                <FadeIn key={s.key} delay={i * 0.18} className={`text-center px-4 ${HOW_OFFSETS[i]}`}>
+                  <div className="relative mx-auto mb-6" style={{ width: 88, height: 88 }}>
+                    <span aria-hidden style={{
+                      position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: CV, fontSize: 60, fontWeight: 800, color: 'transparent',
+                      WebkitTextStroke: '1px rgba(212,175,55,0.22)', pointerEvents: 'none', userSelect: 'none',
+                    }}>{s.num}</span>
+                    <div className="absolute inset-0 m-auto flex items-center justify-center" style={{
+                      width: 52, height: 52, borderRadius: 14,
+                      background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.22)',
+                      boxShadow: '0 0 18px rgba(212,175,55,0.1)',
+                    }}>
+                      <s.icon size={20} color={GOLD} />
+                    </div>
+                  </div>
+                  <h3 className="text-white mb-3" style={{ fontSize: 16, fontFamily: CV, fontWeight: 600 }}>{t(`landing.how.steps.${s.key}.title`)}</h3>
+                  <p style={{ color: '#888888', fontSize: 14, lineHeight: 1.7, maxWidth: 280, margin: '0 auto' }}>{t(`landing.how.steps.${s.key}.desc`)}</p>
+                </FadeIn>
+              ))}
+            </div>
           </div>
         </div>
       </section>
