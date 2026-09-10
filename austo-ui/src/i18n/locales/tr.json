@@ -43,7 +43,12 @@
       "full": "Tam"
     },
     "openMenu": "Menüyü aç",
-    "closeMenu": "Menüyü kapat"
+    "closeMenu": "Menüyü kapat",
+    "calculator": {
+      "toggle": "Hesap makinesi",
+      "title": "Hesap Makinesi",
+      "backspace": "Sil"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",

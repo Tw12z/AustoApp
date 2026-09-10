@@ -11,6 +11,7 @@ import { financeApi } from '../api/client'
 import type { FinanceItem } from '../types'
 import Logo from './Logo'
 import LanguageSwitcher from './LanguageSwitcher'
+import FloatingCalculator from './FloatingCalculator'
 
 const TICKER_CODES  = ['GRAM ALTIN', 'ÇEYREK ALTIN', 'YARIM ALTIN', 'TAM ALTIN', 'USD', 'EUR', 'GBP']
 const TICKER_LABEL_KEYS: Record<string, string> = {
@@ -191,6 +192,8 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+
+      <FloatingCalculator />
     </div>
   )
 }

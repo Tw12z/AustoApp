@@ -43,7 +43,12 @@
       "full": "Full"
     },
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "calculator": {
+      "toggle": "Calculator",
+      "title": "Calculator",
+      "backspace": "Backspace"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
