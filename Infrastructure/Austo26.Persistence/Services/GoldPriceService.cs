@@ -41,5 +41,8 @@ public class GoldPriceService : IGoldPriceService
         => new(g.Id, g.Date, g.GramGoldBuyTRY, g.GramGoldSellTRY,
                g.GramK14BuyTRY, g.GramK14SellTRY,
                g.GramK18BuyTRY, g.GramK18SellTRY,
-               g.GramK22BuyTRY, g.GramK22SellTRY, g.Source);
+               g.GramK22BuyTRY, g.GramK22SellTRY,
+               g.UsdTRY, g.EurTRY, g.GbpTRY,
+               g.CeyrekAltinTRY, g.YarimAltinTRY, g.TamAltinTRY,
+               g.CumhuriyetAltinTRY, g.AtaLiraTRY, g.Source);
 }

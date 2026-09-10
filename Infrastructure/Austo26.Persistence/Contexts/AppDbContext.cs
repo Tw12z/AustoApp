@@ -97,6 +97,14 @@ public class AppDbContext : DbContext, IAppDbContext
             e.Property(g => g.GramK18SellTRY).HasPrecision(18, 2);
             e.Property(g => g.GramK22BuyTRY).HasPrecision(18, 2);
             e.Property(g => g.GramK22SellTRY).HasPrecision(18, 2);
+            e.Property(g => g.UsdTRY).HasPrecision(18, 2);
+            e.Property(g => g.EurTRY).HasPrecision(18, 2);
+            e.Property(g => g.GbpTRY).HasPrecision(18, 2);
+            e.Property(g => g.CeyrekAltinTRY).HasPrecision(18, 2);
+            e.Property(g => g.YarimAltinTRY).HasPrecision(18, 2);
+            e.Property(g => g.TamAltinTRY).HasPrecision(18, 2);
+            e.Property(g => g.CumhuriyetAltinTRY).HasPrecision(18, 2);
+            e.Property(g => g.AtaLiraTRY).HasPrecision(18, 2);
         });
 
         base.OnModelCreating(modelBuilder);

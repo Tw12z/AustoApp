@@ -21,6 +21,8 @@ function fmtShort(n: number, locale = 'tr-TR') {
 // ── Metric config ─────────────────────────────────────────
 type MetricKey =
   | 'gramGoldBuyTRY' | 'gramGoldSellTRY'
+  | 'usdTRY' | 'eurTRY' | 'gbpTRY'
+  | 'ceyrekAltinTRY' | 'yarimAltinTRY' | 'tamAltinTRY' | 'cumhuriyetAltinTRY' | 'ataLiraTRY'
   | 'gramK14BuyTRY'  | 'gramK14SellTRY'
   | 'gramK18BuyTRY'  | 'gramK18SellTRY'
   | 'gramK22BuyTRY'  | 'gramK22SellTRY'
@@ -32,9 +34,20 @@ interface MetricConfig {
   color: string
 }
 
+// Gram altın alış/satış + döviz + tam altın türleri önce gelir (esas görünüm);
+// ayarlı (14/18/22k) gram fiyatları — hepsi aynı gram fiyatının türevi olduğundan —
+// ayrıntı isteyenler için sonda, ayrı bir grupta durur.
 const METRICS: MetricConfig[] = [
-  { key: 'gramGoldBuyTRY',  labelKey: 'fineBuy',  shortKey: 'shortFineBuy', color: '#D4AF37' },
-  { key: 'gramGoldSellTRY', labelKey: 'fineSell', shortKey: 'shortFineSell', color: '#F5E070' },
+  { key: 'gramGoldBuyTRY',    labelKey: 'fineBuy',  shortKey: 'shortFineBuy',  color: '#D4AF37' },
+  { key: 'gramGoldSellTRY',   labelKey: 'fineSell', shortKey: 'shortFineSell', color: '#F5E070' },
+  { key: 'usdTRY',            labelKey: 'usd',        shortKey: 'shortUsd',        color: '#22C55E' },
+  { key: 'eurTRY',            labelKey: 'eur',        shortKey: 'shortEur',        color: '#38BDF8' },
+  { key: 'gbpTRY',            labelKey: 'gbp',        shortKey: 'shortGbp',        color: '#A78BFA' },
+  { key: 'ceyrekAltinTRY',    labelKey: 'ceyrek',     shortKey: 'shortCeyrek',     color: '#F59E0B' },
+  { key: 'yarimAltinTRY',     labelKey: 'yarim',      shortKey: 'shortYarim',      color: '#FB923C' },
+  { key: 'tamAltinTRY',       labelKey: 'tam',        shortKey: 'shortTam',        color: '#EF4444' },
+  { key: 'cumhuriyetAltinTRY',labelKey: 'cumhuriyet', shortKey: 'shortCumhuriyet', color: '#EC4899' },
+  { key: 'ataLiraTRY',        labelKey: 'ata',        shortKey: 'shortAta',        color: '#D946EF' },
   { key: 'gramK14BuyTRY',   labelKey: 'k14Buy',   shortKey: 'shortK14Buy',  color: '#3B82F6' },
   { key: 'gramK14SellTRY',  labelKey: 'k14Sell',  shortKey: 'shortK14Sell', color: '#93C5FD' },
   { key: 'gramK18BuyTRY',   labelKey: 'k18Buy',   shortKey: 'shortK18Buy',  color: '#10B981' },
@@ -177,7 +190,7 @@ export default function Finance() {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d')
   const [grouping,  setGrouping]  = useState<Grouping>('daily')
   const [selected,  setSelected]  = useState<Set<MetricKey>>(
-    new Set<MetricKey>(['gramGoldBuyTRY', 'gramGoldSellTRY'])
+    new Set<MetricKey>(['gramGoldSellTRY', 'usdTRY', 'ceyrekAltinTRY', 'tamAltinTRY'])
   )
 
   // Live rate visibility

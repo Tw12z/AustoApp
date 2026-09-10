@@ -558,10 +558,16 @@
     "rateCard": { "buy": "Buy" },
     "metrics": {
       "fineBuy": "Fine Buy", "fineSell": "Fine Sell",
+      "usd": "USD/TRY", "eur": "EUR/TRY", "gbp": "GBP/TRY",
+      "ceyrek": "Quarter Gold", "yarim": "Half Gold", "tam": "Full Gold",
+      "cumhuriyet": "Republic Gold", "ata": "Ata Lira",
       "k14Buy": "14k Buy", "k14Sell": "14k Sell",
       "k18Buy": "18k Buy", "k18Sell": "18k Sell",
       "k22Buy": "22k Buy", "k22Sell": "22k Sell",
       "shortFineBuy": "Fine Buy", "shortFineSell": "Fine Sell",
+      "shortUsd": "USD", "shortEur": "EUR", "shortGbp": "GBP",
+      "shortCeyrek": "Quarter", "shortYarim": "Half", "shortTam": "Full",
+      "shortCumhuriyet": "Republic", "shortAta": "Ata Lira",
       "shortK14Buy": "14k Buy", "shortK14Sell": "14k Sell",
       "shortK18Buy": "18k Buy", "shortK18Sell": "18k Sell",
       "shortK22Buy": "22k Buy", "shortK22Sell": "22k Sell"

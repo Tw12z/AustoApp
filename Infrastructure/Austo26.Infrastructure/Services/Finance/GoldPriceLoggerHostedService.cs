@@ -63,7 +63,16 @@ public class GoldPriceLoggerHostedService : BackgroundService
             return;
         }
 
-        var log = new GoldPriceLog(DateTime.UtcNow, gram.BuyingPrice, gram.SellingPrice, "Turuncgil");
+        // Chart shows more than just gram/ayar gold — capture the same döviz + tam altın
+        // türleri instruments the live rate cards show, one "satış" price snapshot each,
+        // so the history chart can plot dollar/euro and full gold-coin trends too.
+        decimal? Sell(string code) => rates.FirstOrDefault(r => r.Code == code) is { SellingPrice: > 0 } r ? r.SellingPrice : null;
+
+        var log = new GoldPriceLog(DateTime.UtcNow, gram.BuyingPrice, gram.SellingPrice, "Turuncgil",
+            usdTRY: Sell("USD"), eurTRY: Sell("EUR"), gbpTRY: Sell("GBP"),
+            ceyrekAltinTRY: Sell("ÇEYREK ALTIN"), yarimAltinTRY: Sell("YARIM ALTIN"),
+            tamAltinTRY: Sell("TAM ALTIN"), cumhuriyetAltinTRY: Sell("CUMHURİYET"),
+            ataLiraTRY: Sell("ATA LİRA"));
         await repo.AddAsync(log);
         await repo.SaveChangesAsync();
         _logger.LogInformation("Logged today's gold price: buy {Buy} / sell {Sell}", gram.BuyingPrice, gram.SellingPrice);

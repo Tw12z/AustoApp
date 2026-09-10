@@ -11,6 +11,14 @@ public record GoldPriceLogDto(
     decimal? GramK18SellTRY,
     decimal? GramK22BuyTRY,
     decimal? GramK22SellTRY,
+    decimal? UsdTRY,
+    decimal? EurTRY,
+    decimal? GbpTRY,
+    decimal? CeyrekAltinTRY,
+    decimal? YarimAltinTRY,
+    decimal? TamAltinTRY,
+    decimal? CumhuriyetAltinTRY,
+    decimal? AtaLiraTRY,
     string Source
 );
 

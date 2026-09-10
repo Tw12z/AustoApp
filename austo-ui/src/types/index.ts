@@ -57,6 +57,14 @@ export interface GoldPriceLog {
   gramK18SellTRY?: number
   gramK22BuyTRY?: number
   gramK22SellTRY?: number
+  usdTRY?: number
+  eurTRY?: number
+  gbpTRY?: number
+  ceyrekAltinTRY?: number
+  yarimAltinTRY?: number
+  tamAltinTRY?: number
+  cumhuriyetAltinTRY?: number
+  ataLiraTRY?: number
   source: string
 }
 
