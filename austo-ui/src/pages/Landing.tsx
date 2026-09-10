@@ -370,19 +370,24 @@ function QRDemo() {
 }
 
 function ReportsDemo() {
-  const heights = [22, 38, 16, 44, 28]
+  const r = 24
+  const circumference = 2 * Math.PI * r
   return (
     <DemoPanel>
-      <div className="flex items-end justify-between" style={{ height: 56, marginBottom: 10 }}>
-        {heights.map((h, i) => (
-          <motion.div key={i} style={{ width: 18, borderRadius: 4, background: GOLD_GRAD }}
-            animate={{ height: [6, h, h * 0.55, h] }}
-            transition={{ duration: 2.6, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }} />
-        ))}
-      </div>
-      <div className="flex items-center justify-between" style={{ fontSize: 11, color: '#7D7D7D' }}>
-        <span>Net Kâr</span>
-        <span style={{ color: '#22C55E', fontWeight: 700 }}>+%68,2</span>
+      <div className="flex items-center gap-4">
+        <svg width="56" height="56" viewBox="0 0 56 56" style={{ flexShrink: 0 }}>
+          <circle cx="28" cy="28" r={r} fill="none" stroke="rgba(212,175,55,0.14)" strokeWidth="3" />
+          <motion.circle cx="28" cy="28" r={r} fill="none" stroke={GOLD} strokeWidth="3" strokeLinecap="round"
+            style={{ transform: 'rotate(-90deg)', transformOrigin: '28px 28px' }}
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: circumference * 0.32 }}
+            transition={{ duration: 1.8, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }} />
+        </svg>
+        <div>
+          <div style={{ fontSize: 21, fontWeight: 800, color: '#fff' }}>%68</div>
+          <div style={{ fontSize: 11, color: '#7D7D7D' }}>Net Kâr Artışı</div>
+        </div>
       </div>
     </DemoPanel>
   )
@@ -404,7 +409,7 @@ function FeatureGrid() {
           const onRight = i % 2 === 1
           const Demo = FEATURE_DEMOS[f.key]
           return (
-            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 items-start gap-6 md:gap-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
+            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 md:grid-flow-dense items-start gap-6 md:gap-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
               <FadeIn delay={i * 0.1} viewportMargin="120px" className={onRight ? 'md:col-start-2' : 'md:col-start-1'}>
                 <div className={`flex flex-col items-center text-center mx-auto ${onRight ? 'md:items-start md:text-left md:ml-10' : 'md:items-end md:text-right md:mr-10'}`}
                   style={{ maxWidth: 320 }}>
