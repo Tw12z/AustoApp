@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   TrendingUp, TrendingDown, ShoppingCart, ShoppingBag,
-  Gem, Search, Plus, Minus, X, CheckCircle, Zap, User,
+  Search, Plus, Minus, X, CheckCircle, Zap, User,
 } from 'lucide-react'
+import LogoMarkless from '../components/LogoMarkless'
 import {
   reportsApi, financeApi, stockApi,
   productsApi, customersApi, salesApi,
@@ -24,10 +25,10 @@ function fmtShort(n: number, locale = 'tr-TR') {
 // ── StatCard ──────────────────────────────────────────────
 interface StatCardProps {
   label: string; value: string; sub?: string
-  icon: React.ElementType; color?: string; loading?: boolean
+  icon?: React.ElementType; iconNode?: React.ReactNode; color?: string; loading?: boolean
   iconRight?: number; iconBottom?: number; iconSize?: number
 }
-function StatCard({ label, value, sub, icon: Icon, color = '#D4AF37', loading, iconRight = -20, iconBottom = -20, iconSize = 140 }: StatCardProps) {
+function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', loading, iconRight = -20, iconBottom = -20, iconSize = 140 }: StatCardProps) {
   return (
     <div className="group relative flex flex-col justify-between rounded-2xl transition-all duration-300 overflow-hidden"
       style={{
@@ -42,14 +43,14 @@ function StatCard({ label, value, sub, icon: Icon, color = '#D4AF37', loading, i
 
       {/* Large watermark icon */}
       <div className="absolute" style={{ right: iconRight, bottom: iconBottom, opacity: 0.25 }}>
-        <Icon size={iconSize} strokeWidth={0.6} style={{
+        {iconNode ?? (Icon && <Icon size={iconSize} strokeWidth={0.6} style={{
           color: color,
           filter: `
             drop-shadow(0 0 8px ${color}20)
             drop-shadow(2px 0 0 ${color}) drop-shadow(-2px 0 0 ${color})
             drop-shadow(0 2px 0 ${color}) drop-shadow(0 -2px 0 ${color})
           `,
-        }} />
+        }} />)}
       </div>
 
       {/* Label */}
@@ -536,7 +537,15 @@ export default function Dashboard() {
         <StatCard label={t('dashboard.stats.stockValue')}
           value={loading ? '—' : fmtShort(valuation?.totalEstimatedValueTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.totalWeight', { weight: (valuation?.totalWeightGram ?? 0).toFixed(2) })}
-          icon={Gem} color="#D4AF37" loading={loading} />
+          iconNode={<LogoMarkless style={{
+            width: 130, height: 130, color: '#D4AF37',
+            filter: `
+              drop-shadow(0 0 8px #D4AF3720)
+              drop-shadow(2px 0 0 #D4AF37) drop-shadow(-2px 0 0 #D4AF37)
+              drop-shadow(0 2px 0 #D4AF37) drop-shadow(0 -2px 0 #D4AF37)
+            `,
+          }} />}
+          color="#D4AF37" loading={loading} />
       </div>
 
       {/* ── Main Grid ───────────────────────────────────────── */}
