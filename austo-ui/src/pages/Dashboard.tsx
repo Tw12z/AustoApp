@@ -541,10 +541,10 @@ export default function Dashboard() {
           iconNode={<LogoMarkless style={{
             width: 200, height: 200, color: '#F5E070',
             filter: `
-              drop-shadow(0 0 4px #F5E070)
-              drop-shadow(0 0 10px #D4AF37)
-              drop-shadow(0 0 22px #D4AF37AA)
-              drop-shadow(0 0 38px #D4AF3766)
+              drop-shadow(0 0 2px #F5E070)
+              drop-shadow(0 0 6px #D4AF37)
+              drop-shadow(0 0 13px #D4AF3799)
+              drop-shadow(0 0 22px #D4AF3755)
             `,
           }} />}
           iconRight={10} iconBottom={-65}
