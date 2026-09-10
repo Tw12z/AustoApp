@@ -593,8 +593,10 @@
   },
   "reports": {
     "pageTitle": "Raporlar",
-    "dailySummary": "Günlük Özet",
+    "periodSummary": "Satış & Alış Özeti",
+    "periods": { "daily": "Günlük", "weekly": "Haftalık", "monthly": "Aylık", "yearly": "Yıllık" },
     "fetch": "Getir",
+    "downloadPdf": "PDF İndir",
     "cards": {
       "salesCount": "Satış Adedi",
       "salesRevenue": "Satış Geliri",
@@ -607,7 +609,16 @@
     "totalValue": "Toplam Değer",
     "columns": { "product": "Ürün", "category": "Kategori", "purity": "Ayar", "weight": "Ağırlık", "stock": "Stok", "totalWeight": "Toplam Ağırlık", "estimatedValue": "Tahmini Değer" },
     "loading": "Yükleniyor...",
-    "noStockData": "Stok verisi yok."
+    "noStockData": "Stok verisi yok.",
+    "pdf": {
+      "title": "Satış Raporu",
+      "generatedAt": "Oluşturulma: {{date}}",
+      "generating": "Hazırlanıyor...",
+      "salesWeight": "Satış Ağırlığı",
+      "purchasesWeight": "Alış Ağırlığı",
+      "detailTitle": "Satış Detayı",
+      "noSales": "Bu dönemde satış kaydı yok."
+    }
   },
   "settings": {
     "tabs": { "profile": "Profil", "security": "Güvenlik", "notifications": "Bildirimler", "system": "Sistem" },

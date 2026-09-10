@@ -1,45 +1,127 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CalendarDays } from 'lucide-react'
-import { reportsApi } from '../api/client'
-import type { DailySummary, StockReport } from '../types'
+import { CalendarDays, FileDown } from 'lucide-react'
+import { reportsApi, salesApi } from '../api/client'
+import type { DailySummary, StockReport, Sale } from '../types'
+import { useEnumLabels } from '../hooks/useEnumLabels'
+import { getPeriodRange, type ReportPeriod } from '../utils/dateRanges'
+import { buildSalesReportPdf } from '../utils/reportPdf'
 
 function fmt(n: number, locale = 'tr-TR') {
   return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+const PERIODS: ReportPeriod[] = ['daily', 'weekly', 'monthly', 'yearly']
+
 export default function Reports() {
   const { t, i18n } = useTranslation()
+  const { transactionStatus } = useEnumLabels()
   const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+  const dateLocale = priceLocale
+
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [period, setPeriod] = useState<ReportPeriod>('daily')
   const [summary, setSummary] = useState<DailySummary | null>(null)
   const [stockReport, setStockReport] = useState<StockReport | null>(null)
   const [loading, setLoading] = useState(false)
   const [stockLoading, setStockLoading] = useState(true)
+  const [pdfLoading, setPdfLoading] = useState(false)
+
+  const { from, to } = getPeriodRange(date, period)
 
   const loadSummary = async () => {
     setLoading(true)
-    await reportsApi.getDaily(date).then(r => setSummary(r.data)).finally(() => setLoading(false))
+    await reportsApi.getRange(from, to).then(r => setSummary(r.data)).finally(() => setLoading(false))
   }
 
   useEffect(() => {
     loadSummary()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period, date])
+
+  useEffect(() => {
     reportsApi.getStock().then(r => setStockReport(r.data)).finally(() => setStockLoading(false))
   }, [])
+
+  const rangeLabel = from === to
+    ? new Date(from).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })
+    : `${new Date(from).toLocaleDateString(dateLocale, { day: 'numeric', month: 'short', year: 'numeric' })} – ${new Date(to).toLocaleDateString(dateLocale, { day: 'numeric', month: 'short', year: 'numeric' })}`
+
+  async function handleDownloadPdf() {
+    setPdfLoading(true)
+    try {
+      const [summaryRes, salesRes] = await Promise.all([
+        reportsApi.getRange(from, to),
+        salesApi.getByDate(from, to),
+      ])
+      const sales: Sale[] = salesRes.data
+      buildSalesReportPdf({
+        period,
+        from,
+        to,
+        summary: summaryRes.data,
+        sales,
+        locale: priceLocale,
+        statusLabel: status => transactionStatus[status]?.label ?? String(status),
+        labels: {
+          title: t('reports.pdf.title'),
+          rangeLabel: `${t(`reports.periods.${period}`)} • ${rangeLabel}`,
+          generatedAt: t('reports.pdf.generatedAt', { date: new Date().toLocaleString(dateLocale) }),
+          salesCount: t('reports.cards.salesCount'),
+          salesRevenue: t('reports.cards.salesRevenue'),
+          salesWeight: t('reports.pdf.salesWeight'),
+          purchasesCount: t('reports.cards.purchasesCount'),
+          purchasesCost: t('reports.cards.purchasesCost'),
+          purchasesWeight: t('reports.pdf.purchasesWeight'),
+          netProfitLoss: t('reports.netProfitLoss'),
+          detailTitle: t('reports.pdf.detailTitle'),
+          colDate: t('sales.columns.date'),
+          colCustomer: t('sales.columns.customer'),
+          colWeight: t('sales.columns.weight'),
+          colAmount: t('sales.columns.amount'),
+          colStatus: t('sales.columns.status'),
+          retail: t('sales.retail'),
+          noSales: t('reports.pdf.noSales'),
+        },
+      })
+    } finally {
+      setPdfLoading(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
       <h1 className="page-title gold-text">{t('reports.pageTitle')}</h1>
 
-      {/* Daily Summary */}
+      {/* Sales & Purchases summary — daily/weekly/monthly/yearly */}
       <div className="card p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 className="text-sm font-semibold" style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '.05em' }}>{t('reports.periodSummary')}</h2>
+          <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#0A0A0A', border: '1px solid #1A1A1A' }}>
+            {PERIODS.map(p => (
+              <button key={p} onClick={() => setPeriod(p)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150"
+                style={{
+                  background: period === p ? 'rgba(212,175,55,0.15)' : 'transparent',
+                  color:      period === p ? '#D4AF37' : '#7D7D7D',
+                  border:     `1px solid ${period === p ? 'rgba(212,175,55,0.3)' : 'transparent'}`,
+                }}>
+                {t(`reports.periods.${p}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <h2 className="text-sm font-semibold" style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '.05em' }}>{t('reports.dailySummary')}</h2>
           <div className="flex flex-wrap items-center gap-2">
             <CalendarDays size={14} style={{ color: '#D4AF37' }} />
             <input className="input" style={{ width: 160, maxWidth: '100%' }} type="date" value={date} onChange={e => setDate(e.target.value)} />
             <button className="btn-outline px-3 py-1.5 text-sm" onClick={loadSummary} disabled={loading}>{loading ? '...' : t('reports.fetch')}</button>
+            <span className="text-xs" style={{ color: '#888' }}>{rangeLabel}</span>
           </div>
+          <button className="btn-gold flex items-center gap-2 px-4 py-2 text-sm" onClick={handleDownloadPdf} disabled={pdfLoading}>
+            <FileDown size={14} /> {pdfLoading ? t('reports.pdf.generating') : t('reports.downloadPdf')}
+          </button>
         </div>
 
         {summary && (

@@ -131,5 +131,6 @@ export const stockItemsApi = {
 // ── Reports ─────────────────────────────────────────────
 export const reportsApi = {
   getDaily: (date?: string) => api.get(`/reports/daily${date ? `?date=${date}` : ''}`),
+  getRange: (from: string, to: string) => api.get(`/reports/range?from=${from}&to=${to}`),
   getStock: ()              => api.get('/reports/stock'),
 }

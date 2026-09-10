@@ -15,6 +15,10 @@ public class ReportsController : ControllerBase
     public async Task<IActionResult> GetDaily([FromQuery] DateTime? date)
         => Ok(await _service.GetDailySummaryAsync(date ?? DateTime.Today));
 
+    [HttpGet("range")]
+    public async Task<IActionResult> GetRange([FromQuery] DateTime from, [FromQuery] DateTime to)
+        => Ok(await _service.GetRangeSummaryAsync(from, to));
+
     [HttpGet("stock")]
     public async Task<IActionResult> GetStock()
         => Ok(await _service.GetStockReportAsync());

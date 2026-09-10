@@ -593,8 +593,10 @@
   },
   "reports": {
     "pageTitle": "Reports",
-    "dailySummary": "Daily Summary",
+    "periodSummary": "Sales & Purchases Summary",
+    "periods": { "daily": "Daily", "weekly": "Weekly", "monthly": "Monthly", "yearly": "Yearly" },
     "fetch": "Fetch",
+    "downloadPdf": "Download PDF",
     "cards": {
       "salesCount": "Sales Count",
       "salesRevenue": "Sales Revenue",
@@ -607,7 +609,16 @@
     "totalValue": "Total Value",
     "columns": { "product": "Product", "category": "Category", "purity": "Purity", "weight": "Weight", "stock": "Stock", "totalWeight": "Total Weight", "estimatedValue": "Estimated Value" },
     "loading": "Loading...",
-    "noStockData": "No stock data."
+    "noStockData": "No stock data.",
+    "pdf": {
+      "title": "Sales Report",
+      "generatedAt": "Generated: {{date}}",
+      "generating": "Preparing...",
+      "salesWeight": "Sales Weight",
+      "purchasesWeight": "Purchases Weight",
+      "detailTitle": "Sales Detail",
+      "noSales": "No sales in this period."
+    }
   },
   "settings": {
     "tabs": { "profile": "Profile", "security": "Security", "notifications": "Notifications", "system": "System" },

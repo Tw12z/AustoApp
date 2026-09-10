@@ -20,20 +20,23 @@ public class ReportService : IReportService
         _productRepo  = productRepo;
     }
 
-    public async Task<DailySummaryDto> GetDailySummaryAsync(DateTime date)
-    {
-        var dayStart = date.Date;
-        var dayEnd   = dayStart.AddDays(1).AddTicks(-1);
+    public Task<DailySummaryDto> GetDailySummaryAsync(DateTime date)
+        => GetRangeSummaryAsync(date, date);
 
-        var allSales  = (await _saleRepo.GetByDateRangeAsync(dayStart, dayEnd)).ToList();
+    public async Task<DailySummaryDto> GetRangeSummaryAsync(DateTime from, DateTime to)
+    {
+        var rangeStart = from.Date;
+        var rangeEnd   = to.Date.AddDays(1).AddTicks(-1);
+
+        var allSales  = (await _saleRepo.GetByDateRangeAsync(rangeStart, rangeEnd)).ToList();
         var sales     = allSales.Where(s => s.Status != TransactionStatus.Cancelled).ToList();
-        var purchases = (await _purchaseRepo.GetByDateRangeAsync(dayStart, dayEnd)).ToList();
+        var purchases = (await _purchaseRepo.GetByDateRangeAsync(rangeStart, rangeEnd)).ToList();
 
         var salesRevenue  = sales.Sum(s => s.TotalAmountTRY);
         var purchasesCost = purchases.Sum(p => p.TotalAmountTRY);
 
         return new DailySummaryDto(
-            date,
+            rangeStart,
             sales.Count,
             salesRevenue,
             sales.Sum(s => s.TotalWeightGram),
