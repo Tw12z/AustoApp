@@ -162,26 +162,23 @@
   .marquee-wrap { overflow:hidden; mask-image:linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); }
   @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-  /* 3D rotating feature ring — a drum of cards spinning around a fixed center */
-  .feature-ring-perspective { perspective: 1500px; perspective-origin: 50% 45%; }
+  /* 3D feature ring — a drum of equal-sized cards, rotated by hand (drag), not auto-spinning.
+     A large perspective keeps every card's apparent size close to identical; only rotation/dimming reads as 3D. */
+  .feature-ring-perspective { perspective: 4200px; perspective-origin: 50% 45%; touch-action: pan-y; }
   .feature-ring {
     position: relative;
     width: 1px; height: 1px;
     transform-style: preserve-3d;
-    animation: ring-spin 46s linear infinite;
-  }
-  .feature-ring:hover { animation-play-state: paused; }
-  @keyframes ring-spin {
-    from { transform: rotateY(0deg); }
-    to   { transform: rotateY(360deg); }
+    will-change: transform;
   }
   .feature-ring-card {
     position: absolute;
     top: 50%; left: 50%;
     width: var(--ring-card-w, 200px);
     margin-left: calc(var(--ring-card-w, 200px) / -2);
-    margin-top: -92px;
+    margin-top: -86px;
     backface-visibility: hidden;
+    transition: opacity 0.15s linear;
   }
   .feature-ring-card-inner {
     border-radius: 16px;
@@ -189,6 +186,7 @@
     background: rgba(10,10,10,0.6);
     backdrop-filter: blur(8px);
     padding: 22px 20px;
+    text-align: center;
     transition: border-color 0.3s ease, background 0.3s ease;
   }
   .feature-ring-card-inner:hover { border-color: rgba(212,175,55,0.4); background: rgba(14,14,14,0.75); }

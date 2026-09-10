@@ -240,22 +240,24 @@ function NavClock() {
   )
 }
 
-/* ── Feature grid, Apple-style: no boxes, no numbers, just space and type ── */
-/* Minimalist icon + copy, shared by the 3D ring and the mobile fallback grid */
+/* ── Feature grid ── */
+/* Icon sits inline with the title (not floating alone above it), everything centered. */
 function FeatureItemBody({ f }: { f: typeof features[0] }) {
   const { t } = useTranslation()
   return (
-    <>
-      <f.icon size={19} strokeWidth={1.5} style={{
-        color: '#e8c76b', filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.45))', marginBottom: 10,
-      }} />
-      <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 14.5, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 6 }}>
-        {t(`landing.features.items.${f.key}.title`)}
-      </h3>
+    <div className="flex flex-col items-center text-center">
+      <div className="flex items-center justify-center gap-2" style={{ marginBottom: 8 }}>
+        <f.icon size={16} strokeWidth={1.6} style={{
+          color: '#e8c76b', filter: 'drop-shadow(0 0 5px rgba(212,175,55,0.45))', flexShrink: 0,
+        }} />
+        <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em' }}>
+          {t(`landing.features.items.${f.key}.title`)}
+        </h3>
+      </div>
       <p style={{ color: '#8A8A8A', fontSize: 12.5, lineHeight: 1.6, fontWeight: 300 }}>
         {t(`landing.features.items.${f.key}.desc`)}
       </p>
-    </>
+    </div>
   )
 }
 
@@ -263,19 +265,40 @@ const RING_RADIUS = 380
 
 function FeatureGrid() {
   const angleStep = 360 / features.length
+  const [rotation, setRotation] = useState(0)
+  const dragging = useRef(false)
+  const lastX = useRef(0)
+
+  const startDrag = (clientX: number) => { dragging.current = true; lastX.current = clientX }
+  const moveDrag = (clientX: number) => {
+    if (!dragging.current) return
+    setRotation(r => r + (clientX - lastX.current) * 0.4)
+    lastX.current = clientX
+  }
+  const endDrag = () => { dragging.current = false }
+
   return (
     <>
-      {/* Desktop/tablet: an infinite 3D ring, spinning like a drum, pauses on hover */}
-      <div className="hidden md:flex items-center justify-center feature-ring-perspective" style={{ height: 300, marginTop: 24 }}>
-        <div className="feature-ring" style={{ '--ring-card-w': '190px' } as React.CSSProperties}>
-          {features.map((f, i) => (
-            <div key={f.key} className="feature-ring-card"
-              style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${RING_RADIUS}px)` }}>
-              <div className="feature-ring-card-inner">
-                <FeatureItemBody f={f} />
+      {/* Desktop/tablet: a 3D ring you spin by hand — off-center cards dim toward the sides */}
+      <div className="hidden md:flex items-center justify-center feature-ring-perspective select-none active:cursor-grabbing"
+        style={{ height: 300, marginTop: 24, cursor: 'grab' }}
+        onPointerDown={e => startDrag(e.clientX)}
+        onPointerMove={e => moveDrag(e.clientX)}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}>
+        <div className="feature-ring" style={{ '--ring-card-w': '190px', transform: `rotateY(${rotation}deg)` } as React.CSSProperties}>
+          {features.map((f, i) => {
+            const facing = Math.cos(((i * angleStep + rotation) * Math.PI) / 180)
+            const opacity = 0.22 + Math.max(0, facing) * 0.78
+            return (
+              <div key={f.key} className="feature-ring-card"
+                style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${RING_RADIUS}px)`, opacity }}>
+                <div className="feature-ring-card-inner">
+                  <FeatureItemBody f={f} />
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
