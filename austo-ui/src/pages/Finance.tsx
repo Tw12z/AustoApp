@@ -13,8 +13,7 @@ function fmt(n: number, locale = 'tr-TR') {
   return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 function fmtShort(n: number, locale = 'tr-TR') {
-  if (n >= 1_000_000) return '₺' + (n / 1_000_000).toFixed(1) + 'M'
-  if (n >= 1_000)     return '₺' + (n / 1_000).toFixed(0) + 'K'
+  // Full precision, not "7K" — traders want the exact number, not a rounded stand-in.
   return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 }
 
@@ -437,7 +436,7 @@ export default function Finance() {
                 tick={{ fill: '#7D7D7D', fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
-                width={52}
+                width={76}
                 tickFormatter={v => fmtShort(v, priceLocale)}
               />
               <Tooltip content={<MultiTip />} cursor={{ stroke: 'rgba(212,175,55,0.1)', strokeWidth: 1 }} />
