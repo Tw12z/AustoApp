@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, useInView } from 'framer-motion'
 import {
   TrendingUp, Package, ShoppingCart, BarChart3,
-  QrCode, MapPin, Shield, Zap, ChevronLeft, ChevronRight, ArrowRight,
+  QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
   ArrowLeftRight, Users, Truck, Wallet,
 } from 'lucide-react'
 import Logo from '../components/Logo'
@@ -243,55 +243,39 @@ function NavClock() {
 /* ── Feature grid, Apple-style: no boxes, no numbers, just space and type ── */
 function FeatureGrid() {
   const { t } = useTranslation()
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const scrollByCard = (dir: 1 | -1) => scrollRef.current?.scrollBy({ left: dir * 296, behavior: 'smooth' })
-
   return (
-    <div className="relative">
-      <div ref={scrollRef} className="no-scrollbar scroll-fade-x flex gap-14 overflow-x-auto px-6 md:px-16"
-        style={{ scrollSnapType: 'x proximity', paddingBottom: 4 }}>
+    <div className="px-6 md:px-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto" style={{ maxWidth: 1080 }}>
         {features.map((f, i) => (
           <motion.div key={f.key}
-            initial={{ opacity: 0, y: 22 }}
+            initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px', amount: 0.4 }}
-            transition={{ duration: 0.5, delay: (i % 4) * 0.06, ease: 'easeOut' }}
-            className="group shrink-0 transition-transform duration-300 hover:-translate-y-1"
-            style={{ width: 260, scrollSnapAlign: 'start' }}>
-            <div className="relative mb-5" style={{ width: 52, height: 52 }}>
-              <div className="absolute -inset-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.18), transparent 70%)' }} />
-              <f.icon size={30} strokeWidth={1.5} className="relative" style={{
-                color: '#fffbe0',
-                filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 10px rgba(212,175,55,0.55))',
-              }} />
+            viewport={{ once: true, margin: '-60px', amount: 0.3 }}
+            transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: 'easeOut' }}
+            className="p-6 rounded-2xl border transition-colors duration-300"
+            style={{ borderColor: 'rgba(212,175,55,0.1)' }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(212,175,55,0.32)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(212,175,55,0.1)')}>
+            <div className="flex items-center gap-3" style={{ marginBottom: 12 }}>
+              <div className="flex items-center justify-center shrink-0" style={{
+                width: 38, height: 38, borderRadius: 10,
+                background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.2)',
+              }}>
+                <f.icon size={17} strokeWidth={1.6} style={{
+                  color: '#fffbe0',
+                  filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 8px rgba(212,175,55,0.6))',
+                }} />
+              </div>
+              <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 15.5, fontWeight: 700, letterSpacing: '-0.01em' }}>
+                {t(`landing.features.items.${f.key}.title`)}
+              </h3>
             </div>
-            <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-              {t(`landing.features.items.${f.key}.title`)}
-            </h3>
-            <p style={{ color: '#8A8A8A', fontSize: 14.5, lineHeight: 1.7, fontWeight: 300 }}>
+            <p style={{ color: '#8A8A8A', fontSize: 13.5, lineHeight: 1.7, fontWeight: 300 }}>
               {t(`landing.features.items.${f.key}.desc`)}
             </p>
           </motion.div>
         ))}
       </div>
-
-      <button aria-label="previous" onClick={() => scrollByCard(-1)}
-        className="hidden md:flex items-center justify-center absolute" style={{
-          left: 6, top: 26, width: 36, height: 36, borderRadius: '50%',
-          border: '1px solid rgba(212,175,55,0.22)', background: 'rgba(10,10,10,0.75)', backdropFilter: 'blur(6px)',
-          color: GOLD, cursor: 'pointer',
-        }}>
-        <ChevronLeft size={16} />
-      </button>
-      <button aria-label="next" onClick={() => scrollByCard(1)}
-        className="hidden md:flex items-center justify-center absolute" style={{
-          right: 6, top: 26, width: 36, height: 36, borderRadius: '50%',
-          border: '1px solid rgba(212,175,55,0.22)', background: 'rgba(10,10,10,0.75)', backdropFilter: 'blur(6px)',
-          color: GOLD, cursor: 'pointer',
-        }}>
-        <ChevronRight size={16} />
-      </button>
     </div>
   )
 }
