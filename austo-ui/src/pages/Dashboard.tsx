@@ -538,13 +538,14 @@ export default function Dashboard() {
           value={loading ? '—' : fmtShort(valuation?.totalEstimatedValueTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.totalWeight', { weight: (valuation?.totalWeightGram ?? 0).toFixed(2) })}
           iconNode={<LogoMarkless style={{
-            width: 130, height: 130, color: '#D4AF37',
+            width: 260, height: 260, color: '#D4AF37',
             filter: `
               drop-shadow(0 0 8px #D4AF3720)
               drop-shadow(2px 0 0 #D4AF37) drop-shadow(-2px 0 0 #D4AF37)
               drop-shadow(0 2px 0 #D4AF37) drop-shadow(0 -2px 0 #D4AF37)
             `,
           }} />}
+          iconRight={-40} iconBottom={-90}
           color="#D4AF37" loading={loading} />
       </div>
 
