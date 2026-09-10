@@ -8,7 +8,6 @@ import {
   ArrowLeftRight, Users, Truck, Wallet,
 } from 'lucide-react'
 import Logo from '../components/Logo'
-import BorderGlow from '../components/BorderGlow'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import LineWaves from '../components/LineWaves'
 import DashboardMirror from '../components/DashboardMirror'
@@ -241,59 +240,35 @@ function NavClock() {
   )
 }
 
-/* ── Feature bento grid: asymmetric, no carousel, no numbering ── */
-const FEATURED_KEYS = new Set(['finance', 'dashboard'])
-
+/* ── Feature grid, Apple-style: no boxes, no numbers, just space and type ── */
 function FeatureGrid() {
   const { t } = useTranslation()
   return (
     <div className="px-6 md:px-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mx-auto"
-        style={{ maxWidth: 1120, gridAutoFlow: 'dense' }}>
-        {features.map((f, i) => {
-          const featured = FEATURED_KEYS.has(f.key)
-          return (
-            <motion.div key={f.key}
-              initial={{ opacity: 0, y: 26 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.5, delay: (i % 4) * 0.06 }}
-              className={featured ? 'md:col-span-2 md:row-span-2' : ''}
-              style={{ height: '100%' }}>
-              <BorderGlow style={{ padding: featured ? 32 : 24, height: '100%' }} borderRadius={18}>
-                <div className="h-full flex flex-col relative overflow-hidden" style={{ justifyContent: featured ? 'space-between' : 'flex-start' }}>
-                  {featured && (
-                    <f.icon aria-hidden size={160} strokeWidth={1} style={{
-                      position: 'absolute', bottom: -30, right: -24, color: 'rgba(212,175,55,0.05)', pointerEvents: 'none',
-                    }} />
-                  )}
-                  <div style={{
-                    width: featured ? 56 : 42, height: featured ? 56 : 42, borderRadius: featured ? 16 : 12,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: featured ? 24 : 16,
-                    background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.2)',
-                    boxShadow: '0 0 8px rgba(212,175,55,0.15), inset 0 0 8px rgba(212,175,55,0.06)',
-                  }}>
-                    <f.icon size={featured ? 24 : 18} style={{
-                      color: '#fffbe0',
-                      filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 8px #D4AF37) drop-shadow(0 0 18px rgba(212,175,55,0.85))',
-                    }} />
-                  </div>
-                  <div className="relative">
-                    <h3 style={{
-                      color: '#fff', fontFamily: featured ? PF : CV, fontSize: featured ? 20 : 14,
-                      fontWeight: featured ? 700 : 600, letterSpacing: '0.01em', marginBottom: featured ? 12 : 8,
-                    }}>
-                      {t(`landing.features.items.${f.key}.title`)}
-                    </h3>
-                    <p style={{ color: '#888', fontSize: featured ? 14.5 : 13, lineHeight: 1.7, margin: 0 }}>
-                      {t(`landing.features.items.${f.key}.desc`)}
-                    </p>
-                  </div>
-                </div>
-              </BorderGlow>
-            </motion.div>
-          )
-        })}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 mx-auto" style={{ maxWidth: 1080 }}>
+        {features.map((f, i) => (
+          <motion.div key={f.key}
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.55, delay: (i % 3) * 0.08, ease: 'easeOut' }}
+            className="group transition-transform duration-300 hover:-translate-y-1">
+            <div className="relative mb-5" style={{ width: 52, height: 52 }}>
+              <div className="absolute -inset-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.18), transparent 70%)' }} />
+              <f.icon size={30} strokeWidth={1.5} className="relative" style={{
+                color: '#fffbe0',
+                filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 10px rgba(212,175,55,0.55))',
+              }} />
+            </div>
+            <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
+              {t(`landing.features.items.${f.key}.title`)}
+            </h3>
+            <p style={{ color: '#8A8A8A', fontSize: 14.5, lineHeight: 1.7, maxWidth: 300, fontWeight: 300 }}>
+              {t(`landing.features.items.${f.key}.desc`)}
+            </p>
+          </motion.div>
+        ))}
       </div>
     </div>
   )
