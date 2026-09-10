@@ -1,4 +1,6 @@
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../i18n'
 
 interface LanguageSwitcherProps {
@@ -13,6 +15,9 @@ const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
 export default function LanguageSwitcher({ className = '' }: LanguageSwitcherProps) {
   const { i18n } = useTranslation()
   const current = (i18n.resolvedLanguage ?? i18n.language) as SupportedLanguage
+  // Scoped per instance so the sliding pill never jumps between the navbar's
+  // switcher and, say, a login-page one if both ever mount at once.
+  const pillId = useId()
 
   return (
     <div
@@ -29,13 +34,18 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
             type="button"
             onClick={() => i18n.changeLanguage(lang)}
             aria-pressed={isActive}
-            className="px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide transition-colors"
-            style={{
-              color: isActive ? '#0A0A0A' : '#9A9A9A',
-              background: isActive ? '#D4AF37' : 'transparent',
-            }}
+            className="relative px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide"
+            style={{ color: isActive ? '#0A0A0A' : '#9A9A9A', transition: 'color 0.25s ease' }}
           >
-            {LANGUAGE_LABELS[lang]}
+            {isActive && (
+              <motion.span
+                layoutId={`lang-pill-${pillId}`}
+                className="absolute inset-0 rounded-full"
+                style={{ background: '#D4AF37' }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            )}
+            <span className="relative">{LANGUAGE_LABELS[lang]}</span>
           </button>
         )
       })}

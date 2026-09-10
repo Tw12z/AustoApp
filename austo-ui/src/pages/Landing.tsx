@@ -474,7 +474,7 @@ export default function Landing() {
 
       {/* ── NAVBAR ── */}
       <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4">
-        <nav className="relative flex items-center justify-between gap-8 px-8 rounded-full"
+        <nav className="relative flex items-center justify-between gap-8 pl-8 pr-2.5 rounded-full"
           style={{
             background: 'rgba(10,10,10,0.85)',
             backdropFilter: 'blur(20px)',
