@@ -28,7 +28,7 @@ interface StatCardProps {
   icon?: React.ElementType; iconNode?: React.ReactNode; color?: string; loading?: boolean
   iconRight?: number; iconBottom?: number; iconSize?: number; iconOpacity?: number
 }
-function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', loading, iconRight = -20, iconBottom = -20, iconSize = 140, iconOpacity = 0.25 }: StatCardProps) {
+function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', loading, iconRight = -20, iconBottom = -20, iconSize = 140, iconOpacity = 0.4 }: StatCardProps) {
   return (
     <div className="group relative flex flex-col justify-between rounded-2xl transition-all duration-300 overflow-hidden"
       style={{
@@ -46,9 +46,10 @@ function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', 
         {iconNode ?? (Icon && <Icon size={iconSize} strokeWidth={0.6} style={{
           color: color,
           filter: `
-            drop-shadow(0 0 8px ${color}20)
-            drop-shadow(2px 0 0 ${color}) drop-shadow(-2px 0 0 ${color})
-            drop-shadow(0 2px 0 ${color}) drop-shadow(0 -2px 0 ${color})
+            drop-shadow(0 0 4px ${color})
+            drop-shadow(0 0 10px ${color})
+            drop-shadow(0 0 22px ${color}AA)
+            drop-shadow(0 0 38px ${color}66)
           `,
         }} />)}
       </div>
@@ -528,7 +529,7 @@ export default function Dashboard() {
         <StatCard label={t('dashboard.stats.todayPurchases')}
           value={loading ? '—' : fmtShort(summary?.purchasesCostTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.todaySalesSub', { count: summary?.purchasesCount ?? 0, weight: (summary?.purchasesWeightGram ?? 0).toFixed(2) })}
-          icon={ShoppingBag} color="#3B82F6" loading={loading} />
+          icon={ShoppingBag} color="#3B82F6" loading={loading} iconRight={20} />
         <StatCard label={t('dashboard.stats.estimatedNetProfit')}
           value={loading ? '—' : fmtShort(summary?.netRevenueTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.todayNet')} icon={TrendingUp}
@@ -546,7 +547,7 @@ export default function Dashboard() {
               drop-shadow(0 0 38px #D4AF3766)
             `,
           }} />}
-          iconRight={-25} iconBottom={-65} iconOpacity={0.4}
+          iconRight={10} iconBottom={-65}
           color="#D4AF37" loading={loading} />
       </div>
 
