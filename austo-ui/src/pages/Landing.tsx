@@ -240,84 +240,75 @@ function NavClock() {
   )
 }
 
-/* ── Feature grid ── */
-/* Icon sits inline with the title (not floating alone above it), everything centered. */
-function FeatureItemBody({ f }: { f: typeof features[0] }) {
-  const { t } = useTranslation()
+/* ── Feature highlights: the 4 most compelling ones, flanking a winding line ── */
+const FEATURE_HIGHLIGHT_KEYS = ['finance', 'sales', 'qr', 'reports']
+const HIGHLIGHT_ROW_H = 220
+
+function FeaturePathLine({ rows }: { rows: number }) {
+  const ref = useRef<SVGPathElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const h = rows * HIGHLIGHT_ROW_H
+
+  const xs = Array.from({ length: rows }, (_, i) => (i % 2 === 0 ? 66 : 34))
+  let d = `M 50,0`
+  xs.forEach((x, i) => {
+    const y = HIGHLIGHT_ROW_H * i + HIGHLIGHT_ROW_H / 2
+    const prevY = i === 0 ? 0 : HIGHLIGHT_ROW_H * (i - 1) + HIGHLIGHT_ROW_H / 2
+    const midY = (prevY + y) / 2
+    d += ` C 50,${midY} ${x},${midY} ${x},${y}`
+  })
+  d += ` C ${xs[rows - 1]},${h} 50,${h} 50,${h}`
+
   return (
-    <div className="flex flex-col items-center text-center">
-      <div className="flex items-center justify-center gap-2" style={{ marginBottom: 8 }}>
-        <f.icon size={16} strokeWidth={1.6} style={{
-          color: '#e8c76b', filter: 'drop-shadow(0 0 5px rgba(212,175,55,0.45))', flexShrink: 0,
-        }} />
-        <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em' }}>
-          {t(`landing.features.items.${f.key}.title`)}
-        </h3>
-      </div>
-      <p style={{ color: '#8A8A8A', fontSize: 12.5, lineHeight: 1.6, fontWeight: 300 }}>
-        {t(`landing.features.items.${f.key}.desc`)}
-      </p>
-    </div>
+    <svg className="hidden md:block absolute pointer-events-none" viewBox={`0 0 100 ${h}`}
+      preserveAspectRatio="none" style={{ left: '50%', top: 0, width: 120, height: h, transform: 'translateX(-50%)' }}>
+      <defs>
+        <linearGradient id="featurePathGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(212,175,55,0.04)" />
+          <stop offset="50%" stopColor="rgba(212,175,55,0.5)" />
+          <stop offset="100%" stopColor="rgba(212,175,55,0.04)" />
+        </linearGradient>
+      </defs>
+      <motion.path ref={ref} d={d} fill="none" stroke="url(#featurePathGrad)" strokeWidth={1.4} strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={inView ? { pathLength: 1, opacity: 1 } : {}}
+        transition={{ duration: 1.8, ease: 'easeInOut' }} />
+    </svg>
   )
 }
 
-const RING_RADIUS = 380
-
 function FeatureGrid() {
-  const angleStep = 360 / features.length
-  const [rotation, setRotation] = useState(0)
-  const dragging = useRef(false)
-  const lastX = useRef(0)
-
-  const startDrag = (clientX: number) => { dragging.current = true; lastX.current = clientX }
-  const moveDrag = (clientX: number) => {
-    if (!dragging.current) return
-    setRotation(r => r + (clientX - lastX.current) * 0.4)
-    lastX.current = clientX
-  }
-  const endDrag = () => { dragging.current = false }
+  const { t } = useTranslation()
+  const items = FEATURE_HIGHLIGHT_KEYS.map(key => features.find(f => f.key === key)!)
 
   return (
-    <>
-      {/* Desktop/tablet: a 3D ring you spin by hand — off-center cards dim toward the sides */}
-      <div className="hidden md:flex items-center justify-center feature-ring-perspective select-none active:cursor-grabbing"
-        style={{ height: 300, marginTop: 24, cursor: 'grab' }}
-        onPointerDown={e => startDrag(e.clientX)}
-        onPointerMove={e => moveDrag(e.clientX)}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}>
-        <div className="feature-ring" style={{ '--ring-card-w': '190px', transform: `rotateY(${rotation}deg)` } as React.CSSProperties}>
-          {features.map((f, i) => {
-            const facing = Math.cos(((i * angleStep + rotation) * Math.PI) / 180)
-            const opacity = 0.22 + Math.max(0, facing) * 0.78
-            return (
-              <div key={f.key} className="feature-ring-card"
-                style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${RING_RADIUS}px)`, opacity }}>
-                <div className="feature-ring-card-inner">
-                  <FeatureItemBody f={f} />
+    <div className="relative mx-auto px-6 md:px-10" style={{ maxWidth: 860 }}>
+      <FeaturePathLine rows={items.length} />
+      <div className="relative">
+        {items.map((f, i) => {
+          const onRight = i % 2 === 1
+          return (
+            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ minHeight: HIGHLIGHT_ROW_H }}>
+              <FadeIn delay={i * 0.1} className={onRight ? 'md:col-start-2' : 'md:col-start-1'}>
+                <div className={`flex flex-col items-center text-center mx-auto ${onRight ? 'md:items-start md:text-left md:ml-10' : 'md:items-end md:text-right md:mr-10'}`}
+                  style={{ maxWidth: 320 }}>
+                  <f.icon size={22} strokeWidth={1.5} style={{
+                    color: '#e8c76b', filter: 'drop-shadow(0 0 7px rgba(212,175,55,0.5))', marginBottom: 12,
+                  }} />
+                  <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
+                    {t(`landing.features.items.${f.key}.title`)}
+                  </h3>
+                  <p style={{ color: '#8A8A8A', fontSize: 14, lineHeight: 1.75, fontWeight: 300 }}>
+                    {t(`landing.features.items.${f.key}.desc`)}
+                  </p>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              </FadeIn>
+            </div>
+          )
+        })}
       </div>
-
-      {/* Mobile: flat stacked grid — a 3D ring doesn't fit narrow viewports */}
-      <div className="md:hidden px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mx-auto" style={{ maxWidth: 640 }}>
-          {features.map((f, i) => (
-            <motion.div key={f.key}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px', amount: 0.3 }}
-              transition={{ duration: 0.5, delay: (i % 2) * 0.07, ease: 'easeOut' }}
-              className="p-5 rounded-2xl border" style={{ borderColor: 'rgba(212,175,55,0.12)' }}>
-              <FeatureItemBody f={f} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </>
+    </div>
   )
 }
 
