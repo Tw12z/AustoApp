@@ -14,7 +14,10 @@ function fmt(n: number, locale = 'tr-TR') {
 }
 function fmtShort(n: number, locale = 'tr-TR') {
   // Full precision, not "7K" — traders want the exact number, not a rounded stand-in.
-  return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  // Small-magnitude instruments (USD/EUR/GBP, ~tens of TRY) need the kuruş decimals to
+  // mean anything; large gold/coin prices (thousands) read cleaner without them.
+  const decimals = Math.abs(n) < 1000 ? 2 : 0
+  return '₺' + n.toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
 }
 
 // ── Metric config ─────────────────────────────────────────
