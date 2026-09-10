@@ -4,7 +4,7 @@ import { RefreshCw, Plus, X, TrendingUp, TrendingDown } from 'lucide-react'
 import { financeApi } from '../api/client'
 import type { FinanceItem, GoldPriceLog } from '../types'
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip,
+  AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
 } from 'recharts'
 
@@ -271,6 +271,26 @@ export default function Finance() {
   const fxRates   = rates.filter(r => ['USD', 'EUR', 'GBP'].includes(r.code))
   const tickInterval = Math.max(0, Math.floor(chartData.length / 7) - 1)
 
+  // Zoom the Y-axis into the actual range of the visible series instead of
+  // the auto-scale-from-zero default — a 2% daily wobble is invisible next
+  // to a ₺6800 baseline unless the axis is cropped tight around it.
+  const yDomain = useMemo((): [number, number] | ['auto', 'auto'] => {
+    const vals: number[] = []
+    for (const pt of chartData) {
+      for (const m of METRICS) {
+        if (selected.has(m.key)) {
+          const v = pt[m.key]
+          if (typeof v === 'number') vals.push(v)
+        }
+      }
+    }
+    if (vals.length === 0) return ['auto', 'auto']
+    const min = Math.min(...vals)
+    const max = Math.max(...vals)
+    const pad = (max - min) * 0.15 || max * 0.02 || 1
+    return [Math.floor(min - pad), Math.ceil(max + pad)]
+  }, [chartData, selected])
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -418,14 +438,22 @@ export default function Finance() {
 
         {/* Chart */}
         {historyLoading ? (
-          <div className="shimmer rounded-xl" style={{ height: 320 }} />
+          <div className="shimmer rounded-xl" style={{ height: 360 }} />
         ) : chartData.length === 0 ? (
-          <div className="flex items-center justify-center rounded-xl text-sm" style={{ height: 320, color: '#7D7D7D' }}>
+          <div className="flex items-center justify-center rounded-xl text-sm" style={{ height: 360, color: '#7D7D7D' }}>
             {t('finance.noChartData')}
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={360}>
+            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
+              <defs>
+                {METRICS.filter(m => selected.has(m.key)).map(m => (
+                  <linearGradient key={m.key} id={`fill-${m.key}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={m.color} stopOpacity={0.4} />
+                    <stop offset="95%" stopColor={m.color} stopOpacity={0.02} />
+                  </linearGradient>
+                ))}
+              </defs>
               <CartesianGrid stroke="#1A1A1A" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="label"
@@ -440,25 +468,28 @@ export default function Finance() {
                 axisLine={false}
                 tickLine={false}
                 width={76}
+                domain={yDomain}
+                allowDataOverflow
                 tickFormatter={v => fmtShort(v, priceLocale)}
               />
-              <Tooltip content={<MultiTip />} cursor={{ stroke: 'rgba(212,175,55,0.1)', strokeWidth: 1 }} />
+              <Tooltip content={<MultiTip />} cursor={{ stroke: 'rgba(212,175,55,0.15)', strokeWidth: 1 }} />
               {METRICS.filter(m => selected.has(m.key)).map(m => (
-                <Line
+                <Area
                   key={m.key}
                   type="monotone"
                   dataKey={m.key}
                   stroke={m.color}
-                  strokeWidth={2}
+                  strokeWidth={2.5}
+                  fill={`url(#fill-${m.key})`}
                   dot={false}
-                  activeDot={{ r: 4, fill: m.color, stroke: '#111', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: m.color, stroke: '#111', strokeWidth: 2 }}
                   connectNulls
                   isAnimationActive
-                  animationDuration={600}
+                  animationDuration={700}
                   animationEasing="ease-out"
                 />
               ))}
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         )}
       </div>
