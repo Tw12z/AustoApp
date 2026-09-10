@@ -6,7 +6,6 @@ import {
   TrendingUp, Package, ShoppingCart, BarChart3,
   QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
   ArrowLeftRight, Users, Truck, Wallet,
-  UserPlus, PackagePlus, Rocket,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import BorderGlow from '../components/BorderGlow'
@@ -60,9 +59,9 @@ const stats = [
 
 /* ── How-it-works: asymmetric 3-step path ── */
 const HOW_STEPS = [
-  { key: 'account',  num: '01', icon: UserPlus },
-  { key: 'products', num: '02', icon: PackagePlus },
-  { key: 'manage',   num: '03', icon: Rocket },
+  { key: 'account',  num: '01' },
+  { key: 'products', num: '02' },
+  { key: 'manage',   num: '03' },
 ]
 const HOW_OFFSETS = ['md:mt-0', 'md:mt-20', 'md:mt-8']
 
@@ -521,19 +520,12 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-6 relative">
               {HOW_STEPS.map((s, i) => (
                 <FadeIn key={s.key} delay={i * 0.18} className={`text-center px-4 ${HOW_OFFSETS[i]}`}>
-                  <div className="relative mx-auto mb-6" style={{ width: 88, height: 88 }}>
+                  <div className="mb-4" style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span aria-hidden style={{
-                      position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: CV, fontSize: 60, fontWeight: 800, color: 'transparent',
-                      WebkitTextStroke: '1px rgba(212,175,55,0.22)', pointerEvents: 'none', userSelect: 'none',
+                      fontFamily: CV, fontSize: 56, fontWeight: 800, lineHeight: 1,
+                      background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                      userSelect: 'none',
                     }}>{s.num}</span>
-                    <div className="absolute inset-0 m-auto flex items-center justify-center" style={{
-                      width: 52, height: 52, borderRadius: 14,
-                      background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.22)',
-                      boxShadow: '0 0 18px rgba(212,175,55,0.1)',
-                    }}>
-                      <s.icon size={20} color={GOLD} />
-                    </div>
                   </div>
                   <h3 className="text-white mb-3" style={{ fontSize: 16, fontFamily: CV, fontWeight: 600 }}>{t(`landing.how.steps.${s.key}.title`)}</h3>
                   <p style={{ color: '#888888', fontSize: 14, lineHeight: 1.7, maxWidth: 280, margin: '0 auto' }}>{t(`landing.how.steps.${s.key}.desc`)}</p>
