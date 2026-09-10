@@ -59,9 +59,9 @@ const stats = [
 
 /* ── How-it-works: asymmetric 3-step path ── */
 const HOW_STEPS = [
-  { key: 'account',  num: '01' },
-  { key: 'products', num: '02' },
-  { key: 'manage',   num: '03' },
+  { key: 'account',  num: '1' },
+  { key: 'products', num: '2' },
+  { key: 'manage',   num: '3' },
 ]
 const HOW_OFFSETS = ['md:mt-0', 'md:mt-20', 'md:mt-8']
 
@@ -171,7 +171,7 @@ function HowPath() {
       </defs>
       <motion.path
         ref={ref}
-        d="M 166,70 C 320,70 340,215 500,195 C 660,178 700,55 834,110"
+        d="M 166,54 C 320,54 340,154 500,134 C 660,118 700,70 834,86"
         fill="none"
         stroke="url(#howPathGrad)"
         strokeWidth={1.4}
@@ -180,13 +180,6 @@ function HowPath() {
         animate={inView ? { pathLength: 1, opacity: 1 } : {}}
         transition={{ duration: 1.5, ease: 'easeInOut' }}
       />
-      {[[166, 70], [500, 195], [834, 110]].map(([cx, cy], i) => (
-        <motion.circle key={i} cx={cx} cy={cy} r={4} fill={GOLD}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={inView ? { opacity: 0.9, scale: 1 } : {}}
-          transition={{ duration: 0.4, delay: 0.3 + i * 0.45 }}
-        />
-      ))}
     </svg>
   )
 }
