@@ -65,6 +65,43 @@ function MiniChart() {
   )
 }
 
+/* Small product glyphs for the Quick Sale list — an actual silhouette per
+   item instead of a flat colour swatch, since a bracelet and a gold bar
+   read as visibly different products, not just "some gold item #1/#2". */
+type ProductGlyphType = 'bracelet' | 'bar' | 'necklace' | 'ring'
+function ProductGlyph({ type, color = '#D4AF37' }: { type: ProductGlyphType; color?: string }) {
+  return (
+    <div className="rounded-md shrink-0 flex items-center justify-center"
+      style={{ width: 22, height: 22, background: '#1A1A1A', border: '1px solid rgba(212,175,55,0.25)' }}>
+      {type === 'bracelet' && (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="8" stroke={color} strokeWidth="2.6" />
+          <circle cx="12" cy="4.3" r="1.3" fill="#F5E070" />
+        </svg>
+      )}
+      {type === 'bar' && (
+        <svg width="14" height="14" viewBox="0 0 24 24">
+          <path d="M6 17 L8 8 L16 8 L18 17 Z" fill={color} />
+          <path d="M6 17 L8 8 L16 8 L18 17 Z" fill="none" stroke="#8A6C14" strokeWidth="0.6" />
+          <line x1="8.6" y1="10.5" x2="15.4" y2="10.5" stroke="#8A6C14" strokeWidth="0.6" />
+        </svg>
+      )}
+      {type === 'necklace' && (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M4 5 C4 13 20 13 20 5" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="12" cy="16.5" r="2.3" fill={color} />
+        </svg>
+      )}
+      {type === 'ring' && (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="14" r="6.5" stroke={color} strokeWidth="2.4" />
+          <path d="M9 7.5 L12 3 L15 7.5 Z" fill="#F5E070" />
+        </svg>
+      )}
+    </div>
+  )
+}
+
 /* ── Page 1: Dashboard ── */
 const DEMO_RATES = [
   { code: 'USD', price: '₺34,18', change: '+0.42%', up: true },
@@ -75,9 +112,9 @@ const DEMO_RATES = [
 function DashboardBody() {
   const { t, i18n } = useTranslation()
   const numLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
-  const demoProducts = [
-    { name: t('landing.features.demo.productA'), price: '₺9.840' },
-    { name: t('landing.hero.demo.productFineBar'), price: '₺28.650' },
+  const demoProducts: { name: string; price: string; type: 'bracelet' | 'bar' }[] = [
+    { name: t('landing.features.demo.productA'), price: '₺9.840', type: 'bracelet' },
+    { name: t('landing.hero.demo.productFineBar'), price: '₺28.650', type: 'bar' },
   ]
   return (
     <>
@@ -114,7 +151,7 @@ function DashboardBody() {
               <motion.div key={p.name}
                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, delay: 0.2 + i * 0.08 }}
                 className="flex items-center gap-2 rounded-lg" style={{ background: '#111111', padding: '8px 10px' }}>
-                <div className="rounded-md shrink-0" style={{ width: 22, height: 22, background: 'linear-gradient(135deg,#D4AF37,#B8960C)' }} />
+                <ProductGlyph type={p.type} />
                 <span className="flex-1 truncate" style={{ fontSize: 11, fontWeight: 500, color: '#E5E5E5' }}>{p.name}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF' }}>{p.price}</span>
               </motion.div>
@@ -152,11 +189,11 @@ function DashboardBody() {
 
 function ProductsBody() {
   const { t } = useTranslation()
-  const demoProductsTable = [
-    { name: t('landing.features.demo.productA'),   purity: '22k', color: '#EAC84A', stock: '4.20g', price: '₺9.840' },
-    { name: t('landing.features.demo.productB'),   purity: '14k', color: '#C8A420', stock: '2.85g', price: '₺5.120' },
-    { name: t('landing.hero.demo.productFineBar'), purity: '24k', color: '#F5C842', stock: '10.0g', price: '₺28.650' },
-    { name: t('landing.hero.demo.productRing18k'), purity: '18k', color: '#D4AF37', stock: '1.40g', price: '₺3.210' },
+  const demoProductsTable: { name: string; purity: string; color: string; stock: string; price: string; type: ProductGlyphType }[] = [
+    { name: t('landing.features.demo.productA'),   purity: '22k', color: '#EAC84A', stock: '4.20g', price: '₺9.840',  type: 'bracelet' },
+    { name: t('landing.features.demo.productB'),   purity: '14k', color: '#C8A420', stock: '2.85g', price: '₺5.120',  type: 'necklace' },
+    { name: t('landing.hero.demo.productFineBar'), purity: '24k', color: '#F5C842', stock: '10.0g', price: '₺28.650', type: 'bar' },
+    { name: t('landing.hero.demo.productRing18k'), purity: '18k', color: '#D4AF37', stock: '1.40g', price: '₺3.210',  type: 'ring' },
   ]
   return (
     <>
@@ -185,7 +222,7 @@ function ProductsBody() {
             className="flex items-center px-4 py-3"
             style={{ background: i % 2 ? '#0D0D0D' : '#111111', borderBottom: i < demoProductsTable.length - 1 ? '1px solid #1A1A1A' : 'none' }}>
             <div className="flex items-center gap-2.5" style={{ flex: 2 }}>
-              <div className="rounded-md shrink-0" style={{ width: 22, height: 22, background: 'linear-gradient(135deg,#161616,#0A0A0A)', border: `1px solid ${p.color}44` }} />
+              <ProductGlyph type={p.type} color={p.color} />
               <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#E5E5E5' }}>{p.name}</span>
             </div>
             <div style={{ flex: 1, textAlign: 'right' }}>
