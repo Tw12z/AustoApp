@@ -128,6 +128,13 @@
         "qr": { "title": "QR Code Integration", "desc": "Define a barcode for every product. Perform stock movements in seconds by scanning a QR code." },
         "secure": { "title": "Secure & Modern", "desc": "Secure access with JWT authentication, email verification, and password reset. Built on .NET 10 and React." },
         "dashboard": { "title": "Dashboard & Quick Actions", "desc": "See daily sales, purchases, net profit, and stock value on one screen. Track the sales trend on a chart and complete a quick sale instantly." }
+      },
+      "demo": {
+        "productA": "22k Bracelet",
+        "productB": "14k Necklace",
+        "saleCompleted": "Sale Completed",
+        "recordingMovement": "Recording stock movement…",
+        "netProfitIncrease": "Net Profit Increase"
       }
     },
     "how": {

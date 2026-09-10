@@ -128,6 +128,13 @@
         "qr": { "title": "QR Kod Entegrasyonu", "desc": "Her ürün için barkod tanımlayın. Stok hareketlerini QR okutarak saniyeler içinde gerçekleştirin." },
         "secure": { "title": "Güvenli & Modern", "desc": "JWT kimlik doğrulama, e-posta doğrulama ve şifre sıfırlama ile güvenli erişim. .NET 10 ve React üzerinde inşa edilmiş." },
         "dashboard": { "title": "Dashboard & Hızlı Eylemler", "desc": "Tek ekranda günlük satış, alış, net kar ve stok değerini görün. Satış trendini grafikle takip edin, hızlı satışı anında tamamlayın." }
+      },
+      "demo": {
+        "productA": "22k Bilezik",
+        "productB": "14k Kolye",
+        "saleCompleted": "Satış Tamamlandı",
+        "recordingMovement": "Stok hareketi kaydediliyor…",
+        "netProfitIncrease": "Net Kâr Artışı"
       }
     },
     "how": {

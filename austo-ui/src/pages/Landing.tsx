@@ -305,17 +305,20 @@ function DemoPanel({ children }: { children: React.ReactNode }) {
 }
 
 function FinanceDemo() {
+  const { t, i18n } = useTranslation()
+  const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+  const changeText = i18n.resolvedLanguage === 'en' ? '▲ 0.14%' : '▲ %0,14'
   return (
     <DemoPanel>
       <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
-        <span style={{ fontSize: 10, letterSpacing: '0.12em', color: '#7D7D7D' }}>GRAM ALTIN</span>
+        <span style={{ fontSize: 10, letterSpacing: '0.12em', color: '#7D7D7D' }}>{t('layout.ticker.gram').toUpperCase()}</span>
         <motion.span style={{ fontSize: 10, color: '#22C55E', fontWeight: 700 }}
           animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.6, repeat: Infinity }}>
-          ▲ %0,14
+          {changeText}
         </motion.span>
       </div>
       <div style={{ fontSize: 21, fontWeight: 800, color: '#fff', fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>
-        ₺4.812,50
+        ₺{(4812.50).toLocaleString(priceLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
       <svg width="100%" height="42" viewBox="0 0 200 42" preserveAspectRatio="none">
         <motion.path d="M0,30 L28,22 L56,26 L84,12 L112,18 L140,6 L168,14 L200,4"
@@ -332,7 +335,13 @@ function FinanceDemo() {
 }
 
 function SalesDemo() {
-  const rows: [string, string][] = [['22k Bilezik', '₺9.840'], ['14k Kolye', '₺5.120']]
+  const { t, i18n } = useTranslation()
+  const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+  const fmt = (n: number) => '₺' + n.toLocaleString(priceLocale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  const rows: [string, string][] = [
+    [t('landing.features.demo.productA'), fmt(9840)],
+    [t('landing.features.demo.productB'), fmt(5120)],
+  ]
   return (
     <DemoPanel>
       <div style={{ marginBottom: 10 }}>
@@ -351,13 +360,14 @@ function SalesDemo() {
         style={{ background: 'rgba(34,197,94,0.1)', color: '#22C55E', fontSize: 12, fontWeight: 700, padding: '7px 0' }}
         animate={{ opacity: [0, 0, 1, 1, 0] }}
         transition={{ duration: 3.4, repeat: Infinity, times: [0, 0.72, 0.82, 0.92, 1] }}>
-        <Check size={14} /> Satış Tamamlandı
+        <Check size={14} /> {t('landing.features.demo.saleCompleted')}
       </motion.div>
     </DemoPanel>
   )
 }
 
 function QRDemo() {
+  const { t } = useTranslation()
   return (
     <DemoPanel>
       <div className="relative flex items-center justify-center overflow-hidden" style={{
@@ -371,12 +381,13 @@ function QRDemo() {
             opacity: { duration: 2.2, repeat: Infinity, times: [0, 0.08, 0.92, 1], ease: 'easeInOut' },
           }} />
       </div>
-      <div className="text-center" style={{ marginTop: 10, fontSize: 11.5, color: '#7D7D7D' }}>Stok hareketi kaydediliyor…</div>
+      <div className="text-center" style={{ marginTop: 10, fontSize: 11.5, color: '#7D7D7D' }}>{t('landing.features.demo.recordingMovement')}</div>
     </DemoPanel>
   )
 }
 
 function ReportsDemo() {
+  const { t } = useTranslation()
   const r = 24
   const circumference = 2 * Math.PI * r
   return (
@@ -393,7 +404,7 @@ function ReportsDemo() {
         </svg>
         <div>
           <div style={{ fontSize: 21, fontWeight: 800, color: '#fff' }}>%68</div>
-          <div style={{ fontSize: 11, color: '#7D7D7D' }}>Net Kâr Artışı</div>
+          <div style={{ fontSize: 11, color: '#7D7D7D' }}>{t('landing.features.demo.netProfitIncrease')}</div>
         </div>
       </div>
     </DemoPanel>
