@@ -26,9 +26,9 @@ function fmtShort(n: number, locale = 'tr-TR') {
 interface StatCardProps {
   label: string; value: string; sub?: string
   icon?: React.ElementType; iconNode?: React.ReactNode; color?: string; loading?: boolean
-  iconRight?: number; iconBottom?: number; iconSize?: number
+  iconRight?: number; iconBottom?: number; iconSize?: number; iconOpacity?: number
 }
-function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', loading, iconRight = -20, iconBottom = -20, iconSize = 140 }: StatCardProps) {
+function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', loading, iconRight = -20, iconBottom = -20, iconSize = 140, iconOpacity = 0.25 }: StatCardProps) {
   return (
     <div className="group relative flex flex-col justify-between rounded-2xl transition-all duration-300 overflow-hidden"
       style={{
@@ -42,7 +42,7 @@ function StatCard({ label, value, sub, icon: Icon, iconNode, color = '#D4AF37', 
         style={{ background: `linear-gradient(90deg, transparent, ${color}55, transparent)` }} />
 
       {/* Large watermark icon */}
-      <div className="absolute" style={{ right: iconRight, bottom: iconBottom, opacity: 0.25 }}>
+      <div className="absolute" style={{ right: iconRight, bottom: iconBottom, opacity: iconOpacity }}>
         {iconNode ?? (Icon && <Icon size={iconSize} strokeWidth={0.6} style={{
           color: color,
           filter: `
@@ -538,10 +538,15 @@ export default function Dashboard() {
           value={loading ? '—' : fmtShort(valuation?.totalEstimatedValueTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.totalWeight', { weight: (valuation?.totalWeightGram ?? 0).toFixed(2) })}
           iconNode={<LogoMarkless style={{
-            width: 200, height: 200, color: '#D4AF37',
-            filter: 'drop-shadow(0 0 8px #D4AF3720)',
+            width: 200, height: 200, color: '#F5E070',
+            filter: `
+              drop-shadow(0 0 4px #F5E070)
+              drop-shadow(0 0 10px #D4AF37)
+              drop-shadow(0 0 22px #D4AF37AA)
+              drop-shadow(0 0 38px #D4AF3766)
+            `,
           }} />}
-          iconRight={-25} iconBottom={-65}
+          iconRight={-25} iconBottom={-65} iconOpacity={0.4}
           color="#D4AF37" loading={loading} />
       </div>
 
