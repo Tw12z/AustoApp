@@ -20,6 +20,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ITokenHandler, TokenHandler>();
         services.AddScoped<IQRService, QRService>();
         services.AddHttpClient<IFinanceService, TuruncgilService>();
+        services.AddHostedService<GoldPriceLoggerHostedService>();
 
         return services;
     }
