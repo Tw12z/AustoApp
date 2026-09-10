@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { motion, useInView } from 'framer-motion'
 import {
   LayoutDashboard, Package, ArrowLeftRight, ShoppingCart, ShoppingBag,
-  TrendingUp, TrendingDown, BarChart3, Gem, Search, Settings, Plus,
+  TrendingUp, TrendingDown, BarChart3, Search, Settings, Plus,
   QrCode, CheckCircle2,
 } from 'lucide-react'
+import LogoMarkless from './LogoMarkless'
 
 /* ── Dashboard mirror ──
    A faithful, large-scale echo of the real in-app product — same section
@@ -22,8 +23,8 @@ import {
 const CV = 'Montserrat, sans-serif'
 const AUTO_ADVANCE_MS = 5000
 
-function MiniStat({ icon: Icon, label, value, sub, color, delay }: {
-  icon: React.ElementType; label: string; value: string; sub: string; color: string; delay: number
+function MiniStat({ icon: Icon, iconNode, label, value, sub, color, delay }: {
+  icon?: React.ElementType; iconNode?: React.ReactNode; label: string; value: string; sub: string; color: string; delay: number
 }) {
   return (
     <motion.div
@@ -32,7 +33,7 @@ function MiniStat({ icon: Icon, label, value, sub, color, delay }: {
       style={{ background: 'linear-gradient(160deg,#161616 0%,#0E0E0E 100%)', border: '1px solid rgba(212,175,55,0.1)', padding: '16px 16px 14px' }}>
       <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}66, transparent)` }} />
       <div className="flex items-center gap-1.5 mb-2" style={{ color: '#888888' }}>
-        <Icon size={12} strokeWidth={2} />
+        {iconNode ?? (Icon && <Icon size={12} strokeWidth={2} />)}
         <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase' }}>{label}</span>
       </div>
       <div style={{ fontSize: 21, fontWeight: 800, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em' }}>{value}</div>
@@ -65,10 +66,6 @@ function MiniChart() {
 }
 
 /* ── Page 1: Dashboard ── */
-const DEMO_PRODUCTS = [
-  { name: '22k Bilezik', price: '₺9.840' },
-  { name: 'Fine Külçe',  price: '₺28.650' },
-]
 const DEMO_RATES = [
   { code: 'USD', price: '₺34,18', change: '+0.42%', up: true },
   { code: 'EUR', price: '₺37,05', change: '+0.18%', up: true },
@@ -76,7 +73,12 @@ const DEMO_RATES = [
 ]
 
 function DashboardBody() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const numLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+  const demoProducts = [
+    { name: t('landing.features.demo.productA'), price: '₺9.840' },
+    { name: t('landing.hero.demo.productFineBar'), price: '₺28.650' },
+  ]
   return (
     <>
       <div className="flex items-center gap-2 mb-5">
@@ -92,9 +94,12 @@ function DashboardBody() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <MiniStat icon={ShoppingCart} label={t('landing.hero.demo.todaySales')}     value="₺48.250" sub="+12.4%"    color="#22C55E" delay={0} />
-        <MiniStat icon={ShoppingBag}  label={t('landing.hero.demo.todayPurchases')} value="₺16.900" sub="8 işlem"  color="#3B82F6" delay={0.06} />
+        <MiniStat icon={ShoppingBag}  label={t('landing.hero.demo.todayPurchases')} value="₺16.900" sub={t('landing.hero.demo.purchasesCount', { count: 8 })}  color="#3B82F6" delay={0.06} />
         <MiniStat icon={TrendingUp}   label={t('landing.hero.demo.netProfit')}      value="₺31.350" sub="+68.2%"   color="#22C55E" delay={0.12} />
-        <MiniStat icon={Gem}          label={t('landing.hero.demo.stockValue')}     value="₺2,4M"   sub="1.284 pcs" color="#D4AF37" delay={0.18} />
+        <MiniStat iconNode={<LogoMarkless style={{ width: 12, height: 12, color: '#D4AF37' }} />}
+          label={t('landing.hero.demo.stockValue')} value="₺2,4M"
+          sub={t('landing.hero.demo.stockUnitsCount', { count: (1284).toLocaleString(numLocale) })}
+          color="#D4AF37" delay={0.18} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
@@ -105,7 +110,7 @@ function DashboardBody() {
             <span style={{ fontSize: 10, color: '#555555' }}>{t('landing.hero.demo.search')}</span>
           </div>
           <div className="space-y-1.5">
-            {DEMO_PRODUCTS.map((p, i) => (
+            {demoProducts.map((p, i) => (
               <motion.div key={p.name}
                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, delay: 0.2 + i * 0.08 }}
                 className="flex items-center gap-2 rounded-lg" style={{ background: '#111111', padding: '8px 10px' }}>
@@ -145,16 +150,14 @@ function DashboardBody() {
   )
 }
 
-/* ── Page 2: Products ── */
-const DEMO_PRODUCTS_TABLE = [
-  { name: '22k Bilezik', purity: '22k', color: '#EAC84A', stock: '4.20g',  price: '₺9.840' },
-  { name: '14k Kolye',   purity: '14k', color: '#C8A420', stock: '2.85g',  price: '₺5.120' },
-  { name: 'Fine Külçe',  purity: '24k', color: '#F5C842', stock: '10.0g',  price: '₺28.650' },
-  { name: '18k Yüzük',   purity: '18k', color: '#D4AF37', stock: '1.40g',  price: '₺3.210' },
-]
-
 function ProductsBody() {
   const { t } = useTranslation()
+  const demoProductsTable = [
+    { name: t('landing.features.demo.productA'),   purity: '22k', color: '#EAC84A', stock: '4.20g', price: '₺9.840' },
+    { name: t('landing.features.demo.productB'),   purity: '14k', color: '#C8A420', stock: '2.85g', price: '₺5.120' },
+    { name: t('landing.hero.demo.productFineBar'), purity: '24k', color: '#F5C842', stock: '10.0g', price: '₺28.650' },
+    { name: t('landing.hero.demo.productRing18k'), purity: '18k', color: '#D4AF37', stock: '1.40g', price: '₺3.210' },
+  ]
   return (
     <>
       <div className="flex items-center justify-between mb-5">
@@ -176,11 +179,11 @@ function ProductsBody() {
             <span key={h} style={{ flex: i === 0 ? 2 : 1, fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#888888', textAlign: i === 0 ? 'left' : 'right' }}>{h}</span>
           ))}
         </div>
-        {DEMO_PRODUCTS_TABLE.map((p, i) => (
+        {demoProductsTable.map((p, i) => (
           <motion.div key={p.name}
             initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, delay: i * 0.06 }}
             className="flex items-center px-4 py-3"
-            style={{ background: i % 2 ? '#0D0D0D' : '#111111', borderBottom: i < DEMO_PRODUCTS_TABLE.length - 1 ? '1px solid #1A1A1A' : 'none' }}>
+            style={{ background: i % 2 ? '#0D0D0D' : '#111111', borderBottom: i < demoProductsTable.length - 1 ? '1px solid #1A1A1A' : 'none' }}>
             <div className="flex items-center gap-2.5" style={{ flex: 2 }}>
               <div className="rounded-md shrink-0" style={{ width: 22, height: 22, background: 'linear-gradient(135deg,#161616,#0A0A0A)', border: `1px solid ${p.color}44` }} />
               <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#E5E5E5' }}>{p.name}</span>
@@ -241,9 +244,9 @@ function StockBody() {
 
       <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(212,175,55,0.08)' }}>
         {[
-          { label: t('landing.hero.demo.moveIn'),  loc: 'Vitrin', delta: '+3' },
-          { label: t('landing.hero.demo.moveOut'), loc: 'Kasa',   delta: '-1' },
-          { label: t('landing.hero.demo.moveIn'),  loc: 'Kasa',   delta: '+5' },
+          { label: t('landing.hero.demo.moveIn'),  loc: t('landing.hero.demo.locShowcase'), delta: '+3' },
+          { label: t('landing.hero.demo.moveOut'), loc: t('landing.hero.demo.locSafe'),     delta: '-1' },
+          { label: t('landing.hero.demo.moveIn'),  loc: t('landing.hero.demo.locSafe'),     delta: '+5' },
         ].map((m, i, arr) => (
           <motion.div key={i}
             initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, delay: 0.15 + i * 0.08 }}
@@ -334,7 +337,7 @@ export default function DashboardMirror() {
           <div className="hidden sm:flex flex-col items-center gap-2 shrink-0"
             style={{ width: 60, padding: '20px 0', borderRight: '1px solid rgba(212,175,55,0.08)' }}>
             <div className="mb-3 flex items-center justify-center rounded-lg" style={{ width: 26, height: 26, background: 'linear-gradient(135deg,#D4AF37,#B8960C)' }}>
-              <Gem size={13} style={{ color: '#0A0A0A' }} />
+              <LogoMarkless style={{ width: 14, height: 14, color: '#0A0A0A' }} />
             </div>
             {PAGES.map((p, i) => (
               <button key={p.key} type="button" onClick={() => handleSelect(i)}
@@ -363,8 +366,8 @@ export default function DashboardMirror() {
             {/* Ticker — constant across pages, like the real app header */}
             <div className="flex items-center gap-4 mb-5 overflow-hidden" style={{ opacity: 0.9 }}>
               {[
-                { label: 'GRAM', price: '₺4.812,50', up: true },
-                { label: 'ÇEYREK', price: '₺7.855,00', up: true },
+                { label: t('layout.ticker.gram').toUpperCase(), price: '₺4.812,50', up: true },
+                { label: t('layout.ticker.quarter').toUpperCase(), price: '₺7.855,00', up: true },
                 { label: 'USD', price: '₺34,18', up: false },
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-1.5 shrink-0">

@@ -95,6 +95,12 @@
         "transferred": "Vitrine transfer edildi",
         "moveIn": "Stok Giriş",
         "moveOut": "Stok Çıkış",
+        "productFineBar": "Fine Külçe",
+        "productRing18k": "18k Yüzük",
+        "locShowcase": "Vitrin",
+        "locSafe": "Kasa",
+        "purchasesCount": "{{count}} işlem",
+        "stockUnitsCount": "{{count}} adet",
         "nav": {
           "dashboard": "Panel",
           "products": "Ürünler",
