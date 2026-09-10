@@ -241,42 +241,60 @@ function NavClock() {
 }
 
 /* ── Feature grid, Apple-style: no boxes, no numbers, just space and type ── */
-function FeatureGrid() {
+/* Minimalist icon + copy, shared by the 3D ring and the mobile fallback grid */
+function FeatureItemBody({ f }: { f: typeof features[0] }) {
   const { t } = useTranslation()
   return (
-    <div className="px-6 md:px-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto" style={{ maxWidth: 1080 }}>
-        {features.map((f, i) => (
-          <motion.div key={f.key}
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px', amount: 0.3 }}
-            transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: 'easeOut' }}
-            className="p-6 rounded-2xl border transition-colors duration-300"
-            style={{ borderColor: 'rgba(212,175,55,0.1)' }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(212,175,55,0.32)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(212,175,55,0.1)')}>
-            <div className="flex items-center gap-3" style={{ marginBottom: 12 }}>
-              <div className="flex items-center justify-center shrink-0" style={{
-                width: 38, height: 38, borderRadius: 10,
-                background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.2)',
-              }}>
-                <f.icon size={17} strokeWidth={1.6} style={{
-                  color: '#fffbe0',
-                  filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 8px rgba(212,175,55,0.6))',
-                }} />
+    <>
+      <f.icon size={19} strokeWidth={1.5} style={{
+        color: '#e8c76b', filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.45))', marginBottom: 10,
+      }} />
+      <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 14.5, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 6 }}>
+        {t(`landing.features.items.${f.key}.title`)}
+      </h3>
+      <p style={{ color: '#8A8A8A', fontSize: 12.5, lineHeight: 1.6, fontWeight: 300 }}>
+        {t(`landing.features.items.${f.key}.desc`)}
+      </p>
+    </>
+  )
+}
+
+const RING_RADIUS = 380
+
+function FeatureGrid() {
+  const angleStep = 360 / features.length
+  return (
+    <>
+      {/* Desktop/tablet: an infinite 3D ring, spinning like a drum, pauses on hover */}
+      <div className="hidden md:flex items-center justify-center feature-ring-perspective" style={{ height: 300, marginTop: 24 }}>
+        <div className="feature-ring" style={{ '--ring-card-w': '190px' } as React.CSSProperties}>
+          {features.map((f, i) => (
+            <div key={f.key} className="feature-ring-card"
+              style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${RING_RADIUS}px)` }}>
+              <div className="feature-ring-card-inner">
+                <FeatureItemBody f={f} />
               </div>
-              <h3 style={{ color: '#fff', fontFamily: CV, fontSize: 15.5, fontWeight: 700, letterSpacing: '-0.01em' }}>
-                {t(`landing.features.items.${f.key}.title`)}
-              </h3>
             </div>
-            <p style={{ color: '#8A8A8A', fontSize: 13.5, lineHeight: 1.7, fontWeight: 300 }}>
-              {t(`landing.features.items.${f.key}.desc`)}
-            </p>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* Mobile: flat stacked grid — a 3D ring doesn't fit narrow viewports */}
+      <div className="md:hidden px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mx-auto" style={{ maxWidth: 640 }}>
+          {features.map((f, i) => (
+            <motion.div key={f.key}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px', amount: 0.3 }}
+              transition={{ duration: 0.5, delay: (i % 2) * 0.07, ease: 'easeOut' }}
+              className="p-5 rounded-2xl border" style={{ borderColor: 'rgba(212,175,55,0.12)' }}>
+              <FeatureItemBody f={f} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </>
   )
 }
 
