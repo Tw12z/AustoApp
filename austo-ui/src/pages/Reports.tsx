@@ -55,7 +55,7 @@ export default function Reports() {
         salesApi.getByDate(from, to),
       ])
       const sales: Sale[] = salesRes.data
-      buildSalesReportPdf({
+      await buildSalesReportPdf({
         period,
         from,
         to,
