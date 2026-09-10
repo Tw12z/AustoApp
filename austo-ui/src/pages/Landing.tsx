@@ -57,6 +57,16 @@ const stats = [
   { value: '∞',    key: 'productCapacity' },
 ]
 
+/* ── Live gold/currency ticker items ── */
+const TICKER_ITEMS = [
+  { code: 'GRAM ALTIN', labelKey: 'layout.ticker.gram' },
+  { code: 'ÇEYREK ALTIN', labelKey: 'layout.ticker.quarter' },
+  { code: 'YARIM ALTIN', labelKey: 'layout.ticker.half' },
+  { code: 'TAM ALTIN', labelKey: 'layout.ticker.full' },
+  { code: 'USD', labelKey: null },
+  { code: 'EUR', labelKey: null },
+]
+
 /* ── How-it-works: asymmetric 3-step path ── */
 const HOW_STEPS = [
   { key: 'account',  num: '1' },
@@ -530,47 +540,43 @@ export default function Landing() {
       </section>
 
       {/* ── LIVE GOLD STRIP ── */}
-      <section className="px-6 md:px-10 overflow-hidden"
-        style={{ paddingTop: '5rem', paddingBottom: '5rem', background: 'rgba(212,175,55,0.02)', borderTop: '1px solid rgba(212,175,55,0.08)', borderBottom: '1px solid rgba(212,175,55,0.08)' }}>
-        <FadeIn className="text-center mb-10">
+      <section className="overflow-hidden"
+        style={{ paddingTop: '5rem', paddingBottom: '5rem', background: '#0A0A0A', borderTop: '1px solid rgba(212,175,55,0.08)', borderBottom: '1px solid rgba(212,175,55,0.08)' }}>
+        <FadeIn className="text-center mb-10 px-6 md:px-10">
           <h3 style={{ fontFamily: CV, fontSize: 'clamp(1.4rem, 2.8vw, 2rem)', fontWeight: 700 }}>{t('landing.liveGold.title')}</h3>
         </FadeIn>
-        <div className="flex gap-4 justify-center flex-wrap max-w-4xl mx-auto">
-          {[
-            { code: 'GRAM ALTIN', labelKey: 'layout.ticker.gram' },
-            { code: 'ÇEYREK ALTIN', labelKey: 'layout.ticker.quarter' },
-            { code: 'YARIM ALTIN', labelKey: 'layout.ticker.half' },
-            { code: 'TAM ALTIN', labelKey: 'layout.ticker.full' },
-            { code: 'USD', labelKey: null },
-            { code: 'EUR', labelKey: null },
-          ].map((item, i) => {
-            const rate = liveRates.find(r => r.code === item.code)
-            const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
-            const isUp = rate ? !rate.changeRate.includes('-') : true
-            return (
-              <motion.div key={item.code}
-                initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.4 }}
-                className="rounded-2xl text-center"
-                style={{ background: '#0D0D0D', border: '1px solid rgba(212,175,55,0.12)', padding: '18px 28px', minWidth: 130 }}>
-                <div className="mb-2" style={{ color: '#7D7D7D', fontSize: 11, letterSpacing: '0.12em', fontFamily: CV }}>{item.labelKey ? t(item.labelKey) : item.code}</div>
-                {rate ? (
-                  <>
-                    <div style={{ color: '#FFFFFF', fontSize: 17, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
-                      ₺{rate.sellingPrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}
-                    </div>
-                    <div className="mt-1" style={{ color: isUp ? '#22C55E' : '#EF4444', fontSize: 11, fontWeight: 600 }}>
-                      {isUp ? '▲' : '▼'}{rate.changeRate.replace('-', '')}
-                    </div>
-                  </>
-                ) : (
-                  <div className="h-5 w-24 rounded-lg mx-auto shimmer" />
-                )}
-              </motion.div>
-            )
-          })}
+
+        <div className="marquee-wrap">
+          <div className="marquee-track" style={{ animationDuration: '38s', animationDirection: 'reverse' }}>
+            {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => {
+              const rate = liveRates.find(r => r.code === item.code)
+              const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
+              const isUp = rate ? !rate.changeRate.includes('-') : true
+              return (
+                <div key={i} className="flex items-center gap-3 shrink-0 select-none"
+                  style={{ padding: '0 36px', borderRight: '1px solid rgba(212,175,55,0.1)' }}>
+                  <span style={{ color: GOLD, fontSize: 11, letterSpacing: '0.14em', fontFamily: CV, whiteSpace: 'nowrap' }}>
+                    {item.labelKey ? t(item.labelKey) : item.code}
+                  </span>
+                  {rate ? (
+                    <>
+                      <span style={{ color: '#FFFFFF', fontSize: 17, fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        ₺{rate.sellingPrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}
+                      </span>
+                      <span style={{ color: isUp ? '#22C55E' : '#EF4444', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {isUp ? '▲' : '▼'}{rate.changeRate.replace('-', '')}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="h-4 w-20 rounded shimmer inline-block" />
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
-        <p className="text-center mt-8" style={{ color: '#7D7D7D', fontSize: 12 }}>{t('landing.liveGold.note')}</p>
+
+        <p className="text-center mt-10 px-6" style={{ color: '#7D7D7D', fontSize: 12 }}>{t('landing.liveGold.note')}</p>
       </section>
 
       {/* ── CTA ── */}
