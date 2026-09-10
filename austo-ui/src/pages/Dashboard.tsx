@@ -525,7 +525,7 @@ export default function Dashboard() {
         <StatCard label={t('dashboard.stats.todaySales')}
           value={loading ? '—' : fmtShort(summary?.salesRevenueTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.todaySalesSub', { count: summary?.salesCount ?? 0, weight: (summary?.salesWeightGram ?? 0).toFixed(2) })}
-          icon={ShoppingCart} color="#22C55E" loading={loading} iconRight={5} />
+          icon={ShoppingCart} color="#22C55E" loading={loading} iconRight={5} iconBottom={-35} />
         <StatCard label={t('dashboard.stats.todayPurchases')}
           value={loading ? '—' : fmtShort(summary?.purchasesCostTRY ?? 0, dateLocale)}
           sub={t('dashboard.stats.todaySalesSub', { count: summary?.purchasesCount ?? 0, weight: (summary?.purchasesWeightGram ?? 0).toFixed(2) })}
