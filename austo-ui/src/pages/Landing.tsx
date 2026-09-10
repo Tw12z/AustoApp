@@ -319,12 +319,12 @@ function FinanceDemo() {
       </div>
       <svg width="100%" height="42" viewBox="0 0 200 42" preserveAspectRatio="none">
         <motion.path d="M0,30 L28,22 L56,26 L84,12 L112,18 L140,6 L168,14 L200,4"
-          fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="butt" strokeLinejoin="round"
           initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
+          animate={{ pathLength: [0, 0, 1, 1], opacity: [0, 0, 1, 1, 0] }}
           transition={{
-            pathLength: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
-            opacity: { duration: 2.4, repeat: Infinity, times: [0, 0.15, 0.8, 1], ease: 'easeInOut' },
+            pathLength: { duration: 3, repeat: Infinity, times: [0, 0.22, 0.75, 1], ease: 'easeInOut' },
+            opacity: { duration: 3, repeat: Infinity, times: [0, 0.08, 0.22, 0.88, 1], ease: 'easeInOut' },
           }} />
       </svg>
     </DemoPanel>
