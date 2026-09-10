@@ -5,7 +5,7 @@ import { motion, useInView } from 'framer-motion'
 import {
   TrendingUp, Package, ShoppingCart, BarChart3,
   QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
-  ArrowLeftRight, Users, Truck, Wallet,
+  ArrowLeftRight, Users, Truck, Wallet, Check,
 } from 'lucide-react'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -244,20 +244,35 @@ function NavClock() {
 const FEATURE_HIGHLIGHT_KEYS = ['finance', 'sales', 'qr', 'reports']
 const HIGHLIGHT_ROW_H = 220
 
+/* Catmull-Rom → cubic-Bezier: a smooth curve through every point, no corners at the joins */
+function smoothPath(points: [number, number][]): string {
+  if (points.length < 2) return ''
+  let d = `M ${points[0][0]},${points[0][1]}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i === 0 ? i : i - 1]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[i + 2 < points.length ? i + 2 : i + 1]
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6
+    d += ` C ${c1x},${c1y} ${c2x},${c2y} ${p2[0]},${p2[1]}`
+  }
+  return d
+}
+
 function FeaturePathLine({ rows }: { rows: number }) {
   const ref = useRef<SVGPathElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const h = rows * HIGHLIGHT_ROW_H
 
-  const xs = Array.from({ length: rows }, (_, i) => (i % 2 === 0 ? 66 : 34))
-  let d = `M 50,0`
-  xs.forEach((x, i) => {
-    const y = HIGHLIGHT_ROW_H * i + HIGHLIGHT_ROW_H / 2
-    const prevY = i === 0 ? 0 : HIGHLIGHT_ROW_H * (i - 1) + HIGHLIGHT_ROW_H / 2
-    const midY = (prevY + y) / 2
-    d += ` C 50,${midY} ${x},${midY} ${x},${y}`
-  })
-  d += ` C ${xs[rows - 1]},${h} 50,${h} 50,${h}`
+  const points: [number, number][] = [[50, 0]]
+  for (let i = 0; i < rows; i++) {
+    points.push([i % 2 === 0 ? 66 : 34, HIGHLIGHT_ROW_H * i + HIGHLIGHT_ROW_H / 2])
+  }
+  points.push([50, h])
+  const d = smoothPath(points)
 
   return (
     <svg className="hidden md:block absolute pointer-events-none" viewBox={`0 0 100 ${h}`}
@@ -278,6 +293,106 @@ function FeaturePathLine({ rows }: { rows: number }) {
   )
 }
 
+/* Small looping visual mockups, one per highlighted feature */
+function DemoPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border" style={{
+      width: 230, padding: '18px 20px', borderColor: 'rgba(212,175,55,0.14)',
+      background: 'linear-gradient(160deg, #121212, #0c0c0c)',
+    }}>
+      {children}
+    </div>
+  )
+}
+
+function FinanceDemo() {
+  return (
+    <DemoPanel>
+      <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
+        <span style={{ fontSize: 10, letterSpacing: '0.12em', color: '#7D7D7D' }}>GRAM ALTIN</span>
+        <motion.span style={{ fontSize: 10, color: '#22C55E', fontWeight: 700 }}
+          animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.6, repeat: Infinity }}>
+          ▲ %0,14
+        </motion.span>
+      </div>
+      <div style={{ fontSize: 21, fontWeight: 800, color: '#fff', fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>
+        ₺4.812,50
+      </div>
+      <svg width="100%" height="42" viewBox="0 0 200 42" preserveAspectRatio="none">
+        <motion.path d="M0,30 L28,22 L56,26 L84,12 L112,18 L140,6 L168,14 L200,4"
+          fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+          transition={{ duration: 2.4, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }} />
+      </svg>
+    </DemoPanel>
+  )
+}
+
+function SalesDemo() {
+  const rows: [string, string][] = [['22k Bilezik', '₺9.840'], ['14k Kolye', '₺5.120']]
+  return (
+    <DemoPanel>
+      <div style={{ marginBottom: 10 }}>
+        {rows.map(([label, price], i) => (
+          <motion.div key={label} className="flex items-center justify-between"
+            style={{ fontSize: 12, color: '#ccc', padding: '5px 0', borderBottom: i === 0 ? '1px solid rgba(212,175,55,0.08)' : 'none' }}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: [0, 1, 1, 0], x: [-8, 0, 0, -8] }}
+            transition={{ duration: 3.4, repeat: Infinity, delay: i * 0.35, times: [0, 0.14, 0.86, 1] }}>
+            <span>{label}</span>
+            <span style={{ color: GOLD }}>{price}</span>
+          </motion.div>
+        ))}
+      </div>
+      <motion.div className="flex items-center justify-center gap-2 rounded-full"
+        style={{ background: 'rgba(34,197,94,0.1)', color: '#22C55E', fontSize: 12, fontWeight: 700, padding: '7px 0' }}
+        animate={{ opacity: [0, 0, 1, 1, 0] }}
+        transition={{ duration: 3.4, repeat: Infinity, times: [0, 0.72, 0.82, 0.92, 1] }}>
+        <Check size={14} /> Satış Tamamlandı
+      </motion.div>
+    </DemoPanel>
+  )
+}
+
+function QRDemo() {
+  return (
+    <DemoPanel>
+      <div className="relative flex items-center justify-center overflow-hidden" style={{
+        width: '100%', height: 92, borderRadius: 12, background: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.1)',
+      }}>
+        <QrCode size={48} strokeWidth={1.3} style={{ color: 'rgba(255,251,224,0.85)' }} />
+        <motion.div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: GOLD, boxShadow: '0 0 8px rgba(212,175,55,0.8)' }}
+          animate={{ top: ['8%', '90%', '8%'] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }} />
+      </div>
+      <div className="text-center" style={{ marginTop: 10, fontSize: 11.5, color: '#7D7D7D' }}>Stok hareketi kaydediliyor…</div>
+    </DemoPanel>
+  )
+}
+
+function ReportsDemo() {
+  const heights = [22, 38, 16, 44, 28]
+  return (
+    <DemoPanel>
+      <div className="flex items-end justify-between" style={{ height: 56, marginBottom: 10 }}>
+        {heights.map((h, i) => (
+          <motion.div key={i} style={{ width: 18, borderRadius: 4, background: GOLD_GRAD }}
+            animate={{ height: [6, h, h * 0.55, h] }}
+            transition={{ duration: 2.6, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }} />
+        ))}
+      </div>
+      <div className="flex items-center justify-between" style={{ fontSize: 11, color: '#7D7D7D' }}>
+        <span>Net Kâr</span>
+        <span style={{ color: '#22C55E', fontWeight: 700 }}>+%68,2</span>
+      </div>
+    </DemoPanel>
+  )
+}
+
+const FEATURE_DEMOS: Record<string, React.ComponentType> = {
+  finance: FinanceDemo, sales: SalesDemo, qr: QRDemo, reports: ReportsDemo,
+}
+
 function FeatureGrid() {
   const { t } = useTranslation()
   const items = FEATURE_HIGHLIGHT_KEYS.map(key => features.find(f => f.key === key)!)
@@ -288,8 +403,9 @@ function FeatureGrid() {
       <div className="relative">
         {items.map((f, i) => {
           const onRight = i % 2 === 1
+          const Demo = FEATURE_DEMOS[f.key]
           return (
-            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ minHeight: HIGHLIGHT_ROW_H }}>
+            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 items-center gap-6 md:gap-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
               <FadeIn delay={i * 0.1} className={onRight ? 'md:col-start-2' : 'md:col-start-1'}>
                 <div className={`flex flex-col items-center text-center mx-auto ${onRight ? 'md:items-start md:text-left md:ml-10' : 'md:items-end md:text-right md:mr-10'}`}
                   style={{ maxWidth: 320 }}>
@@ -303,6 +419,11 @@ function FeatureGrid() {
                     {t(`landing.features.items.${f.key}.desc`)}
                   </p>
                 </div>
+              </FadeIn>
+
+              <FadeIn delay={i * 0.1 + 0.15}
+                className={`flex justify-center ${onRight ? 'md:col-start-1 md:justify-end md:pr-10' : 'md:col-start-2 md:justify-start md:pl-10'}`}>
+                <Demo />
               </FadeIn>
             </div>
           )
