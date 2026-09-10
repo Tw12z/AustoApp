@@ -320,8 +320,12 @@ function FinanceDemo() {
       <svg width="100%" height="42" viewBox="0 0 200 42" preserveAspectRatio="none">
         <motion.path d="M0,30 L28,22 L56,26 L84,12 L112,18 L140,6 L168,14 L200,4"
           fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-          transition={{ duration: 2.4, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }} />
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
+          transition={{
+            pathLength: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+            opacity: { duration: 2.4, repeat: Infinity, times: [0, 0.15, 0.8, 1], ease: 'easeInOut' },
+          }} />
       </svg>
     </DemoPanel>
   )
@@ -361,8 +365,11 @@ function QRDemo() {
       }}>
         <QrCode size={48} strokeWidth={1.3} style={{ color: 'rgba(255,251,224,0.85)' }} />
         <motion.div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: GOLD, boxShadow: '0 0 8px rgba(212,175,55,0.8)' }}
-          animate={{ top: ['8%', '90%', '8%'] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }} />
+          animate={{ top: ['8%', '90%', '8%'], opacity: [0, 1, 1, 0] }}
+          transition={{
+            top: { duration: 2.2, repeat: Infinity, ease: 'easeInOut' },
+            opacity: { duration: 2.2, repeat: Infinity, times: [0, 0.08, 0.92, 1], ease: 'easeInOut' },
+          }} />
       </div>
       <div className="text-center" style={{ marginTop: 10, fontSize: 11.5, color: '#7D7D7D' }}>Stok hareketi kaydediliyor…</div>
     </DemoPanel>
