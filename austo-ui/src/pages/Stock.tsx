@@ -152,6 +152,7 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
 
             {!printMode ? (
               <div className="rounded-xl overflow-hidden" style={{ border:'1px solid #1A1A1A' }}>
+                <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ borderBottom:'1px solid #1A1A1A' }}>
@@ -170,6 +171,7 @@ function StockEntryModal({ open, onClose, onDone, products, locations }: {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             ) : (
               /* Print önizleme */
@@ -479,9 +481,9 @@ export default function Stock() {
         }
       `}</style>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('stock.pageTitle')}</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button className="btn-outline flex items-center gap-2" onClick={() => setModal('entry')}>
             <Package size={15} /> {t('stock.stockEntry')}
           </button>
@@ -525,6 +527,7 @@ export default function Stock() {
         <div className="px-5 py-4" style={{ borderBottom:'1px solid #1A1A1A' }}>
           <h2 className="text-sm font-semibold" style={{ color:'#888', textTransform:'uppercase', letterSpacing:'.05em' }}>{t('stock.movements.title')}</h2>
         </div>
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom:'1px solid #1A1A1A' }}>
@@ -554,6 +557,7 @@ export default function Stock() {
             }
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Modals */}

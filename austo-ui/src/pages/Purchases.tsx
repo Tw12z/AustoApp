@@ -68,7 +68,7 @@ export default function Purchases() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('purchases.pageTitle')}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={() => setModal(true)}>
           <Plus size={16} /> {t('purchases.newPurchase')}
@@ -76,6 +76,7 @@ export default function Purchases() {
       </div>
 
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -106,6 +107,7 @@ export default function Purchases() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Modal open={modal} onClose={() => setModal(false)} title={t('purchases.createTitle')}>

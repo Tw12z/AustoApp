@@ -78,7 +78,7 @@ export default function Locations() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('locations.pageTitle')}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={openCreate}>
           <Plus size={16} /> {t('locations.newLocation')}
@@ -91,6 +91,7 @@ export default function Locations() {
       </div>
 
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -137,6 +138,7 @@ export default function Locations() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('locations.editTitle') : t('locations.newTitle')}>

@@ -131,7 +131,7 @@ export default function Products() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('products.pageTitle')}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={() => { setSelected(null); setModal('create') }}>
           <Plus size={16} /> {t('products.newProduct')}

@@ -59,7 +59,7 @@ export default function SimpleList({ title, api, entityLabel }: {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{title}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={openCreate}>
           <Plus size={16} /> {t('simpleList.newEntity', { entity: entityLabel })}
@@ -72,6 +72,7 @@ export default function SimpleList({ title, api, entityLabel }: {
       </div>
 
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -100,6 +101,7 @@ export default function SimpleList({ title, api, entityLabel }: {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('simpleList.editEntity', { entity: entityLabel }) : t('simpleList.newEntity', { entity: entityLabel })}>

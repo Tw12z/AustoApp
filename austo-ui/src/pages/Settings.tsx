@@ -74,7 +74,7 @@ export default function Settings() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="page-title">{t('settings.pageTitle')}</h1>
           <p className="text-sm mt-1" style={{ color: '#888' }}>{t('settings.pageSubtitle')}</p>
@@ -86,16 +86,16 @@ export default function Settings() {
         )}
       </div>
 
-      <div className="flex gap-6">
-        {/* Sidebar tabs */}
-        <div className="shrink-0 w-44">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        {/* Sidebar tabs — horizontal scroll strip on mobile, vertical column from md up */}
+        <div className="shrink-0 w-full md:w-44 flex md:block gap-2 overflow-x-auto pb-1 md:pb-0">
           {TAB_IDS.map(id => {
             const Icon = TAB_ICONS[id]
             return (
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm mb-1 transition-all duration-200"
+                className="shrink-0 md:w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm md:mb-1 whitespace-nowrap transition-all duration-200"
                 style={activeTab === id
                   ? { background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)' }
                   : { color: '#888', border: '1px solid transparent' }}
@@ -108,7 +108,7 @@ export default function Settings() {
         </div>
 
         {/* Content */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {activeTab === 'profile' && (
             <>
               <Section title={t('settings.profile.sectionTitle')}>

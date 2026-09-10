@@ -175,7 +175,7 @@ export default function Sales() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('sales.pageTitle')}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={openCreate}>
           <Plus size={16} /> {t('sales.newSale')}
@@ -206,6 +206,7 @@ export default function Sales() {
       </div>
 
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -265,6 +266,7 @@ export default function Sales() {
             }
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* ── Create modal ───────────────────────────────────── */}
@@ -294,8 +296,8 @@ export default function Sales() {
                 <button type="button" className="btn-outline px-3 py-1 text-xs" onClick={addItem}>{t('sales.form.addProduct')}</button>
               </div>
               <div className="space-y-2">
-                {/* Header row */}
-                <div className="grid grid-cols-12 gap-2 px-1">
+                {/* Header row — labels double as placeholders on mobile, where fields stack instead */}
+                <div className="hidden sm:grid sm:grid-cols-12 gap-2 px-1">
                   {[t('sales.form.headerProduct'), '', t('sales.form.headerQty'), '', t('sales.form.headerUnitPrice'), '', ''].map((h, i) => (
                     <div key={i} className={`text-[10px] uppercase tracking-wider ${
                       i === 0 ? 'col-span-5' : i === 2 ? 'col-span-2' : i === 4 ? 'col-span-4' : 'col-span-1'
@@ -303,8 +305,9 @@ export default function Sales() {
                   ))}
                 </div>
                 {items.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-12 gap-2 items-center">
-                    <div className="col-span-5">
+                  <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:items-center pb-3 sm:pb-0"
+                    style={{ borderBottom: items.length > 1 ? '1px solid #1A1A1A' : 'none' }}>
+                    <div className="sm:col-span-5">
                       <select className="select text-sm" value={item.productId}
                         onChange={e => handleProductChange(idx, e.target.value)} required>
                         <option value="">{t('sales.form.selectProduct')}</option>
@@ -313,20 +316,20 @@ export default function Sales() {
                         )}
                       </select>
                     </div>
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <input className="input text-sm" type="number" step="1" min="1"
                         placeholder={t('sales.form.qtyPlaceholder')} value={item.quantity}
                         onChange={e => updateItem(idx, 'quantity', +e.target.value)} required />
                     </div>
-                    <div className="col-span-4">
+                    <div className="sm:col-span-4">
                       <input className="input text-sm" type="number" step="0.01" min="0"
                         placeholder={t('sales.form.unitPricePlaceholder')} value={item.unitPriceTRY}
                         onChange={e => updateItem(idx, 'unitPriceTRY', +e.target.value)} required />
                     </div>
-                    <div className="col-span-1 flex items-center justify-center gap-1">
+                    <div className="sm:col-span-1 flex items-center justify-end sm:justify-center gap-1">
                       {items.length > 1 && (
-                        <button type="button" onClick={() => removeItem(idx)} className="text-red-500 hover:text-red-300">
-                          <X size={14} />
+                        <button type="button" onClick={() => removeItem(idx)} className="text-red-500 hover:text-red-300 flex items-center gap-1.5 text-xs">
+                          <X size={14} /><span className="sm:hidden">{t('sales.form.removeProduct')}</span>
                         </button>
                       )}
                     </div>
@@ -486,6 +489,7 @@ export default function Sales() {
               </div>
             )}
 
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -511,6 +515,7 @@ export default function Sales() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </Modal>

@@ -96,7 +96,7 @@ function Clock() {
         {hh}<span style={{ color: 'rgba(212,175,55,0.4)' }}>:</span>{mm}
         <span style={{ color: '#888888', fontSize: 11, marginLeft: 4 }}>{ss}</span>
       </div>
-      <div className="text-[10px] tracking-[0.08em] uppercase" style={{ color: '#888888' }}>
+      <div className="hidden sm:block text-[10px] tracking-[0.08em] uppercase" style={{ color: '#888888' }}>
         {weekday} · {dayMonth}
       </div>
     </div>
@@ -178,7 +178,7 @@ export default function Layout() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="flex items-center gap-4 px-6 py-3.5 shrink-0" style={{ borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0A0A0A' }}>
+        <header className="flex items-center gap-3 sm:gap-4 px-3 sm:px-6 py-3.5 shrink-0" style={{ borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0A0A0A' }}>
           <button className="lg:hidden text-gray-400 hover:text-gold-400" onClick={() => setSidebarOpen(true)} aria-label={t('layout.openMenu')}>
             <Menu size={20} />
           </button>
@@ -187,7 +187,7 @@ export default function Layout() {
           <Clock />
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <Outlet />
         </main>
       </div>

@@ -398,6 +398,7 @@
       "headerProduct": "Product",
       "headerQty": "Qty",
       "headerUnitPrice": "Unit Price",
+      "removeProduct": "Remove",
       "selectProduct": "Select Product",
       "unitsSuffix": "in stock",
       "qtyPlaceholder": "Qty",

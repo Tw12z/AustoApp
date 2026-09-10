@@ -333,9 +333,9 @@ export default function Finance() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('finance.pageTitle')}</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button className="btn-ghost flex items-center gap-2" onClick={handleRefresh} disabled={refreshing}>
             <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} /> {t('finance.refresh')}
           </button>
@@ -347,10 +347,10 @@ export default function Finance() {
 
       {/* Live rates */}
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <p className="label">{t('finance.liveRates')}</p>
           {!ratesLoading && (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               {/* Group toggles */}
               <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#0A0A0A', border: '1px solid #1A1A1A' }}>
                 {([

@@ -33,11 +33,11 @@ export default function Reports() {
 
       {/* Daily Summary */}
       <div className="card p-5">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <h2 className="text-sm font-semibold" style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '.05em' }}>{t('reports.dailySummary')}</h2>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <CalendarDays size={14} style={{ color: '#D4AF37' }} />
-            <input className="input" style={{ width: 160 }} type="date" value={date} onChange={e => setDate(e.target.value)} />
+            <input className="input" style={{ width: 160, maxWidth: '100%' }} type="date" value={date} onChange={e => setDate(e.target.value)} />
             <button className="btn-outline px-3 py-1.5 text-sm" onClick={loadSummary} disabled={loading}>{loading ? '...' : t('reports.fetch')}</button>
           </div>
         </div>
@@ -81,6 +81,7 @@ export default function Reports() {
           )}
         </div>
 
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -105,6 +106,7 @@ export default function Reports() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

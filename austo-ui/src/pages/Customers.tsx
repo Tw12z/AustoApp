@@ -53,7 +53,7 @@ export default function Customers() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('customers.pageTitle')}</h1>
         <button className="btn-gold flex items-center gap-2" onClick={openCreate}><Plus size={16} /> {t('customers.newCustomer')}</button>
       </div>
@@ -64,6 +64,7 @@ export default function Customers() {
       </div>
 
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
@@ -96,6 +97,7 @@ export default function Customers() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('customers.editTitle') : t('customers.newTitle')}>

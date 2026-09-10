@@ -182,11 +182,11 @@ export default function Login() {
         {/* ── MAIN AUTH CARD ── */}
         {view === 'auth' && (
           <motion.div key="auth" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }} className="relative w-full max-w-3xl overflow-hidden rounded-2xl"
-            style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.2)', backdropFilter: 'blur(10px)', minHeight: 520 }}>
+            transition={{ duration: 0.4 }} className="relative w-full max-w-sm md:max-w-3xl overflow-hidden rounded-2xl md:min-h-[520px]"
+            style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.2)', backdropFilter: 'blur(10px)' }}>
 
-            {/* Sign In Form — left */}
-            <div className="absolute top-0 left-0 w-1/2 h-full flex items-center justify-center p-10">
+            {/* Sign In Form — left (own row on mobile, left half of the slider on desktop) */}
+            <div className={`${isSignUp ? 'hidden md:flex' : 'flex'} relative w-full md:absolute md:top-0 md:left-0 md:w-1/2 md:h-full items-center justify-center p-6 md:p-10`}>
               <div className="w-full">
                 <h2 className="text-2xl font-bold text-white mb-1">{t('auth.signIn.title')} <span style={{ color: '#D4AF37' }}>Austo</span></h2>
                 <p className="text-sm mb-6" style={{ color: '#888' }}>{t('auth.signIn.subtitle')}</p>
@@ -226,8 +226,8 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Sign Up Form — right */}
-            <div className="absolute top-0 right-0 w-1/2 h-full flex items-center justify-center p-10">
+            {/* Sign Up Form — right (own row on mobile, right half of the slider on desktop) */}
+            <div className={`${isSignUp ? 'flex' : 'hidden md:flex'} relative w-full md:absolute md:top-0 md:right-0 md:w-1/2 md:h-full items-center justify-center p-6 md:p-10`}>
               <div className="w-full">
                 <h2 className="text-2xl font-bold text-white mb-1">{t('auth.signUp.title')} <span style={{ color: '#D4AF37' }}>{t('auth.signUp.titleAccent')}</span></h2>
                 <p className="text-sm mb-5" style={{ color: '#888' }}>{t('auth.signUp.subtitle')}</p>
@@ -292,9 +292,10 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Sliding dark panel */}
+            {/* Sliding dark panel — the desktop-only "switch mode" trick; mobile gets a
+                plain text toggle under the active form instead (see below) */}
             <motion.div
-              className="absolute top-0 bottom-0 w-1/2 z-10 flex flex-col items-center justify-center p-12 text-center"
+              className="hidden md:flex absolute top-0 bottom-0 w-1/2 z-10 flex-col items-center justify-center p-12 text-center"
               animate={{ left: isSignUp ? '0%' : '50%' }}
               transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
               style={{ background: 'linear-gradient(135deg, #050505, #111)' }}
@@ -312,6 +313,13 @@ export default function Login() {
                 {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
               </button>
             </motion.div>
+
+            {/* Mobile-only mode toggle — the sliding panel above is desktop-only real estate */}
+            <div className="md:hidden relative text-center pb-6 px-6 -mt-2">
+              <button onClick={() => switchMode(!isSignUp)} className="text-xs transition-colors hover:text-white" style={{ color: '#888' }}>
+                {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
+              </button>
+            </div>
           </motion.div>
         )}
 
