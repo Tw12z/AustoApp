@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import {
   TrendingUp, Package, ShoppingCart, BarChart3,
   QrCode, MapPin, Shield, Zap, ChevronRight, ArrowRight,
@@ -241,92 +241,60 @@ function NavClock() {
   )
 }
 
-/* ── Feature carousel ── */
-const CARD_W = 380
-const CARD_GAP = 28
-const CARD_STEP = CARD_W + CARD_GAP
+/* ── Feature bento grid: asymmetric, no carousel, no numbering ── */
+const FEATURED_KEYS = new Set(['finance', 'dashboard'])
 
-interface FeatureCardProps {
-  f: typeof features[0]
-  index: number
-  x: ReturnType<typeof useMotionValue<number>>
-  isDragging: boolean
-  onClickSnap: (i: number) => void
-}
-
-function FeatureCard({ f, index, x, isDragging, onClickSnap }: FeatureCardProps) {
+function FeatureGrid() {
   const { t } = useTranslation()
-  const cardCenter = index * CARD_STEP + CARD_W / 2
-
-  const scale = useTransform(x, xVal => {
-    const dist = Math.abs(window.innerWidth / 2 - (xVal + cardCenter))
-    return Math.max(0.75, 1.12 - (dist / CARD_STEP) * 0.22)
-  })
-  const opacity = useTransform(x, xVal => {
-    const dist = Math.abs(window.innerWidth / 2 - (xVal + cardCenter))
-    return Math.max(0.18, 1 - (dist / CARD_STEP) * 0.5)
-  })
   return (
-    <motion.div
-      onClick={() => !isDragging && onClickSnap(index)}
-      style={{ scale, opacity, width: CARD_W, flexShrink: 0, cursor: 'pointer' }}
-    >
-      <BorderGlow style={{ padding: 28 }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20,
-          background: 'rgba(212,175,55,0.04)',
-          border: '1px solid rgba(212,175,55,0.2)',
-          boxShadow: '0 0 8px rgba(212,175,55,0.15), inset 0 0 8px rgba(212,175,55,0.06)',
-        }}>
-          <f.icon size={19} style={{
-            color: '#fffbe0',
-            filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 6px #D4AF37) drop-shadow(0 0 14px rgba(212,175,55,0.9)) drop-shadow(0 0 28px rgba(212,175,55,0.5))',
-          }} />
-        </div>
-        <h3 style={{ color: '#fff', fontSize: 14, fontFamily: CV, fontWeight: 600, letterSpacing: '0.01em', marginBottom: 10 }}>{t(`landing.features.items.${f.key}.title`)}</h3>
-        <p style={{ color: '#888888', fontSize: 13.5, lineHeight: 1.65, margin: 0 }}>{t(`landing.features.items.${f.key}.desc`)}</p>
-      </BorderGlow>
-    </motion.div>
-  )
-}
-
-function FeatureCarousel() {
-  const [activeIndex, setActiveIndex] = useState(1)
-  const [isDragging, setIsDragging] = useState(false)
-  const x = useMotionValue(0)
-
-  const snapTo = (idx: number) => {
-    const clamped = Math.max(0, Math.min(features.length - 1, idx))
-    setActiveIndex(clamped)
-    animate(x, window.innerWidth / 2 - (clamped * CARD_STEP + CARD_W / 2), {
-      type: 'spring', stiffness: 380, damping: 36,
-    })
-  }
-
-  useEffect(() => { snapTo(activeIndex) }, [])
-
-  const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-    setIsDragging(false)
-    if (info.offset.x < -60 || info.velocity.x < -300) snapTo(activeIndex + 1)
-    else if (info.offset.x > 60 || info.velocity.x > 300) snapTo(activeIndex - 1)
-    else snapTo(activeIndex)
-  }
-
-  return (
-    <div style={{ overflow: 'hidden', paddingTop: 24, paddingBottom: 40 }}>
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: -9999, right: 9999 }}
-        dragElastic={0}
-        style={{ x, display: 'flex', gap: CARD_GAP, width: 'max-content', cursor: isDragging ? 'grabbing' : 'grab' }}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={handleDragEnd}
-      >
-        {features.map((f, i) => (
-          <FeatureCard key={f.key} f={f} index={i} x={x} isDragging={isDragging} onClickSnap={snapTo} />
-        ))}
-      </motion.div>
+    <div className="px-6 md:px-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mx-auto"
+        style={{ maxWidth: 1120, gridAutoFlow: 'dense' }}>
+        {features.map((f, i) => {
+          const featured = FEATURED_KEYS.has(f.key)
+          return (
+            <motion.div key={f.key}
+              initial={{ opacity: 0, y: 26 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5, delay: (i % 4) * 0.06 }}
+              className={featured ? 'md:col-span-2 md:row-span-2' : ''}
+              style={{ height: '100%' }}>
+              <BorderGlow style={{ padding: featured ? 32 : 24, height: '100%' }} borderRadius={18}>
+                <div className="h-full flex flex-col relative overflow-hidden" style={{ justifyContent: featured ? 'space-between' : 'flex-start' }}>
+                  {featured && (
+                    <f.icon aria-hidden size={160} strokeWidth={1} style={{
+                      position: 'absolute', bottom: -30, right: -24, color: 'rgba(212,175,55,0.05)', pointerEvents: 'none',
+                    }} />
+                  )}
+                  <div style={{
+                    width: featured ? 56 : 42, height: featured ? 56 : 42, borderRadius: featured ? 16 : 12,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: featured ? 24 : 16,
+                    background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.2)',
+                    boxShadow: '0 0 8px rgba(212,175,55,0.15), inset 0 0 8px rgba(212,175,55,0.06)',
+                  }}>
+                    <f.icon size={featured ? 24 : 18} style={{
+                      color: '#fffbe0',
+                      filter: 'drop-shadow(0 0 2px #D4AF37) drop-shadow(0 0 8px #D4AF37) drop-shadow(0 0 18px rgba(212,175,55,0.85))',
+                    }} />
+                  </div>
+                  <div className="relative">
+                    <h3 style={{
+                      color: '#fff', fontFamily: featured ? PF : CV, fontSize: featured ? 20 : 14,
+                      fontWeight: featured ? 700 : 600, letterSpacing: '0.01em', marginBottom: featured ? 12 : 8,
+                    }}>
+                      {t(`landing.features.items.${f.key}.title`)}
+                    </h3>
+                    <p style={{ color: '#888', fontSize: featured ? 14.5 : 13, lineHeight: 1.7, margin: 0 }}>
+                      {t(`landing.features.items.${f.key}.desc`)}
+                    </p>
+                  </div>
+                </div>
+              </BorderGlow>
+            </motion.div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -505,8 +473,7 @@ export default function Landing() {
           </p>
         </FadeIn>
 
-        {/* Draggable carousel */}
-        <FeatureCarousel />
+        <FeatureGrid />
       </section>
 
       {/* ── HOW IT WORKS ── */}
