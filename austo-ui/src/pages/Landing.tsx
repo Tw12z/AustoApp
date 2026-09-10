@@ -151,11 +151,13 @@ function VaultReveal({ children, delay = 0, center = false }: { children: React.
 }
 
 /* ── Helpers ── */
-function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+function FadeIn({ children, delay = 0, className = '', viewportMargin = '-60px', style }: {
+  children: React.ReactNode; delay?: number; className?: string; viewportMargin?: `${number}px`; style?: React.CSSProperties
+}) {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const inView = useInView(ref, { once: true, margin: viewportMargin })
   return (
-    <motion.div ref={ref} className={className}
+    <motion.div ref={ref} className={className} style={style}
       initial={{ opacity: 0, y: 36 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.65, delay, ease: 'easeOut' }}>
@@ -242,7 +244,7 @@ function NavClock() {
 
 /* ── Feature highlights: the 4 most compelling ones, flanking a winding line ── */
 const FEATURE_HIGHLIGHT_KEYS = ['finance', 'sales', 'qr', 'reports']
-const HIGHLIGHT_ROW_H = 220
+const HIGHLIGHT_ROW_H = 180
 
 /* Catmull-Rom → cubic-Bezier: a smooth curve through every point, no corners at the joins */
 function smoothPath(points: [number, number][]): string {
@@ -264,7 +266,7 @@ function smoothPath(points: [number, number][]): string {
 
 function FeaturePathLine({ rows }: { rows: number }) {
   const ref = useRef<SVGPathElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const inView = useInView(ref, { once: true, margin: '150px' })
   const h = rows * HIGHLIGHT_ROW_H
 
   const points: [number, number][] = [[50, 0]]
@@ -293,13 +295,10 @@ function FeaturePathLine({ rows }: { rows: number }) {
   )
 }
 
-/* Small looping visual mockups, one per highlighted feature */
+/* Small looping visual mockups, one per highlighted feature — no box, just the motion, to stay as quiet as the copy beside it */
 function DemoPanel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border" style={{
-      width: 230, padding: '18px 20px', borderColor: 'rgba(212,175,55,0.14)',
-      background: 'linear-gradient(160deg, #121212, #0c0c0c)',
-    }}>
+    <div style={{ width: 210 }}>
       {children}
     </div>
   )
@@ -405,8 +404,8 @@ function FeatureGrid() {
           const onRight = i % 2 === 1
           const Demo = FEATURE_DEMOS[f.key]
           return (
-            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 items-center gap-6 md:gap-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
-              <FadeIn delay={i * 0.1} className={onRight ? 'md:col-start-2' : 'md:col-start-1'}>
+            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 items-start gap-6 md:gap-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
+              <FadeIn delay={i * 0.1} viewportMargin="120px" className={onRight ? 'md:col-start-2' : 'md:col-start-1'}>
                 <div className={`flex flex-col items-center text-center mx-auto ${onRight ? 'md:items-start md:text-left md:ml-10' : 'md:items-end md:text-right md:mr-10'}`}
                   style={{ maxWidth: 320 }}>
                   <f.icon size={22} strokeWidth={1.5} style={{
@@ -421,8 +420,9 @@ function FeatureGrid() {
                 </div>
               </FadeIn>
 
-              <FadeIn delay={i * 0.1 + 0.15}
-                className={`flex justify-center ${onRight ? 'md:col-start-1 md:justify-end md:pr-10' : 'md:col-start-2 md:justify-start md:pl-10'}`}>
+              <FadeIn delay={i * 0.1 + 0.15} viewportMargin="120px"
+                className={`flex justify-center ${onRight ? 'md:col-start-1 md:justify-end md:pr-10' : 'md:col-start-2 md:justify-start md:pl-10'}`}
+                style={{ marginTop: 30 }}>
                 <Demo />
               </FadeIn>
             </div>
