@@ -5,7 +5,7 @@ import { financeApi } from '../api/client'
 import type { FinanceItem, GoldPriceLog } from '../types'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid,
+  ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from 'recharts'
 
 // ── Formatters ────────────────────────────────────────────
@@ -121,7 +121,7 @@ function groupLogs(logs: GoldPriceLog[], grouping: Grouping, locale = 'tr-TR'): 
 interface MultiTipProps {
   active?: boolean
   label?: string
-  payload?: Array<{ dataKey: string; value: number; color: string }>
+  payload?: Array<{ dataKey: string; value: number; color: string; payload: Record<string, number | string> }>
 }
 function MultiTip({ active, label, payload }: MultiTipProps) {
   const { t, i18n } = useTranslation()
@@ -129,17 +129,27 @@ function MultiTip({ active, label, payload }: MultiTipProps) {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-xl px-4 py-3 text-sm"
-      style={{ background: '#1A1A1A', border: '1px solid rgba(212,175,55,0.2)', minWidth: 160 }}>
+      style={{ background: '#1A1A1A', border: '1px solid rgba(212,175,55,0.2)', minWidth: 190 }}>
       <div className="text-xs mb-2" style={{ color: '#888' }}>{label}</div>
       {payload.map(p => {
-        const m = METRICS.find(m => m.key === p.dataKey)
+        const key = p.dataKey.replace(/__pct$/, '')
+        const m = METRICS.find(m => m.key === key)
+        const abs = p.payload[key]
+        const isUp = p.value >= 0
         return (
           <div key={p.dataKey} className="flex items-center justify-between gap-4 py-0.5">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
               <span className="text-xs" style={{ color: '#888' }}>{m ? t(`finance.metrics.${m.shortKey}`) : ''}</span>
             </div>
-            <span className="text-xs font-semibold text-white tabular-nums">{fmtShort(p.value, priceLocale)}</span>
+            <div className="text-right leading-tight">
+              <div className="text-xs font-semibold tabular-nums" style={{ color: isUp ? '#22C55E' : '#EF4444' }}>
+                {isUp ? '+' : ''}{p.value.toFixed(2)}%
+              </div>
+              {typeof abs === 'number' && (
+                <div className="text-[10px] tabular-nums" style={{ color: '#666' }}>{fmtShort(abs, priceLocale)}</div>
+              )}
+            </div>
           </div>
         )
       })}
@@ -271,25 +281,54 @@ export default function Finance() {
   const fxRates   = rates.filter(r => ['USD', 'EUR', 'GBP'].includes(r.code))
   const tickInterval = Math.max(0, Math.floor(chartData.length / 7) - 1)
 
-  // Zoom the Y-axis into the actual range of the visible series instead of
-  // the auto-scale-from-zero default — a 2% daily wobble is invisible next
-  // to a ₺6800 baseline unless the axis is cropped tight around it.
+  // Overlaying raw TRY prices breaks the moment two selected instruments sit
+  // at different orders of magnitude (USD ~48 next to Tam Altın ~44.000) —
+  // the small one gets crushed flat on a shared axis no matter how tight the
+  // domain is. Index every series to "% change since the start of the visible
+  // range" instead: every instrument shares the same axis on equal footing,
+  // and a real 0.2% move actually reads as a visible swing instead of noise.
+  const normalizedChartData = useMemo(() => {
+    const baseline: Partial<Record<MetricKey, number>> = {}
+    for (const m of METRICS) {
+      if (!selected.has(m.key)) continue
+      const first = chartData.find(pt => typeof pt[m.key] === 'number')
+      if (first) baseline[m.key] = first[m.key] as number
+    }
+    return chartData.map(pt => {
+      const row: Record<string, number | string> = { label: pt.label }
+      for (const m of METRICS) {
+        if (!selected.has(m.key)) continue
+        const v = pt[m.key]
+        if (typeof v === 'number') {
+          row[m.key] = v
+          const base = baseline[m.key]
+          row[`${m.key}__pct`] = base ? (v / base - 1) * 100 : 0
+        }
+      }
+      return row
+    })
+  }, [chartData, selected])
+
+  // Zoom the Y-axis into the actual range of the visible % series instead of
+  // an auto-scale default — otherwise a tight ±0.5% week still gets padded
+  // out to something that looks flat.
   const yDomain = useMemo((): [number, number] | ['auto', 'auto'] => {
     const vals: number[] = []
-    for (const pt of chartData) {
+    for (const pt of normalizedChartData) {
       for (const m of METRICS) {
         if (selected.has(m.key)) {
-          const v = pt[m.key]
+          const v = pt[`${m.key}__pct`]
           if (typeof v === 'number') vals.push(v)
         }
       }
     }
     if (vals.length === 0) return ['auto', 'auto']
-    const min = Math.min(...vals)
-    const max = Math.max(...vals)
-    const pad = (max - min) * 0.15 || max * 0.02 || 1
-    return [Math.floor(min - pad), Math.ceil(max + pad)]
-  }, [chartData, selected])
+    const min = Math.min(0, ...vals)
+    const max = Math.max(0, ...vals)
+    const span = max - min
+    const pad = Math.max(span * 0.2, 0.15)
+    return [Math.floor((min - pad) * 100) / 100, Math.ceil((max + pad) * 100) / 100]
+  }, [normalizedChartData, selected])
 
   return (
     <div className="space-y-6">
@@ -445,7 +484,7 @@ export default function Finance() {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={360}>
-            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
+            <AreaChart data={normalizedChartData} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
               <defs>
                 {METRICS.filter(m => selected.has(m.key)).map(m => (
                   <linearGradient key={m.key} id={`fill-${m.key}`} x1="0" y1="0" x2="0" y2="1">
@@ -467,17 +506,18 @@ export default function Finance() {
                 tick={{ fill: '#7D7D7D', fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
-                width={76}
+                width={56}
                 domain={yDomain}
                 allowDataOverflow
-                tickFormatter={v => fmtShort(v, priceLocale)}
+                tickFormatter={v => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`}
               />
+              <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" strokeDasharray="3 3" />
               <Tooltip content={<MultiTip />} cursor={{ stroke: 'rgba(212,175,55,0.15)', strokeWidth: 1 }} />
               {METRICS.filter(m => selected.has(m.key)).map(m => (
                 <Area
                   key={m.key}
                   type="monotone"
-                  dataKey={m.key}
+                  dataKey={`${m.key}__pct`}
                   stroke={m.color}
                   strokeWidth={2.5}
                   fill={`url(#fill-${m.key})`}
