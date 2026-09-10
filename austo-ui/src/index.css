@@ -161,4 +161,7 @@
   .marquee-track:hover { animation-play-state:paused; }
   .marquee-wrap { overflow:hidden; mask-image:linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); }
   @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .no-scrollbar { scrollbar-width:none; -ms-overflow-style:none; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .scroll-fade-x { mask-image:linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%); -webkit-mask-image:linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%); }
 }
