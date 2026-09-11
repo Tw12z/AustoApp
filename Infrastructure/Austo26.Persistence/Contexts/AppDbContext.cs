@@ -16,6 +16,20 @@ public class AppDbContext : DbContext, IAppDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+    // Npgsql maps DateTime -> "timestamp with time zone" by default and strictly
+    // requires Kind=Utc for it — this app's dates come from a mix of
+    // DateTime.UtcNow, DateTime.Today, and [FromQuery] DateTime model binding
+    // (which produces Kind=Unspecified), none of which is timezone-aware by
+    // design. Mapping to "timestamp without time zone" instead (matching SQL
+    // Server's original datetime2 behavior — a naive wall-clock value, no
+    // timezone enforcement) avoids an ArgumentException on every date-range
+    // query without having to normalize Kind at every call site.
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp without time zone");
+        configurationBuilder.Properties<DateTime?>().HaveColumnType("timestamp without time zone");
+    }
+
     public DbSet<Category> Categories { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<Product> Products { get; set; }

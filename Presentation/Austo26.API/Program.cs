@@ -5,6 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
 
+// Npgsql 6+ strictly validates DateTime.Kind against the column's timezone-
+// awareness (Utc only for "timestamp with time zone", Unspecified only for
+// "timestamp without time zone"). This app's dates come from a mix of
+// DateTime.UtcNow, DateTime.Today, and [FromQuery] DateTime binding — none of
+// it was ever written with that distinction in mind (it wasn't relevant on
+// SQL Server's Kind-agnostic datetime2). Restoring the pre-6.0 lenient
+// behavior here is Npgsql's own documented escape hatch for exactly this
+// migration scenario, rather than auditing every DateTime call site.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ==========================================

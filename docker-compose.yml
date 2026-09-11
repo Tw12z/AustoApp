@@ -1,0 +1,46 @@
+# For a self-managed VM (Oracle Cloud Free Tier, Hetzner, etc.) — runs the
+# API and its Postgres database together. Postgres has an official arm64
+# image, so this runs natively (no emulation) on Oracle's free Ampere A1
+# instances. See DEPLOYMENT.md for the full setup.
+#
+# Usage:
+#   cp .env.docker.example .env.docker   # fill in real values
+#   docker compose --env-file .env.docker up -d
+#   docker compose exec api dotnet ef database update --project ... # first run only
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: AustoDB
+      POSTGRES_USER: austo_app
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - austo_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U austo_app -d AustoDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Presentation/Austo26.API/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=AustoDB;Username=austo_app;Password=${DB_PASSWORD}"
+      Token__SecurityKey: ${TOKEN_SECURITY_KEY}
+      Cors__AllowedOrigins__0: ${FRONTEND_URL}
+      ClientUrl: ${FRONTEND_URL}
+      MailSettings__UserName: ${SMTP_USERNAME}
+      MailSettings__Password: ${SMTP_PASSWORD}
+
+volumes:
+  austo_pgdata:
