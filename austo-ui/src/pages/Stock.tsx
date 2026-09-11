@@ -4,6 +4,7 @@ import { ArrowLeftRight, QrCode, X, Plus, Minus, Search, Package, Printer, Alert
 import { stockApi, stockItemsApi, productsApi, locationsApi } from '../api/client'
 import type { StockMovement, StockValuation, StockItem, Product, Location } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
+import { formatQty } from '../utils/formatQty'
 
 function Modal({ open, onClose, children, title, maxWidth = 440 }: any) {
   const { t } = useTranslation()
@@ -546,7 +547,7 @@ export default function Stock() {
                     <td className="px-4 py-3" style={{ color:'#888' }}>{new Date(m.createdAt).toLocaleDateString(priceLocale)}</td>
                     <td className="px-4 py-3 font-medium text-white">{m.productName}</td>
                     <td className="px-4 py-3"><span className={typeColor[m.type] ?? 'badge-gray'}>{stockMovementTypes[m.type]}</span></td>
-                    <td className="px-4 py-3 font-medium text-white">{m.quantity.toFixed(3)}</td>
+                    <td className="px-4 py-3 font-medium text-white">{formatQty(m.quantity)}</td>
                     <td className="px-4 py-3" style={{ color:'#888' }}>
                       {m.locationName ?? '—'}
                       {m.toLocationName && <span> → {m.toLocationName}</span>}

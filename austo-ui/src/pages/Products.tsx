@@ -4,6 +4,7 @@ import { Plus, QrCode, Search, Edit2, Trash2, X } from 'lucide-react'
 import { productsApi, categoriesApi } from '../api/client'
 import type { Product, Category } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
+import { formatQty } from '../utils/formatQty'
 
 const PURITIES = [0, 8, 14, 18, 21, 22, 24]
 
@@ -166,7 +167,7 @@ export default function Products() {
                   <td className="px-4 py-3" style={{ color: '#888' }}>{p.categoryName}</td>
                   <td className="px-4 py-3"><span className="badge-gold">{purityLabels[p.purity]}</span></td>
                   <td className="px-4 py-3" style={{ color: '#888' }}>{p.weightGram.toFixed(3)}gr</td>
-                  <td className="px-4 py-3 font-medium text-white">{p.stockQuantity.toFixed(2)}</td>
+                  <td className="px-4 py-3 font-medium text-white">{formatQty(p.stockQuantity)}</td>
                   <td className="px-4 py-3" style={{ color: '#888' }}>₺{p.purchasePrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}</td>
                   <td className="px-4 py-3 font-medium text-white">₺{p.salePrice.toLocaleString(priceLocale, { minimumFractionDigits: 2 })}</td>
                   <td className="px-4 py-3"><span className={p.isActive ? 'badge-green' : 'badge-red'}>{p.isActive ? t('common.active') : t('common.inactive')}</span></td>

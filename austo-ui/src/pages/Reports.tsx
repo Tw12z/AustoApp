@@ -6,6 +6,7 @@ import type { DailySummary, StockReport, Sale } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
 import { getPeriodRange, type ReportPeriod } from '../utils/dateRanges'
 import { buildSalesReportPdf } from '../utils/reportPdf'
+import { formatQty } from '../utils/formatQty'
 
 function fmt(n: number, locale = 'tr-TR') {
   return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -181,7 +182,7 @@ export default function Reports() {
                 <td className="px-4 py-3" style={{ color: '#888' }}>{item.categoryName}</td>
                 <td className="px-4 py-3"><span className="badge-gold">{item.purity}</span></td>
                 <td className="px-4 py-3" style={{ color: '#888' }}>{item.weightGram.toFixed(3)}gr</td>
-                <td className="px-4 py-3 font-medium text-white">{item.stockQuantity.toFixed(2)}</td>
+                <td className="px-4 py-3 font-medium text-white">{formatQty(item.stockQuantity)}</td>
                 <td className="px-4 py-3" style={{ color: '#888' }}>{item.totalWeightGram.toFixed(3)}gr</td>
                 <td className="px-4 py-3 font-semibold" style={{ color: '#D4AF37' }}>{fmt(item.estimatedValueTRY, priceLocale)}</td>
               </tr>
