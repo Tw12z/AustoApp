@@ -5,7 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Austo26.API.Controllers;
 
-[Route("api/[controller]")]
+// Explicit kebab-case route — the [controller] token would resolve to the
+// literal class name "StockItems" (no hyphen), but the frontend has always
+// called /api/stock-items. Case-insensitive routing masked this everywhere
+// else (single-word controller names), but the hyphen here is a real
+// mismatch: every stock-items endpoint (batch create, transfer, damage,
+// by-code, by-product, QR) was silently 404ing.
+[Route("api/stock-items")]
 [ApiController]
 public class StockItemsController : ControllerBase
 {
