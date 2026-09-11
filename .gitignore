@@ -11,7 +11,11 @@ austo-ui/dist/
 
 # Environment / secrets
 appsettings.Development.json
-*.env
+appsettings.Production.json
+appsettings.*.local.json
+.env
+.env.*
+!.env.example
 
 # OS
 .DS_Store

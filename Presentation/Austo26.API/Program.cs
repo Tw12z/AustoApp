@@ -42,10 +42,17 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+// Falls back to the local dev origins when Cors:AllowedOrigins isn't set, so
+// `dotnet run` keeps working out of the box; production sets it via
+// appsettings.Production.json or the Cors__AllowedOrigins__0 / __1 / ... env vars.
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:5173", "http://localhost:5174"];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
@@ -60,6 +67,13 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+}
+else
+{
+    // Dev runs Kestrel on http:// only (no local cert), so this is scoped to
+    // non-Development environments to avoid a "can't determine https port"
+    // warning on every request during `dotnet run`.
+    app.UseHttpsRedirection();
 }
 
 app.UseCors("AllowFrontend");

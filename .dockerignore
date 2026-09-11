@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/.vs/
+austo-ui/node_modules/
+austo-ui/dist/
+.git/
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/.env
+**/.env.*

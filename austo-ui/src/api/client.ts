@@ -1,7 +1,11 @@
 import axios from 'axios'
 
+// VITE_API_URL is baked in at build time (see .env.example) — falls back to the
+// local backend for dev so `npm run dev` keeps working with zero setup.
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5202/api'
+
 export const api = axios.create({
-  baseURL: 'http://localhost:5202/api',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 })
 
