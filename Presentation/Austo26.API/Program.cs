@@ -1,6 +1,8 @@
 using Austo26.Infrastructure;
 using Austo26.Persistence;
+using Austo26.Persistence.Contexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
@@ -68,6 +70,16 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// The container images ship runtime-only (no `dotnet ef` / SDK), so there's
+// no way to run `dotnet ef database update` as a separate deploy step short
+// of a dedicated SDK-based migrator image. Applying pending migrations at
+// startup instead is the standard container-friendly pattern — safe to run
+// on every boot since EF Core no-ops when the schema's already current.
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+}
 
 // ==========================================
 // 4. HTTP PIPELINE
