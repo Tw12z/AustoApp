@@ -25,6 +25,9 @@ const Reports       = lazy(() => import('./pages/Reports'))
 const Settings      = lazy(() => import('./pages/Settings'))
 const VerifyEmail   = lazy(() => import('./pages/VerifyEmail'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const TermsOfService = lazy(() => import('./pages/TermsOfService'))
+const PrivacyPolicy  = lazy(() => import('./pages/PrivacyPolicy'))
+const DistanceSalesAgreement = lazy(() => import('./pages/DistanceSalesAgreement'))
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -54,6 +57,9 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/kullanim-kosullari" element={<TermsOfService />} />
+        <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
+        <Route path="/mesafeli-satis-sozlesmesi" element={<DistanceSalesAgreement />} />
         <Route path="/app" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
           <Route path="products"   element={<Products />} />

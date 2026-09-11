@@ -24,7 +24,7 @@ export default function Login() {
   const [view, setView] = useState<View>('auth')
 
   const [loginForm, setLoginForm] = useState({ userNameOrEmail: '', password: '' })
-  const [registerForm, setRegisterForm] = useState({ fullName: '', email: '', userName: '', password: '', confirmPassword: '' })
+  const [registerForm, setRegisterForm] = useState({ fullName: '', email: '', userName: '', password: '', confirmPassword: '', acceptedTerms: false, acceptedPrivacy: false })
   const [forgotEmail, setForgotEmail] = useState('')
 
   const [showPw, setShowPw] = useState(false)
@@ -54,6 +54,7 @@ export default function Login() {
     e.preventDefault()
     resetErrors()
     if (registerForm.password !== registerForm.confirmPassword) { setError(t('auth.errors.passwordMismatch')); return }
+    if (!registerForm.acceptedTerms || !registerForm.acceptedPrivacy) { setError(t('auth.errors.mustAcceptLegal')); return }
     setLoading(true)
     try {
       const res = await authApi.register({ ...registerForm, role: 2 })
@@ -289,11 +290,30 @@ export default function Login() {
                       </div>
                     </div>
                   </div>
+                  <div className="space-y-1.5">
+                    <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: '#888' }}>
+                      <input type="checkbox" className="mt-0.5" checked={registerForm.acceptedTerms}
+                        onChange={e => setRegisterForm(f => ({ ...f, acceptedTerms: e.target.checked }))} required />
+                      <span>
+                        <a href="/kullanim-kosullari" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{t('auth.signUp.termsLink')}</a>
+                        {t('auth.signUp.termsAcceptSuffix')}
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: '#888' }}>
+                      <input type="checkbox" className="mt-0.5" checked={registerForm.acceptedPrivacy}
+                        onChange={e => setRegisterForm(f => ({ ...f, acceptedPrivacy: e.target.checked }))} required />
+                      <span>
+                        <a href="/gizlilik-politikasi" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{t('auth.signUp.privacyLink')}</a>
+                        {t('auth.signUp.privacyAcceptSuffix')}
+                      </span>
+                    </label>
+                  </div>
                   {isSignUp && error && (
                     <div className="text-sm px-3 py-2 rounded-lg"
                       style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>
                   )}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
+                  <button type="submit" disabled={loading || !registerForm.acceptedTerms || !registerForm.acceptedPrivacy}
+                    className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
                     style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
                     {loading && isSignUp ? t('auth.signUp.submitting') : t('auth.signUp.submit')}
                   </button>

@@ -21,6 +21,12 @@ public class User : BaseEntity
     public string? RefreshToken { get; private set; }
     public DateTime? RefreshTokenEndDate { get; private set; }
 
+    // Consent audit trail — proof of which legal text version the user
+    // accepted and when, in case it's ever disputed (KVKK/consumer-law best
+    // practice, not just a formality).
+    public DateTime? TermsAcceptedAt { get; private set; }
+    public string? TermsVersion { get; private set; }
+
     protected User() { }
 
     public User(string fullName, string userName, string email,
@@ -34,6 +40,12 @@ public class User : BaseEntity
         Role = role;
         IsActive = true;
         IsEmailVerified = false;
+    }
+
+    public void RecordTermsAcceptance(string version, DateTime acceptedAt)
+    {
+        TermsVersion = version;
+        TermsAcceptedAt = acceptedAt;
     }
 
     public void ChangeName(string fullName) { SetFullName(fullName); Touch(); }

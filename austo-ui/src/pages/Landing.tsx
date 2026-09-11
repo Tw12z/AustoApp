@@ -733,7 +733,13 @@ export default function Landing() {
       <footer className="flex flex-col md:flex-row items-center justify-between gap-4 px-10 md:px-16 py-8"
         style={{ borderTop: '1px solid rgba(212,175,55,0.07)' }}>
         <Logo className="h-8 w-auto" style={{ color: GOLD, opacity: 0.55 }} />
-        <p style={{ color: '#2e2e2e', fontSize: 12 }}>{t('landing.footer.copyright')}</p>
+        <div className="flex flex-col md:flex-row items-center gap-1.5 md:gap-4">
+          <p style={{ color: '#2e2e2e', fontSize: 12 }}>{t('landing.footer.copyright')}</p>
+          <div className="flex items-center gap-3" style={{ fontSize: 11 }}>
+            <Link to="/kullanim-kosullari" className="transition-colors hover:text-white" style={{ color: '#555' }}>Kullanım Koşulları</Link>
+            <Link to="/gizlilik-politikasi" className="transition-colors hover:text-white" style={{ color: '#555' }}>Gizlilik Politikası</Link>
+          </div>
+        </div>
         <Link to="/login" className="transition-colors hover:text-white" style={{ color: '#888888', fontSize: 13 }}>{t('landing.footer.login')}</Link>
       </footer>
 

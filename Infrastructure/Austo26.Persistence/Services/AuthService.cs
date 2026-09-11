@@ -10,6 +10,11 @@ namespace Austo26.Persistence.Services;
 
 public class AuthService : IAuthService
 {
+    // Bump whenever the Terms/Privacy text materially changes so the DB
+    // records exactly which version a given user agreed to. Kept
+    // server-side (not client-supplied) so it can't be spoofed.
+    private const string CurrentLegalVersion = "1.0";
+
     private readonly IUserRepository _userRepo;
     private readonly ITokenHandler _tokenHandler;
     private readonly IMailService _mailService;
@@ -33,12 +38,18 @@ public class AuthService : IAuthService
         if (!registrationAllowed)
             throw new Exception("Şu anda yeni kayıt kabul edilmiyor. Lütfen daha sonra tekrar deneyin.");
 
+        // Server-side gate — a client that skips the checkboxes (or hits the
+        // endpoint directly) can't register without accepting both.
+        if (!model.AcceptedTerms || !model.AcceptedPrivacy)
+            throw new Exception("Devam etmek için Kullanım Koşulları'nı ve Gizlilik Politikası'nı kabul etmelisiniz.");
+
         if (await _userRepo.IsUserExistsAsync(model.UserName, model.Email))
             throw new Exception("Bu kullanıcı adı veya e-posta zaten kullanılıyor.");
 
         HashingHelper.CreatePasswordHash(model.Password, out byte[] hash, out byte[] salt);
 
         var user = new User(model.FullName, model.UserName, model.Email, hash, salt, model.Role);
+        user.RecordTermsAcceptance(CurrentLegalVersion, DateTime.UtcNow);
 
         var token = Guid.NewGuid().ToString("N");
         user.SetEmailVerificationToken(token, DateTime.UtcNow.AddHours(24));

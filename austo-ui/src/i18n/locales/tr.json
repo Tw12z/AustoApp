@@ -176,7 +176,8 @@
       "loginFailed": "Giriş başarısız.",
       "registerFailed": "Kayıt başarısız.",
       "operationFailed": "İşlem başarısız.",
-      "passwordMismatch": "Şifreler eşleşmiyor."
+      "passwordMismatch": "Şifreler eşleşmiyor.",
+      "mustAcceptLegal": "Devam etmek için Kullanım Koşulları'nı ve Gizlilik Politikası'nı kabul etmelisiniz."
     },
     "forgot": {
       "back": "Geri Dön",
@@ -220,6 +221,10 @@
       "username": "Kullanıcı Adı",
       "password": "Şifre",
       "confirmPassword": "Tekrar",
+      "termsLink": "Kullanım Koşulları'nı",
+      "termsAcceptSuffix": " okudum, kabul ediyorum.",
+      "privacyLink": "Gizlilik Politikası ve KVKK Aydınlatma Metni'ni",
+      "privacyAcceptSuffix": " okudum, kabul ediyorum.",
       "submitting": "Kayıt yapılıyor...",
       "submit": "Kayıt Ol"
     },

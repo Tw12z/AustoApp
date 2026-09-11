@@ -176,7 +176,8 @@
       "loginFailed": "Login failed.",
       "registerFailed": "Registration failed.",
       "operationFailed": "Operation failed.",
-      "passwordMismatch": "Passwords do not match."
+      "passwordMismatch": "Passwords do not match.",
+      "mustAcceptLegal": "You must accept the Terms of Service and Privacy Policy to continue."
     },
     "forgot": {
       "back": "Go Back",
@@ -220,6 +221,10 @@
       "username": "Username",
       "password": "Password",
       "confirmPassword": "Confirm",
+      "termsLink": "the Terms of Service",
+      "termsAcceptSuffix": " and I accept them.",
+      "privacyLink": "the Privacy Policy",
+      "privacyAcceptSuffix": " and I accept it.",
       "submitting": "Signing up...",
       "submit": "Sign Up"
     },
