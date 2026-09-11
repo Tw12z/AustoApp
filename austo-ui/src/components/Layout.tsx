@@ -183,7 +183,10 @@ export default function Layout() {
           <button className="lg:hidden text-gray-400 hover:text-gold-400" onClick={() => setSidebarOpen(true)} aria-label={t('layout.openMenu')}>
             <Menu size={20} />
           </button>
-          <HeaderTicker items={rates} />
+          <div className="hidden md:block flex-1 min-w-0">
+            <HeaderTicker items={rates} />
+          </div>
+          <div className="flex-1 min-w-0 md:hidden" />
           <LanguageSwitcher />
           <Clock />
           <CalculatorDropdown />

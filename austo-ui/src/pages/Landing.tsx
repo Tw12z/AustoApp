@@ -539,7 +539,7 @@ export default function Landing() {
               className="mb-7"
               style={{ fontFamily: CV, fontSize: 'clamp(2.7rem, 3.4vw + 1rem, 5.5rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>
               <VaultReveal delay={0.15} center>
-                <span style={{ background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
+                <span style={{ background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   {t('landing.hero.titleLine1')}
                 </span>
               </VaultReveal>
