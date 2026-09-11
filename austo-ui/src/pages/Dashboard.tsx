@@ -547,7 +547,7 @@ export default function Dashboard() {
               drop-shadow(0 0 22px #D4AF3755)
             `,
           }} />}
-          iconRight={2} iconBottom={-65}
+          iconRight={-12} iconBottom={-65}
           color="#D4AF37" loading={loading} />
       </div>
 
