@@ -229,7 +229,8 @@
       "helloTitle": "Hello!",
       "helloDesc": "Sign up to join the jewelry management system.",
       "signInButton": "Sign In",
-      "signUpButton": "Sign Up"
+      "signUpButton": "Sign Up",
+      "registrationClosed": "New sign-ups aren't being accepted right now."
     },
     "footer": "© 2026 Austo · Jewelry Management System"
   },

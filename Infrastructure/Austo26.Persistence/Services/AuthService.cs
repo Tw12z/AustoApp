@@ -26,6 +26,13 @@ public class AuthService : IAuthService
 
     public async Task<string?> RegisterAsync(RegisterDto model)
     {
+        // Config-driven kill switch (Auth:AllowRegistration / Auth__AllowRegistration
+        // env var) so sign-up can be closed temporarily without touching code —
+        // defaults to open so local dev keeps working with zero config.
+        var registrationAllowed = !bool.TryParse(_config["Auth:AllowRegistration"], out var allowed) || allowed;
+        if (!registrationAllowed)
+            throw new Exception("Şu anda yeni kayıt kabul edilmiyor. Lütfen daha sonra tekrar deneyin.");
+
         if (await _userRepo.IsUserExistsAsync(model.UserName, model.Email))
             throw new Exception("Bu kullanıcı adı veya e-posta zaten kullanılıyor.");
 

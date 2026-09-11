@@ -229,7 +229,8 @@
       "helloTitle": "Merhaba!",
       "helloDesc": "Kuyumcu yönetim sistemine katılmak için kayıt olun.",
       "signInButton": "Giriş Yap",
-      "signUpButton": "Kayıt Ol"
+      "signUpButton": "Kayıt Ol",
+      "registrationClosed": "Şu anda yeni kayıt kabul edilmiyor."
     },
     "footer": "© 2026 Austo · Kuyumcu Yönetim Sistemi"
   },

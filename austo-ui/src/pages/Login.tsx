@@ -11,6 +11,11 @@ import LanguageSwitcher from '../components/LanguageSwitcher'
 
 type View = 'auth' | 'forgot' | 'forgotSent' | 'registered'
 
+// Temporary kill switch for public sign-up — the backend enforces this for real
+// (Auth:AllowRegistration), this just keeps the UI from offering a form that
+// would only fail. Flip back to true once registration reopens.
+const REGISTRATION_ENABLED = false
+
 export default function Login() {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -77,7 +82,11 @@ export default function Login() {
     }
   }
 
-  const switchMode = (signup: boolean) => { setIsSignUp(signup); resetErrors() }
+  const switchMode = (signup: boolean) => {
+    if (signup && !REGISTRATION_ENABLED) return // sign-up temporarily closed
+    setIsSignUp(signup)
+    resetErrors()
+  }
   const backToAuth = () => { setView('auth'); resetErrors() }
 
   return (
@@ -303,23 +312,27 @@ export default function Login() {
               <Logo className="h-10 w-auto mb-6 cursor-pointer" style={{ color: '#D4AF37' }} onClick={() => navigate('/')} />
               <h2 className="text-2xl font-bold text-white mb-3">{isSignUp ? t('auth.panel.welcomeBackTitle') : t('auth.panel.helloTitle')}</h2>
               <p className="text-sm mb-8 max-w-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                {isSignUp ? t('auth.panel.welcomeBackDesc') : t('auth.panel.helloDesc')}
+                {isSignUp ? t('auth.panel.welcomeBackDesc') : REGISTRATION_ENABLED ? t('auth.panel.helloDesc') : t('auth.panel.registrationClosed')}
               </p>
-              <button onClick={() => switchMode(!isSignUp)}
-                className="px-8 py-2.5 rounded-full font-semibold text-sm uppercase tracking-wider transition-all duration-300"
-                style={{ border: '2px solid #D4AF37', color: '#D4AF37', background: 'transparent' }}
-                onMouseEnter={e => { const el = e.currentTarget; el.style.background = '#D4AF37'; el.style.color = '#000' }}
-                onMouseLeave={e => { const el = e.currentTarget; el.style.background = 'transparent'; el.style.color = '#D4AF37' }}>
-                {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
-              </button>
+              {(isSignUp || REGISTRATION_ENABLED) && (
+                <button onClick={() => switchMode(!isSignUp)}
+                  className="px-8 py-2.5 rounded-full font-semibold text-sm uppercase tracking-wider transition-all duration-300"
+                  style={{ border: '2px solid #D4AF37', color: '#D4AF37', background: 'transparent' }}
+                  onMouseEnter={e => { const el = e.currentTarget; el.style.background = '#D4AF37'; el.style.color = '#000' }}
+                  onMouseLeave={e => { const el = e.currentTarget; el.style.background = 'transparent'; el.style.color = '#D4AF37' }}>
+                  {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
+                </button>
+              )}
             </motion.div>
 
             {/* Mobile-only mode toggle — the sliding panel above is desktop-only real estate */}
-            <div className="md:hidden relative text-center pb-6 px-6 -mt-2">
-              <button onClick={() => switchMode(!isSignUp)} className="text-xs transition-colors hover:text-white" style={{ color: '#888' }}>
-                {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
-              </button>
-            </div>
+            {(isSignUp || REGISTRATION_ENABLED) && (
+              <div className="md:hidden relative text-center pb-6 px-6 -mt-2">
+                <button onClick={() => switchMode(!isSignUp)} className="text-xs transition-colors hover:text-white" style={{ color: '#888' }}>
+                  {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
 

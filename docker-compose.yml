@@ -45,6 +45,8 @@ services:
       ClientUrl: ${FRONTEND_URL}
       MailSettings__UserName: ${SMTP_USERNAME}
       MailSettings__Password: ${SMTP_PASSWORD}
+      # Toggle in .env.docker to close/reopen public sign-up without a code change.
+      Auth__AllowRegistration: ${ALLOW_REGISTRATION:-true}
 
 volumes:
   austo_pgdata:
