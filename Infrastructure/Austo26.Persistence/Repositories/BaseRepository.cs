@@ -18,6 +18,9 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task<EntityEntry<T>> AddAsync(T entity) => await _dbSet.AddAsync(entity);
     public void AddRange(IEnumerable<T> entities) => _dbSet.AddRange(entities);
-    public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+    // virtual so repositories whose entity has navigation properties needed
+    // by the "no filter" listing (e.g. StockMovementRepository) can override
+    // this with the right .Include()s instead of returning them unloaded.
+    public virtual async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
     public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
 }
