@@ -34,7 +34,7 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
             type="button"
             onClick={() => i18n.changeLanguage(lang)}
             aria-pressed={isActive}
-            className="relative px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide"
+            className="relative px-2.5 py-1.5 rounded-full text-[11px] font-semibold tracking-wide"
             style={{ color: isActive ? '#0A0A0A' : '#9A9A9A', transition: 'color 0.25s ease' }}
           >
             {isActive && (

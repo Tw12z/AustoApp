@@ -427,7 +427,7 @@ function FeatureGrid() {
           const onRight = i % 2 === 1
           const Demo = FEATURE_DEMOS[f.key]
           return (
-            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 md:grid-flow-dense items-start gap-6 md:gap-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
+            <div key={f.key} className="grid grid-cols-1 md:grid-cols-2 md:grid-flow-dense items-start gap-6 md:gap-0 mb-16 md:mb-0 last:mb-0" style={{ minHeight: HIGHLIGHT_ROW_H }}>
               <FadeIn delay={i * 0.1} viewportMargin="120px" className={onRight ? 'md:col-start-2' : 'md:col-start-1'}>
                 <div className={`flex flex-col items-center text-center mx-auto ${onRight ? 'md:items-start md:text-left md:ml-10' : 'md:items-end md:text-right md:mr-10'}`}
                   style={{ maxWidth: 320 }}>
@@ -461,6 +461,25 @@ export default function Landing() {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const [liveRates, setLiveRates] = useState<FinanceItem[]>([])
+  // The hero mounts a canvas wave loop, a live dashboard mockup and a dozen
+  // framer-motion springs all in the same tick — on a first (uncached) load
+  // that pile-up shows up as one visible stutter right as the page appears.
+  // None of that work is skippable (every piece is genuinely used right
+  // away), so instead of cutting anything we just don't show the first,
+  // roughest frame: keep the page invisible for one paint while fonts settle
+  // and everything gets its first tick in offscreen, then fade in. The
+  // animations are still running underneath the whole time — this only
+  // hides the jank of them all starting at once, not the effects themselves.
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    const reveal = () => requestAnimationFrame(() => requestAnimationFrame(() => { if (!cancelled) setReady(true) }))
+    if (document.fonts?.ready) document.fonts.ready.then(reveal).catch(reveal)
+    else reveal()
+    // Never block on a slow font fetch — reveal regardless after a short cap.
+    const fallback = setTimeout(() => setReady(true), 400)
+    return () => { cancelled = true; clearTimeout(fallback) }
+  }, [])
 
   useEffect(() => {
     const load = () => financeApi.getLiveRates().then(r => setLiveRates(r.data)).catch(() => {})
@@ -470,7 +489,7 @@ export default function Landing() {
   }, [])
 
   return (
-    <div style={{ background: '#060606', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ background: '#060606', color: '#fff', fontFamily: 'Inter, sans-serif', opacity: ready ? 1 : 0, transition: 'opacity 0.35s ease' }}>
 
       {/* ── NAVBAR ── */}
       <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4">

@@ -179,8 +179,8 @@ export default function Layout() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="flex items-center gap-3 sm:gap-4 px-3 sm:px-6 py-3.5 shrink-0" style={{ borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0A0A0A' }}>
-          <button className="lg:hidden text-gray-400 hover:text-gold-400" onClick={() => setSidebarOpen(true)} aria-label={t('layout.openMenu')}>
+        <header className="flex items-center gap-1.5 sm:gap-4 px-3 sm:px-6 py-3.5 shrink-0" style={{ borderBottom: '1px solid rgba(212,175,55,0.1)', background: '#0A0A0A' }}>
+          <button className="lg:hidden -m-2 p-2 rounded-lg text-gray-400 hover:text-gold-400 active:bg-white/5 transition-colors" onClick={() => setSidebarOpen(true)} aria-label={t('layout.openMenu')}>
             <Menu size={20} />
           </button>
           <div className="hidden md:block flex-1 min-w-0">

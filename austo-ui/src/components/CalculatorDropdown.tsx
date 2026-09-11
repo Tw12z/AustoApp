@@ -86,15 +86,20 @@ export default function CalculatorDropdown() {
         onClick={() => setOpen(o => !o)}
         aria-label={t('layout.calculator.toggle')}
         aria-pressed={open}
-        className="flex items-center justify-center rounded-md transition-all duration-150"
+        className="flex items-center justify-center rounded-md transition-all duration-150 active:scale-95"
         style={{
-          width: 22, height: 22,
+          // Visually the same chip as before (border/fill only show up as
+          // 22px), but the actual tap target is padded out to ~36px — on a
+          // real phone this was the smallest, right-most target in the
+          // header and the easiest to miss or fat-finger into the calendar-
+          // clock next to it.
+          width: 36, height: 36,
           background: open ? 'rgba(212,175,55,0.15)' : 'transparent',
           border: `1px solid ${open ? 'rgba(212,175,55,0.3)' : 'transparent'}`,
           color: open ? '#D4AF37' : '#7D7D7D',
         }}
       >
-        <CalcIcon size={13} />
+        <CalcIcon size={15} />
       </button>
 
       {open && (
