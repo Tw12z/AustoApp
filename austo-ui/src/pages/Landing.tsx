@@ -516,7 +516,7 @@ export default function Landing() {
           <div className="flex items-center gap-3 md:gap-5">
             <a href="#features" className="hidden md:inline text-sm font-medium transition-colors hover:text-white" style={{ color: '#888' }}>{t('landing.navbar.features')}</a>
             <a href="#how"      className="hidden md:inline text-sm font-medium transition-colors hover:text-white" style={{ color: '#888' }}>{t('landing.navbar.how')}</a>
-            <div className="hidden md:block"><LanguageSwitcher /></div>
+            <LanguageSwitcher compact />
             <Link to="/login"
               className="shrink-0 text-sm px-4 md:px-5 py-2 rounded-full font-semibold transition-all duration-300 hover:opacity-90"
               style={{ background: GOLD_GRAD, color: '#000', boxShadow: '0 0 16px rgba(212,175,55,0.25)' }}>
