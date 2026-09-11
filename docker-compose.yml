@@ -17,7 +17,11 @@ services:
       POSTGRES_USER: austo_app
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - austo_pgdata:/var/lib/postgresql/data
+      # postgres:18+ images changed their expected mount point from
+      # /var/lib/postgresql/data to the parent /var/lib/postgresql (they now
+      # manage a version-specific subdirectory themselves) — mounting at the
+      # old /data path makes the container refuse to start ("unhealthy").
+      - austo_pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U austo_app -d AustoDB"]
       interval: 5s
