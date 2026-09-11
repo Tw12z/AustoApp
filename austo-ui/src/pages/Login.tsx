@@ -100,7 +100,7 @@ export default function Login() {
 
       {/* Language switcher */}
       <div className="fixed top-5 right-5 z-20">
-        <LanguageSwitcher compact />
+        <LanguageSwitcher />
       </div>
 
       {/* Logo */}
