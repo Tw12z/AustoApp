@@ -62,6 +62,7 @@
     "sales": "Satış",
     "purchases": "Alışlar",
     "reports": "Raporlar",
+    "demoRequests": "Demo Talepleri",
     "settings": "Ayarlar",
     "logout": "Çıkış"
   },
@@ -75,7 +76,7 @@
       "titleLine1": "Altın Yönetiminde",
       "titleLine2": "Yeni Standart",
       "desc": "Kuyumcunuzu uçtan uca dijitalleştirin. Canlı altın fiyatları, stok takibi, satış & alış yönetimi, raporlar ve daha fazlası — tek platformda.",
-      "ctaStart": "Hemen Başla",
+      "ctaStart": "Demo Talep Et",
       "ctaExplore": "Özellikleri Keşfet",
       "demo": {
         "dashboardTitle": "Panel",
@@ -164,7 +165,7 @@
       "titleLine1": "Kuyumcunuzu",
       "titleLine2": "Dijitalleştirin",
       "desc": "Austo ile altın yönetimini modernleştirin. Hızlı kurulum, kolay kullanım.",
-      "button": "Ücretsiz Başla"
+      "button": "Demo Talep Et"
     },
     "footer": {
       "copyright": "© 2026 Austo · Kuyumcu Yönetim Sistemi",
@@ -203,6 +204,25 @@
       "devLink": "E-postayı doğrula →",
       "backToLogin": "Giriş Sayfasına Dön"
     },
+    "demoRequest": {
+      "errors": { "failed": "Talep gönderilemedi." },
+      "title": "Demo",
+      "titleAccent": "Talep Et",
+      "subtitle": "Kayıt şu an ödeme altyapımızı tamamlarken kapalı — bilgilerinizi bırakın, demo hesabınızı biz açalım.",
+      "fullName": "Ad Soyad",
+      "businessName": "İşletme Adı",
+      "businessNamePlaceholder": "Örnek Kuyumculuk",
+      "phone": "Telefon",
+      "phonePlaceholder": "05xx xxx xx xx",
+      "email": "E-posta (opsiyonel)",
+      "submitting": "Gönderiliyor...",
+      "submit": "Demo Talep Et",
+      "submitted": {
+        "title": "Talebiniz Alındı!",
+        "message": "En kısa sürede sizinle iletişime geçip demo hesabınızı hazırlayacağız.",
+        "backToLogin": "Giriş Sayfasına Dön"
+      }
+    },
     "signIn": {
       "title": "Giriş Yap —",
       "subtitle": "Hesabınıza erişin",
@@ -235,9 +255,33 @@
       "helloDesc": "Kuyumcu yönetim sistemine katılmak için kayıt olun.",
       "signInButton": "Giriş Yap",
       "signUpButton": "Kayıt Ol",
+      "demoRequestButton": "Demo Talep Et",
+      "demoRequestDesc": "Kuyumcu yönetim sistemini denemek için bilgilerinizi bırakın, size ulaşalım.",
       "registrationClosed": "Şu anda yeni kayıt kabul edilmiyor."
     },
     "footer": "© 2026 Austo · Kuyumcu Yönetim Sistemi"
+  },
+  "demoRequests": {
+    "pageTitle": "Demo Talepleri",
+    "subtitle": "Landing sayfasındaki \"Demo Talep Et\" formundan gelen kayıtlar.",
+    "noResults": "Henüz demo talebi yok.",
+    "columns": {
+      "date": "Tarih",
+      "fullName": "Ad Soyad",
+      "business": "İşletme",
+      "contact": "İletişim"
+    },
+    "status": {
+      "1": "Yeni",
+      "2": "İletişimde",
+      "3": "Dönüştü",
+      "4": "Reddedildi"
+    },
+    "actions": {
+      "contacted": "İletişimde",
+      "converted": "Dönüştü",
+      "declined": "Reddedildi"
+    }
   },
   "resetPassword": {
     "errors": {

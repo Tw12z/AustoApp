@@ -132,6 +132,13 @@ export const stockItemsApi = {
   qr:          (id: string)            => api.get(`/stock-items/${id}/qr`, { responseType: 'blob' }),
 }
 
+// ── Demo Requests ───────────────────────────────────────
+export const demoRequestsApi = {
+  create:       (data: object)              => api.post('/demo-requests', data),
+  getAll:       ()                          => api.get('/demo-requests'),
+  updateStatus: (id: string, status: number) => api.patch(`/demo-requests/${id}/status`, { status }),
+}
+
 // ── Reports ─────────────────────────────────────────────
 export const reportsApi = {
   getDaily: (date?: string) => api.get(`/reports/daily${date ? `?date=${date}` : ''}`),

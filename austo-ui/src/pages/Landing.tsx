@@ -577,7 +577,7 @@ export default function Landing() {
             <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.05 }}
               className="flex items-center justify-center gap-4 flex-wrap">
-              <button onClick={() => navigate('/login')}
+              <button onClick={() => navigate('/login?mode=demo')}
                 className="flex items-center gap-2.5 px-9 py-4 rounded-full font-semibold text-black transition-all duration-300 hover:scale-105"
                 style={{ background: GOLD_GRAD, fontSize: 16, boxShadow: '0 0 48px rgba(212,175,55,0.35)' }}>
                 {t('landing.hero.ctaStart')} <ArrowRight size={17} />
@@ -740,7 +740,7 @@ export default function Landing() {
           <p className="mb-12 mx-auto" style={{ color: '#7D7D7D', fontSize: 15, maxWidth: 400, fontFamily: PF, fontStyle: 'italic', lineHeight: 1.8 }}>
             {t('landing.cta.desc')}
           </p>
-          <button onClick={() => navigate('/login')}
+          <button onClick={() => navigate('/login?mode=demo')}
             className="inline-flex items-center gap-3 rounded-full font-semibold text-black transition-all duration-300 hover:scale-105"
             style={{ background: GOLD_GRAD, fontSize: 17, padding: '18px 52px', boxShadow: '0 0 60px rgba(212,175,55,0.28)' }}>
             {t('landing.cta.button')} <ArrowRight size={18} />

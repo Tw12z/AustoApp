@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Package, Tag, MapPin, ArrowLeftRight,
   Users, Truck, TrendingUp, ShoppingCart, ShoppingBag,
-  BarChart3, LogOut, Menu, X, Settings,
+  BarChart3, UserPlus, LogOut, Menu, X, Settings,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { financeApi } from '../api/client'
@@ -77,6 +77,9 @@ const nav = [
   { to: '/app/reports',    icon: BarChart3,       key: 'reports'     },
 ]
 
+// Admin-only — the endpoint behind it (GET /api/demo-requests) requires the Admin role.
+const adminNavItem = { to: '/app/demo-requests', icon: UserPlus, key: 'demoRequests', end: false }
+
 function Clock() {
   const { i18n } = useTranslation()
   const [time, setTime] = useState(new Date())
@@ -142,7 +145,7 @@ export default function Layout() {
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {nav.map(({ to, icon: Icon, key, end }) => (
+          {(userRole === 'Admin' ? [...nav, adminNavItem] : nav).map(({ to, icon: Icon, key, end }) => (
             <NavLink
               key={to}
               to={to}

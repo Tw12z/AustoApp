@@ -1,6 +1,7 @@
 using Austo26.Application.Abstractions;
 using Austo26.Domain.Categories;
 using Austo26.Domain.Customers;
+using Austo26.Domain.DemoRequests;
 using Austo26.Domain.Entities.Locations;
 using Austo26.Domain.Finance;
 using Austo26.Domain.Products;
@@ -42,6 +43,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<SaleTransaction> SaleTransactions { get; set; }
     public DbSet<SaleTransactionItem> SaleTransactionItems { get; set; }
     public DbSet<PurchaseTransaction> PurchaseTransactions { get; set; }
+    public DbSet<DemoRequest> DemoRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

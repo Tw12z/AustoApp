@@ -62,6 +62,7 @@
     "sales": "Sales",
     "purchases": "Purchases",
     "reports": "Reports",
+    "demoRequests": "Demo Requests",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -75,7 +76,7 @@
       "titleLine1": "The New Standard",
       "titleLine2": "in Gold Management",
       "desc": "Digitize your jewelry business end-to-end. Live gold prices, stock tracking, sales & purchase management, reports and more — all on one platform.",
-      "ctaStart": "Get Started",
+      "ctaStart": "Request a Demo",
       "ctaExplore": "Explore Features",
       "demo": {
         "dashboardTitle": "Dashboard",
@@ -164,7 +165,7 @@
       "titleLine1": "Digitize Your",
       "titleLine2": "Jewelry Business",
       "desc": "Modernize gold management with Austo. Fast setup, easy to use.",
-      "button": "Start for Free"
+      "button": "Request a Demo"
     },
     "footer": {
       "copyright": "© 2026 Austo · Jewelry Management System",
@@ -203,6 +204,25 @@
       "devLink": "Verify email →",
       "backToLogin": "Back to Login"
     },
+    "demoRequest": {
+      "errors": { "failed": "Couldn't send your request." },
+      "title": "Request a",
+      "titleAccent": "Demo",
+      "subtitle": "Sign-up is closed while we finish our billing setup — leave your details and we'll set up a demo account for you.",
+      "fullName": "Full Name",
+      "businessName": "Business Name",
+      "businessNamePlaceholder": "Example Jewelry",
+      "phone": "Phone",
+      "phonePlaceholder": "+90 5xx xxx xx xx",
+      "email": "Email (optional)",
+      "submitting": "Sending...",
+      "submit": "Request a Demo",
+      "submitted": {
+        "title": "Request Received!",
+        "message": "We'll reach out shortly to set up your demo account.",
+        "backToLogin": "Back to Login"
+      }
+    },
     "signIn": {
       "title": "Sign In —",
       "subtitle": "Access your account",
@@ -235,9 +255,33 @@
       "helloDesc": "Sign up to join the jewelry management system.",
       "signInButton": "Sign In",
       "signUpButton": "Sign Up",
+      "demoRequestButton": "Request a Demo",
+      "demoRequestDesc": "Leave your details to try the jewelry management system — we'll reach out.",
       "registrationClosed": "New sign-ups aren't being accepted right now."
     },
     "footer": "© 2026 Austo · Jewelry Management System"
+  },
+  "demoRequests": {
+    "pageTitle": "Demo Requests",
+    "subtitle": "Leads submitted through the landing page's \"Request a Demo\" form.",
+    "noResults": "No demo requests yet.",
+    "columns": {
+      "date": "Date",
+      "fullName": "Full Name",
+      "business": "Business",
+      "contact": "Contact"
+    },
+    "status": {
+      "1": "New",
+      "2": "Contacted",
+      "3": "Converted",
+      "4": "Declined"
+    },
+    "actions": {
+      "contacted": "Contacted",
+      "converted": "Converted",
+      "declined": "Declined"
+    }
   },
   "resetPassword": {
     "errors": {

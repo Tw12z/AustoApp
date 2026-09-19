@@ -1,30 +1,36 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff, Mail, Lock, User, AtSign, ArrowLeft, MailCheck } from 'lucide-react'
-import { authApi } from '../api/client'
+import { Eye, EyeOff, Mail, Lock, User, AtSign, Phone, Building2, Send, ArrowLeft, MailCheck } from 'lucide-react'
+import { authApi, demoRequestsApi } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LineWaves from '../components/LineWaves'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 
-type View = 'auth' | 'forgot' | 'forgotSent' | 'registered'
+type View = 'auth' | 'forgot' | 'forgotSent' | 'registered' | 'demoSubmitted'
 
 // Temporary kill switch for public sign-up — the backend enforces this for real
 // (Auth:AllowRegistration), this just keeps the UI from offering a form that
-// would only fail. Flip back to true once registration reopens.
+// would only fail. While it's off, the sign-up side of the card shows the
+// "Demo Talep Et" lead form instead (see REGISTRATION_ENABLED below in the
+// render). Flip back to true once registration reopens — the original
+// sign-up form is untouched, just gated.
 const REGISTRATION_ENABLED = false
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { t } = useTranslation()
   const { login } = useAuth()
-  const [isSignUp, setIsSignUp] = useState(false)
+  // Landing page CTAs link to /login?mode=demo to land directly on the demo-request panel.
+  const [isSignUp, setIsSignUp] = useState(() => searchParams.get('mode') === 'demo')
   const [view, setView] = useState<View>('auth')
 
   const [loginForm, setLoginForm] = useState({ userNameOrEmail: '', password: '' })
   const [registerForm, setRegisterForm] = useState({ fullName: '', email: '', userName: '', password: '', confirmPassword: '', acceptedTerms: false, acceptedPrivacy: false })
+  const [demoForm, setDemoForm] = useState({ fullName: '', businessName: '', phone: '', email: '' })
   const [forgotEmail, setForgotEmail] = useState('')
 
   const [showPw, setShowPw] = useState(false)
@@ -68,6 +74,27 @@ export default function Login() {
     }
   }
 
+  const handleDemoRequest = async (e: React.FormEvent) => {
+    e.preventDefault()
+    resetErrors()
+    setLoading(true)
+    try {
+      await demoRequestsApi.create({
+        fullName: demoForm.fullName,
+        businessName: demoForm.businessName,
+        phone: demoForm.phone,
+        email: demoForm.email || null,
+        note: null,
+      })
+      setDemoForm({ fullName: '', businessName: '', phone: '', email: '' })
+      setView('demoSubmitted')
+    } catch (err: any) {
+      setError(err.response?.data?.message ?? t('auth.demoRequest.errors.failed'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault()
     resetErrors()
@@ -84,7 +111,9 @@ export default function Login() {
   }
 
   const switchMode = (signup: boolean) => {
-    if (signup && !REGISTRATION_ENABLED) return // sign-up temporarily closed
+    // Used to no-op here while registration was closed — now the right-hand
+    // panel always has something to show (real sign-up when enabled, the
+    // demo-request form otherwise), so switching is always allowed.
     setIsSignUp(signup)
     resetErrors()
   }
@@ -189,6 +218,22 @@ export default function Login() {
           </motion.div>
         )}
 
+        {/* ── DEMO REQUEST SUBMITTED ── */}
+        {view === 'demoSubmitted' && (
+          <motion.div key="demoSubmitted" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }} className="relative w-full max-w-sm">
+            <div className="card p-8 text-center">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+                style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)' }}>
+                <MailCheck size={26} style={{ color: '#D4AF37' }} />
+              </div>
+              <h2 className="text-xl font-bold text-white mb-2">{t('auth.demoRequest.submitted.title')}</h2>
+              <p className="text-sm mb-5" style={{ color: '#888' }}>{t('auth.demoRequest.submitted.message')}</p>
+              <button onClick={backToAuth} className="btn-outline w-full">{t('auth.demoRequest.submitted.backToLogin')}</button>
+            </div>
+          </motion.div>
+        )}
+
         {/* ── MAIN AUTH CARD ── */}
         {view === 'auth' && (
           <motion.div key="auth" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
@@ -236,88 +281,144 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Sign Up Form — right (own row on mobile, right half of the slider on desktop) */}
+            {/* Sign Up Form — right (own row on mobile, right half of the slider on desktop).
+                Shows the real registration form when it's enabled, or the "Demo Talep Et"
+                lead form while it's closed (see REGISTRATION_ENABLED at the top). */}
             <div className={`${isSignUp ? 'flex' : 'hidden md:flex'} relative w-full md:absolute md:top-0 md:right-0 md:w-1/2 md:h-full items-center justify-center p-6 md:p-10`}>
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-white mb-1">{t('auth.signUp.title')} <span style={{ color: '#D4AF37' }}>{t('auth.signUp.titleAccent')}</span></h2>
-                <p className="text-sm mb-5" style={{ color: '#888' }}>{t('auth.signUp.subtitle')}</p>
-                <form onSubmit={handleRegister} className="space-y-3">
-                  <div>
-                    <label className="label">{t('auth.signUp.fullName')}</label>
-                    <div className="relative">
-                      <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" placeholder={t('common.fullNamePlaceholder')} value={registerForm.fullName}
-                        onChange={e => setRegisterForm(f => ({ ...f, fullName: e.target.value }))} required />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="label">{t('auth.signUp.email')}</label>
-                    <div className="relative">
-                      <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" type="email" placeholder={t('common.emailPlaceholder')} value={registerForm.email}
-                        onChange={e => setRegisterForm(f => ({ ...f, email: e.target.value }))} required />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="label">{t('auth.signUp.username')}</label>
-                    <div className="relative">
-                      <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                      <input className="input pl-8" placeholder={t('common.usernamePlaceholder')} value={registerForm.userName}
-                        onChange={e => setRegisterForm(f => ({ ...f, userName: e.target.value }))} required />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="label">{t('auth.signUp.password')}</label>
-                      <div className="relative">
-                        <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                        <input className="input pl-8 pr-8" type={showPw ? 'text' : 'password'} placeholder="••••••••"
-                          value={registerForm.password} onChange={e => setRegisterForm(f => ({ ...f, password: e.target.value }))} required />
-                        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)} aria-label={showPw ? t('common.hidePassword') : t('common.showPassword')}>
-                          {showPw ? <EyeOff size={12} /> : <Eye size={12} />}
-                        </button>
+                {REGISTRATION_ENABLED ? (
+                  <>
+                    <h2 className="text-2xl font-bold text-white mb-1">{t('auth.signUp.title')} <span style={{ color: '#D4AF37' }}>{t('auth.signUp.titleAccent')}</span></h2>
+                    <p className="text-sm mb-5" style={{ color: '#888' }}>{t('auth.signUp.subtitle')}</p>
+                    <form onSubmit={handleRegister} className="space-y-3">
+                      <div>
+                        <label className="label">{t('auth.signUp.fullName')}</label>
+                        <div className="relative">
+                          <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                          <input className="input pl-8" placeholder={t('common.fullNamePlaceholder')} value={registerForm.fullName}
+                            onChange={e => setRegisterForm(f => ({ ...f, fullName: e.target.value }))} required />
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <label className="label">{t('auth.signUp.confirmPassword')}</label>
-                      <div className="relative">
-                        <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                        <input className="input pl-8 pr-8" type={showConfirmPw ? 'text' : 'password'} placeholder="••••••••"
-                          value={registerForm.confirmPassword} onChange={e => setRegisterForm(f => ({ ...f, confirmPassword: e.target.value }))} required />
-                        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowConfirmPw(v => !v)} aria-label={showConfirmPw ? t('common.hidePassword') : t('common.showPassword')}>
-                          {showConfirmPw ? <EyeOff size={12} /> : <Eye size={12} />}
-                        </button>
+                      <div>
+                        <label className="label">{t('auth.signUp.email')}</label>
+                        <div className="relative">
+                          <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                          <input className="input pl-8" type="email" placeholder={t('common.emailPlaceholder')} value={registerForm.email}
+                            onChange={e => setRegisterForm(f => ({ ...f, email: e.target.value }))} required />
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: '#888' }}>
-                      <input type="checkbox" className="mt-0.5" checked={registerForm.acceptedTerms}
-                        onChange={e => setRegisterForm(f => ({ ...f, acceptedTerms: e.target.checked }))} required />
-                      <span>
-                        <a href="/kullanim-kosullari" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{t('auth.signUp.termsLink')}</a>
-                        {t('auth.signUp.termsAcceptSuffix')}
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: '#888' }}>
-                      <input type="checkbox" className="mt-0.5" checked={registerForm.acceptedPrivacy}
-                        onChange={e => setRegisterForm(f => ({ ...f, acceptedPrivacy: e.target.checked }))} required />
-                      <span>
-                        <a href="/gizlilik-politikasi" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{t('auth.signUp.privacyLink')}</a>
-                        {t('auth.signUp.privacyAcceptSuffix')}
-                      </span>
-                    </label>
-                  </div>
-                  {isSignUp && error && (
-                    <div className="text-sm px-3 py-2 rounded-lg"
-                      style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>
-                  )}
-                  <button type="submit" disabled={loading || !registerForm.acceptedTerms || !registerForm.acceptedPrivacy}
-                    className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
-                    style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
-                    {loading && isSignUp ? t('auth.signUp.submitting') : t('auth.signUp.submit')}
-                  </button>
-                </form>
+                      <div>
+                        <label className="label">{t('auth.signUp.username')}</label>
+                        <div className="relative">
+                          <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                          <input className="input pl-8" placeholder={t('common.usernamePlaceholder')} value={registerForm.userName}
+                            onChange={e => setRegisterForm(f => ({ ...f, userName: e.target.value }))} required />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="label">{t('auth.signUp.password')}</label>
+                          <div className="relative">
+                            <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                            <input className="input pl-8 pr-8" type={showPw ? 'text' : 'password'} placeholder="••••••••"
+                              value={registerForm.password} onChange={e => setRegisterForm(f => ({ ...f, password: e.target.value }))} required />
+                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowPw(v => !v)} aria-label={showPw ? t('common.hidePassword') : t('common.showPassword')}>
+                              {showPw ? <EyeOff size={12} /> : <Eye size={12} />}
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="label">{t('auth.signUp.confirmPassword')}</label>
+                          <div className="relative">
+                            <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                            <input className="input pl-8 pr-8" type={showConfirmPw ? 'text' : 'password'} placeholder="••••••••"
+                              value={registerForm.confirmPassword} onChange={e => setRegisterForm(f => ({ ...f, confirmPassword: e.target.value }))} required />
+                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onClick={() => setShowConfirmPw(v => !v)} aria-label={showConfirmPw ? t('common.hidePassword') : t('common.showPassword')}>
+                              {showConfirmPw ? <EyeOff size={12} /> : <Eye size={12} />}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: '#888' }}>
+                          <input type="checkbox" className="mt-0.5" checked={registerForm.acceptedTerms}
+                            onChange={e => setRegisterForm(f => ({ ...f, acceptedTerms: e.target.checked }))} required />
+                          <span>
+                            <a href="/kullanim-kosullari" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{t('auth.signUp.termsLink')}</a>
+                            {t('auth.signUp.termsAcceptSuffix')}
+                          </span>
+                        </label>
+                        <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: '#888' }}>
+                          <input type="checkbox" className="mt-0.5" checked={registerForm.acceptedPrivacy}
+                            onChange={e => setRegisterForm(f => ({ ...f, acceptedPrivacy: e.target.checked }))} required />
+                          <span>
+                            <a href="/gizlilik-politikasi" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{t('auth.signUp.privacyLink')}</a>
+                            {t('auth.signUp.privacyAcceptSuffix')}
+                          </span>
+                        </label>
+                      </div>
+                      {isSignUp && error && (
+                        <div className="text-sm px-3 py-2 rounded-lg"
+                          style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>
+                      )}
+                      <button type="submit" disabled={loading || !registerForm.acceptedTerms || !registerForm.acceptedPrivacy}
+                        className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
+                        {loading && isSignUp ? t('auth.signUp.submitting') : t('auth.signUp.submit')}
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-2xl font-bold text-white mb-1">{t('auth.demoRequest.title')} <span style={{ color: '#D4AF37' }}>{t('auth.demoRequest.titleAccent')}</span></h2>
+                    <p className="text-sm mb-5" style={{ color: '#888' }}>{t('auth.demoRequest.subtitle')}</p>
+                    <form onSubmit={handleDemoRequest} className="space-y-3">
+                      <div>
+                        <label className="label">{t('auth.demoRequest.fullName')}</label>
+                        <div className="relative">
+                          <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                          <input className="input pl-8" placeholder={t('common.fullNamePlaceholder')} value={demoForm.fullName}
+                            onChange={e => setDemoForm(f => ({ ...f, fullName: e.target.value }))} required />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="label">{t('auth.demoRequest.businessName')}</label>
+                        <div className="relative">
+                          <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                          <input className="input pl-8" placeholder={t('auth.demoRequest.businessNamePlaceholder')} value={demoForm.businessName}
+                            onChange={e => setDemoForm(f => ({ ...f, businessName: e.target.value }))} required />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="label">{t('auth.demoRequest.phone')}</label>
+                          <div className="relative">
+                            <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                            <input className="input pl-8" type="tel" placeholder={t('auth.demoRequest.phonePlaceholder')} value={demoForm.phone}
+                              onChange={e => setDemoForm(f => ({ ...f, phone: e.target.value }))} required />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="label">{t('auth.demoRequest.email')}</label>
+                          <div className="relative">
+                            <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(212,175,55,0.5)' }} />
+                            <input className="input pl-8" type="email" placeholder={t('common.emailPlaceholder')} value={demoForm.email}
+                              onChange={e => setDemoForm(f => ({ ...f, email: e.target.value }))} />
+                          </div>
+                        </div>
+                      </div>
+                      {isSignUp && error && (
+                        <div className="text-sm px-3 py-2 rounded-lg"
+                          style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>
+                      )}
+                      <button type="submit" disabled={loading}
+                        className="w-full py-3 rounded-full font-semibold text-black disabled:opacity-50 flex items-center justify-center gap-2"
+                        style={{ background: 'linear-gradient(135deg, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%)' }}>
+                        <Send size={14} /> {loading && isSignUp ? t('auth.demoRequest.submitting') : t('auth.demoRequest.submit')}
+                      </button>
+                    </form>
+                  </>
+                )}
               </div>
             </div>
 
@@ -332,27 +433,23 @@ export default function Login() {
               <Logo className="h-10 w-auto mb-6 cursor-pointer" style={{ color: '#D4AF37' }} onClick={() => navigate('/')} />
               <h2 className="text-2xl font-bold text-white mb-3">{isSignUp ? t('auth.panel.welcomeBackTitle') : t('auth.panel.helloTitle')}</h2>
               <p className="text-sm mb-8 max-w-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                {isSignUp ? t('auth.panel.welcomeBackDesc') : REGISTRATION_ENABLED ? t('auth.panel.helloDesc') : t('auth.panel.registrationClosed')}
+                {isSignUp ? t('auth.panel.welcomeBackDesc') : REGISTRATION_ENABLED ? t('auth.panel.helloDesc') : t('auth.panel.demoRequestDesc')}
               </p>
-              {(isSignUp || REGISTRATION_ENABLED) && (
-                <button onClick={() => switchMode(!isSignUp)}
+              <button onClick={() => switchMode(!isSignUp)}
                   className="px-8 py-2.5 rounded-full font-semibold text-sm uppercase tracking-wider transition-all duration-300"
                   style={{ border: '2px solid #D4AF37', color: '#D4AF37', background: 'transparent' }}
                   onMouseEnter={e => { const el = e.currentTarget; el.style.background = '#D4AF37'; el.style.color = '#000' }}
                   onMouseLeave={e => { const el = e.currentTarget; el.style.background = 'transparent'; el.style.color = '#D4AF37' }}>
-                  {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
+                  {isSignUp ? t('auth.panel.signInButton') : REGISTRATION_ENABLED ? t('auth.panel.signUpButton') : t('auth.panel.demoRequestButton')}
                 </button>
-              )}
             </motion.div>
 
             {/* Mobile-only mode toggle — the sliding panel above is desktop-only real estate */}
-            {(isSignUp || REGISTRATION_ENABLED) && (
-              <div className="md:hidden relative text-center pb-6 px-6 -mt-2">
-                <button onClick={() => switchMode(!isSignUp)} className="text-xs transition-colors hover:text-white" style={{ color: '#888' }}>
-                  {isSignUp ? t('auth.panel.signInButton') : t('auth.panel.signUpButton')}
-                </button>
-              </div>
-            )}
+            <div className="md:hidden relative text-center pb-6 px-6 -mt-2">
+              <button onClick={() => switchMode(!isSignUp)} className="text-xs transition-colors hover:text-white" style={{ color: '#888' }}>
+                {isSignUp ? t('auth.panel.signInButton') : REGISTRATION_ENABLED ? t('auth.panel.signUpButton') : t('auth.panel.demoRequestButton')}
+              </button>
+            </div>
           </motion.div>
         )}
 

@@ -22,6 +22,7 @@ const Sales         = lazy(() => import('./pages/Sales'))
 const Purchases     = lazy(() => import('./pages/Purchases'))
 const Stock         = lazy(() => import('./pages/Stock'))
 const Reports       = lazy(() => import('./pages/Reports'))
+const DemoRequests  = lazy(() => import('./pages/DemoRequests'))
 const Settings      = lazy(() => import('./pages/Settings'))
 const VerifyEmail   = lazy(() => import('./pages/VerifyEmail'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
@@ -72,6 +73,7 @@ function AppRoutes() {
           <Route path="sales"      element={<Sales />} />
           <Route path="purchases"  element={<Purchases />} />
           <Route path="reports"    element={<Reports />} />
+          <Route path="demo-requests" element={<DemoRequests />} />
           <Route path="settings"   element={<Settings />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
