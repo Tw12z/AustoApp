@@ -1,0 +1,109 @@
+# Sürekli Entegrasyon (CI)
+#
+# Ne zaman çalışır: master'a her push'ta, her pull request'te ve elle
+# tetiklendiğinde. Amacı tek bir soruya cevap vermek: "bu kod derleniyor ve
+# testleri geçiyor mu?" Hiçbir şey deploy etmez — deploy ayrı ve onaylıdır
+# (bkz. .github/workflows/deploy.yml).
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+  # deploy.yml bu dosyayı aynen çağırıyor; böylece deploy öncesi çalışan
+  # doğrulama ile PR'da çalışan doğrulama birebir aynı oluyor.
+  workflow_call:
+
+# Aynı dal için arka arkaya push yapılırsa eski çalışmayı iptal et; master'da
+# ise her commit'in sonucu ayrı ayrı görünsün diye iptal etme.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (derleme + testler)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 10 SDK kur
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: NuGet paketlerini önbellekten al
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Paketleri indir
+        run: dotnet restore Austo26.slnx
+
+      - name: Derle
+        run: dotnet build Austo26.slnx --configuration Release --no-restore
+
+      - name: Testleri çalıştır
+        run: >
+          dotnet test Austo26.slnx
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+
+      - name: Test sonuçlarını sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 14
+
+  frontend:
+    name: Frontend (derleme)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: austo-ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node 22 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: austo-ui/package-lock.json
+
+      - name: Paketleri kur
+        # npm install değil npm ci: package-lock.json'a birebir sadık kalır,
+        # yani CI'da yerelde olmayan bir paket sürümü çıkmaz.
+        run: npm ci
+
+      - name: Derle (tsc + vite)
+        # "npm run build" önce tsc -b çalıştırıyor, yani tip hataları da burada yakalanır.
+        run: npm run build
+
+      - name: Lint (şimdilik bilgi amaçlı)
+        # master'da bugün 39 eslint hatası var. Bunlar temizlenene kadar lint'i
+        # bloklayıcı yapmak CI'ı ilk günden kırmızıya düşürürdü; sayı görünsün
+        # diye çalıştırıyoruz. Temizlendiğinde bu satır silinip adım bloklayıcı olmalı.
+        continue-on-error: true
+        run: npm run lint
+
+  docker:
+    name: Docker imajı (API)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Sunucuya giden şey bu imaj. Derlemesi burada kırılırsa deploy da
+      # kırılırdı — onu canlıda değil burada görelim. İmaj hiçbir yere itilmiyor.
+      - name: İmajı derle (push yok)
+        run: docker build -f Presentation/Austo26.API/Dockerfile -t austo-api:ci .

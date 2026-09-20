@@ -1,0 +1,179 @@
+# Canlıya çıkış (deploy) — asla kendiliğinden çalışmaz.
+#
+# İki ayrı fren var:
+#   1. Sadece elle tetiklenir (Actions > Deploy > Run workflow) ve kutuya
+#      "deploy" yazmanız istenir.
+#   2. Asıl deploy adımı "production" ortamına bağlı. GitHub'da o ortama
+#      "required reviewer" olarak kendinizi eklediğinizde iş bir onay
+#      bekleyerek durur; siz onaylayana kadar sunucuya hiçbir şey gitmez.
+#
+# Sıralama: onay yazısı -> CI (derleme + testler) -> onay bekle -> deploy.
+# Testler kırmızıysa deploy adımına hiç sıra gelmez.
+#
+# Hangi secret ve değişkenlerin tanımlanması gerektiği: docs/CI-CD.md
+name: Deploy (manuel onaylı)
+
+on:
+  workflow_dispatch:
+    inputs:
+      onay:
+        description: 'Canlıya çıkmayı onaylamak için "deploy" yazın'
+        required: true
+        default: ''
+      migrasyon_calistir:
+        description: 'Veritabanı migrasyonlarını da çalıştır'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  onay-yazisi:
+    name: Onay yazısını doğrula
+    runs-on: ubuntu-latest
+    steps:
+      - name: '"deploy" yazıldı mı?'
+        env:
+          ONAY: ${{ inputs.onay }}
+        run: |
+          if [ "$ONAY" != "deploy" ]; then
+            echo "::error::Onay kutusuna tam olarak 'deploy' yazmalısınız."
+            exit 1
+          fi
+          echo "Onay alındı."
+
+  dogrula:
+    name: CI
+    needs: onay-yazisi
+    # Deploy öncesi doğrulama, PR'da çalışanın birebir aynısı olsun diye
+    # ci.yml'yi kopyalamak yerine çağırıyoruz.
+    uses: ./.github/workflows/ci.yml
+
+  deploy-api:
+    name: API'yi sunucuya al
+    needs: dogrula
+    runs-on: ubuntu-latest
+    # Asıl onay kapısı burası. GitHub > Settings > Environments > production
+    # altında "Required reviewers" tanımlıysa, bu iş sizin onayınızı bekler.
+    environment: production
+    env:
+      # Sırları kabuk komutunun içine gömmek yerine ortam değişkeni olarak
+      # geçiriyoruz: hem log'a sızma riski düşer hem de içindeki özel
+      # karakterler komutu bozmaz.
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+    steps:
+      - name: Gerekli secret ve değişkenler tanımlı mı?
+        # Eksik bir değerle yarım deploy yapmaktansa, hiç başlamadan ve
+        # neyin eksik olduğunu söyleyerek durmak daha güvenli.
+        run: |
+          eksik=""
+          if [ -z "$DEPLOY_HOST" ];    then eksik="$eksik DEPLOY_HOST(secret)"; fi
+          if [ -z "$DEPLOY_USER" ];    then eksik="$eksik DEPLOY_USER(secret)"; fi
+          if [ -z "$DEPLOY_SSH_KEY" ]; then eksik="$eksik DEPLOY_SSH_KEY(secret)"; fi
+          if [ -z "$DEPLOY_PATH" ];    then eksik="$eksik DEPLOY_PATH(variable)"; fi
+          if [ -n "$eksik" ]; then
+            echo "::error::Şunlar tanımlı değil:$eksik — Settings > Secrets and variables > Actions altından ekleyin. Ayrıntı: docs/CI-CD.md"
+            exit 1
+          fi
+          echo "Tüm değerler tanımlı."
+
+      - name: SSH anahtarını hazırla
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          # Sunucunun kimliğini sabitle. DEPLOY_KNOWN_HOSTS tanımlıysa onu
+          # kullan; değilse ilk bağlantıda öğren (daha zayıf ama bağlantıyı
+          # sessizce kesmez). `ssh-keyscan <sunucu>` çıktısını secret olarak
+          # eklemek önerilir.
+          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            echo "::warning::DEPLOY_KNOWN_HOSTS tanımlı değil; sunucu anahtarı ilk bağlantıda kabul edilecek."
+            ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Sunucuda kodu güncelle ve konteynerleri yeniden kur
+        # Sunucuda DEPLOY_PATH altında repo klonlu ve .env.docker dolu olmalı
+        # (bkz. DEPLOYMENT.md, bölüm 4). Gerçek sırlar orada durur, burada değil.
+        run: |
+          ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+            "set -e
+             cd '$DEPLOY_PATH'
+             git fetch --all
+             git checkout master
+             git reset --hard origin/master
+             docker compose --env-file .env.docker up -d --build"
+
+      - name: Veritabanı migrasyonlarını çalıştır
+        if: ${{ inputs.migrasyon_calistir }}
+        run: |
+          ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+            "set -e
+             cd '$DEPLOY_PATH'
+             docker compose --env-file .env.docker exec -T api dotnet ef database update \
+               --project Infrastructure/Austo26.Persistence \
+               --startup-project Presentation/Austo26.API"
+
+      - name: API ayakta mı? (duman testi)
+        # Ayrı bir /health ucu yok; herhangi bir HTTP cevabı (401 dahil)
+        # sürecin ayakta olduğunu gösterir, cevapsızlık göstermez.
+        run: |
+          ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+            'for i in $(seq 1 10); do
+               kod=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8080/api/finance/live || echo 000)
+               if [ "$kod" != "000" ]; then echo "API cevap veriyor (HTTP $kod)"; exit 0; fi
+               sleep 5
+             done
+             echo "API 50 saniye icinde cevap vermedi"; exit 1'
+
+      - name: Anahtarı temizle
+        if: always()
+        run: rm -f ~/.ssh/id_deploy
+
+  frontend:
+    name: Frontend paketini üret
+    needs: dogrula
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: austo-ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: austo-ui/package-lock.json
+
+      - run: npm ci
+
+      - name: Canlı API adresiyle derle
+        # VITE_API_URL derleme anında koda gömülür; sonradan dosya düzenleyerek
+        # değiştirilemez (bkz. DEPLOYMENT.md, bölüm 5).
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "::error::VITE_API_URL değişkeni tanımlı değil (Settings > Secrets and variables > Actions > Variables)."
+            exit 1
+          fi
+          npm run build
+
+      - name: dist/ paketini indirilebilir olarak sakla
+        # Statik hosting (Vercel / Cloudflare Pages / nginx) tarafı henüz
+        # bağlı değil; şimdilik paketi buradan indirip elle yüklüyoruz.
+        # Hedef belirlendiğinde buraya bir yükleme adımı eklenecek.
+        uses: actions/upload-artifact@v4
+        with:
+          name: austo-ui-dist
+          path: austo-ui/dist/
+          retention-days: 30

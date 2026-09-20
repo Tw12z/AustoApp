@@ -62,6 +62,8 @@ Austo26/
 │   └── Austo26.Persistence/     # DbContext, Repository'ler, Migrations
 ├── Presentation/
 │   └── Austo26.API/             # Controller'lar, Program.cs
+├── Tests/
+│   └── Austo26.UnitTests/       # Birim testleri (xUnit)
 └── austo-ui/                    # React Frontend
 ```
 
@@ -121,6 +123,17 @@ npm run dev
 ```
 
 Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışır.
+
+### Testler
+
+```bash
+dotnet test Austo26.slnx
+```
+
+Birim testleri `Tests/Austo26.UnitTests` altında: parola hashleme, JWT
+üretimi, ürün stok kuralları, parça/konum takibi ve satış toplamları.
+Aynı testler her push ve pull request'te GitHub Actions üzerinde de
+çalışıyor — bkz. [docs/CI-CD.md](docs/CI-CD.md).
 
 ---
 

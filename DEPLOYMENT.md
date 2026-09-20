@@ -141,10 +141,16 @@ only if usage actually demands it.
 
 ## 7. Known gaps not covered here
 
-- No automated tests exist yet.
+- Automated tests cover the domain rules and auth helpers only
+  (`Tests/Austo26.UnitTests`) — there are no integration or end-to-end tests
+  against a real database yet.
 - `Microsoft.IdentityModel.Tokens` / `System.IdentityModel.Tokens.Jwt` /
   `Scalar.AspNetCore` resolve a few minor versions above what's pinned in the
   `.csproj` files (cosmetic `NU1603` restore warnings, not vulnerabilities —
   left alone deliberately to avoid an untested auth-library version bump
   right before launch).
-- No CI/CD pipeline — deploys above are manual.
+- CI runs on every push and pull request (`.github/workflows/ci.yml`):
+  backend build + tests, frontend build, and the API Docker image. Deploys
+  stay manual **by design** — `.github/workflows/deploy.yml` only runs when
+  triggered by hand and waits for an approval on the `production`
+  environment. Setup steps: `docs/CI-CD.md`.
