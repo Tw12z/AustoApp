@@ -1,11 +1,17 @@
 using Austo26.Application.Abstractions.Services;
 using Austo26.Application.DTOs.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Austo26.API.Controllers;
 
+// Public by necessity — these are the endpoints a caller hits *before* they
+// have a token, so they opt out of the global "authenticated by default"
+// fallback policy. Each one is still gated on its own secret (credentials, a
+// verification token, a reset token) rather than on being logged in.
 [Route("api/[controller]")]
 [ApiController]
+[AllowAnonymous]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;

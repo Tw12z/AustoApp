@@ -75,6 +75,18 @@ public class User : BaseEntity
         Touch();
     }
 
+    /// <summary>
+    /// Re-stores the same password under a stronger hashing scheme. Unlike
+    /// <see cref="ResetPassword"/> this is not a password change, so it leaves
+    /// any pending reset token alone.
+    /// </summary>
+    public void UpgradePasswordHash(byte[] hash, byte[] salt)
+    {
+        PasswordHash = hash;
+        PasswordSalt = salt;
+        Touch();
+    }
+
     public void ResetPassword(byte[] hash, byte[] salt)
     {
         PasswordHash = hash;
