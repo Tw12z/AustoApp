@@ -2,6 +2,7 @@ using Austo26.Infrastructure;
 using Austo26.Persistence;
 using Austo26.Persistence.Contexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -46,7 +47,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+// Deny by default: every endpoint requires an authenticated caller unless it
+// opts out with [AllowAnonymous]. Without a fallback policy an endpoint with
+// no [Authorize] is simply public, which is how the whole API (products,
+// sales, customers, stock, reports, ...) ended up reachable without a token.
+// A fallback can't be forgotten the way a per-controller attribute can — a new
+// controller is protected the moment it's added.
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 // ==========================================
 // 3. CONTROLLERS + OPENAPI
@@ -87,8 +99,10 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    // The fallback policy covers these endpoints too; the API reference has no
+    // way to carry a bearer token before you've logged in, so it opts out.
+    app.MapOpenApi().AllowAnonymous();
+    app.MapScalarApiReference().AllowAnonymous();
 }
 else
 {
