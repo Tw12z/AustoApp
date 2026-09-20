@@ -198,3 +198,57 @@ export const TRANSACTION_STATUS: Record<number, { label: string; cls: string }> 
 export const PURCHASE_SOURCE_TYPES: Record<number, string> = {
   1: 'Tedarikçi', 2: 'Müşteri', 3: 'Hurda',
 }
+
+// ── Konum bazlı stok ────────────────────────────────────────────────────
+// locationId === null ⇒ "konumu belirtilmemiş" satırı: toplam adet ile
+// konumlandırılmış parça sayısı arasındaki fark. Backend Türkçe bir
+// varsayılan ad döner, arayüz bu durumda kendi çevirisini kullanır.
+
+export interface ProductLocationQuantity {
+  locationId: string | null
+  locationName: string
+  quantity: number
+  totalWeightGram: number
+}
+
+export interface ProductLocationBreakdown {
+  productId: string
+  productName: string
+  categoryName: string
+  purity: number
+  weightGram: number
+  totalQuantity: number
+  assignedQuantity: number
+  unassignedQuantity: number
+  locations: ProductLocationQuantity[]
+}
+
+export interface LocationProductQuantity {
+  productId: string
+  productName: string
+  categoryName: string
+  purity: number
+  weightGram: number
+  quantity: number
+  totalWeightGram: number
+  estimatedValueTRY: number
+}
+
+export interface LocationStockDetail {
+  locationId: string | null
+  locationName: string
+  description?: string | null
+  totalQuantity: number
+  totalWeightGram: number
+  totalEstimatedValueTRY: number
+  products: LocationProductQuantity[]
+}
+
+export interface LocationStockSummary {
+  locationId: string | null
+  locationName: string
+  distinctProductCount: number
+  totalQuantity: number
+  totalWeightGram: number
+  totalEstimatedValueTRY: number
+}
