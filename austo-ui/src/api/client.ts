@@ -118,6 +118,14 @@ export const stockApi = {
   transfer:     (data: object) => api.post('/stock/transfer', data),
   adjust:       (data: object) => api.post('/stock/adjust', data),
   getValuation: ()             => api.get('/stock/valuation'),
+
+  // Konum bazlı stok: hangi üründen hangi konumda kaç adet var.
+  // getLocationStock(null) konumu belirtilmemiş adetleri döner.
+  getLocationSummaries: ()      => api.get('/stock/by-location'),
+  getLocationStock: (locationId: string | null) =>
+    api.get(`/stock/by-location/${locationId ?? 'unassigned'}`),
+  getProductBreakdowns: ()      => api.get('/stock/by-product'),
+  getProductBreakdown: (productId: string) => api.get(`/stock/by-product/${productId}`),
 }
 
 // ── StockItems ──────────────────────────────────────────

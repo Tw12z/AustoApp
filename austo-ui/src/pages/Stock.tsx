@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeftRight, QrCode, X, Plus, Minus, Search, Package, Printer, AlertTriangle } from 'lucide-react'
+import { ArrowLeftRight, QrCode, X, Plus, Minus, Search, Package, Printer, AlertTriangle, MapPin, HelpCircle } from 'lucide-react'
 import { stockApi, stockItemsApi, productsApi, locationsApi } from '../api/client'
-import type { StockMovement, StockValuation, StockItem, Product, Location } from '../types'
+import type { StockMovement, StockValuation, StockItem, Product, Location, ProductLocationBreakdown } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
 import { formatQty } from '../utils/formatQty'
 
@@ -435,6 +435,81 @@ function QRScanModal({ open, onClose, onDone, locations }: {
   )
 }
 
+
+// ── Ürün Konum Dağılımı Modalı ────────────────────────────────────────────
+// Stok sayfasında bir ürüne tıklayınca: o üründen hangi konumda kaç adet var.
+function ProductBreakdownModal({ open, breakdown, onClose }: {
+  open: boolean; breakdown: ProductLocationBreakdown | null; onClose: () => void
+}) {
+  const { t } = useTranslation()
+  const { purityLabels } = useEnumLabels()
+  if (!open || !breakdown) return null
+
+  return (
+    <Modal open={open} onClose={onClose} maxWidth={560}
+      title={t('stock.breakdownModal.title', { name: breakdown.productName })}>
+      <div className="px-6 py-5 space-y-4">
+        <div className="flex items-center gap-2 text-xs" style={{ color: '#888' }}>
+          <span className="badge-gold">{purityLabels[breakdown.purity]}</span>
+          <span>{breakdown.categoryName}</span>
+          <span>· {breakdown.weightGram}gr</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-lg p-3" style={{ background: '#0A0A0A', border: '1px solid rgba(212,175,55,0.2)' }}>
+            <div className="text-xs mb-1" style={{ color: '#888' }}>{t('stock.breakdownModal.total')}</div>
+            <div className="font-bold gold-text">{formatQty(breakdown.totalQuantity)}</div>
+          </div>
+          <div className="rounded-lg p-3" style={{ background: '#0A0A0A', border: '1px solid #1A1A1A' }}>
+            <div className="text-xs mb-1" style={{ color: '#888' }}>{t('stock.breakdownModal.assigned')}</div>
+            <div className="font-bold text-white">{formatQty(breakdown.assignedQuantity)}</div>
+          </div>
+          <div className="rounded-lg p-3" style={{ background: '#0A0A0A', border: '1px solid #1A1A1A' }}>
+            <div className="text-xs mb-1" style={{ color: '#888' }}>{t('stock.breakdownModal.unassigned')}</div>
+            <div className="font-bold text-white">{formatQty(breakdown.unassignedQuantity)}</div>
+          </div>
+        </div>
+
+        {breakdown.locations.length === 0 ? (
+          <div className="py-6 text-center text-sm" style={{ color: '#888' }}>{t('stock.breakdownModal.empty')}</div>
+        ) : (
+          <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #1A1A1A' }}>
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
+                  {[t('stock.breakdownModal.columns.location'), t('stock.breakdownModal.columns.quantity'), t('stock.breakdownModal.columns.weight')].map(h => (
+                    <th key={h} className="text-left px-4 py-2 font-medium" style={{ color: '#888', fontSize: 11 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {breakdown.locations.map(l => (
+                  <tr key={l.locationId ?? 'unassigned'} className="table-row">
+                    <td className="px-4 py-2 font-medium" style={{ color: l.locationId ? '#FFF' : '#7D7D7D' }}>
+                      <span className="flex items-center gap-2">
+                        {l.locationId
+                          ? <MapPin size={13} style={{ color: '#D4AF37' }} />
+                          : <HelpCircle size={13} style={{ color: '#7D7D7D' }} />}
+                        {l.locationId ? l.locationName : t('stock.breakdownModal.unassigned')}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 font-bold" style={{ color: l.locationId ? '#D4AF37' : '#7D7D7D' }}>{formatQty(l.quantity)}</td>
+                    <td className="px-4 py-2" style={{ color: '#888' }}>{l.totalWeightGram.toFixed(2)}gr</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {breakdown.unassignedQuantity > 0 && (
+          <p className="text-xs" style={{ color: '#7D7D7D' }}>{t('stock.breakdownModal.unassignedHint')}</p>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
 // ── Ana Sayfa ─────────────────────────────────────────────────────────────
 export default function Stock() {
   const { t, i18n } = useTranslation()
@@ -442,6 +517,8 @@ export default function Stock() {
   const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const [movements, setMovements]   = useState<StockMovement[]>([])
   const [valuation, setValuation]   = useState<StockValuation | null>(null)
+  const [breakdowns, setBreakdowns] = useState<ProductLocationBreakdown[]>([])
+  const [openBreakdown, setOpenBreakdown] = useState<ProductLocationBreakdown | null>(null)
   const [products, setProducts]     = useState<Product[]>([])
   const [locations, setLocations]   = useState<Location[]>([])
   const [modal, setModal]           = useState<'entry' | 'scan' | 'transfer' | null>(null)
@@ -452,6 +529,8 @@ export default function Stock() {
   const load = () => Promise.all([
     stockApi.getMovements().then(r => setMovements(r.data)),
     stockApi.getValuation().then(r => setValuation(r.data)),
+    // Konum dağılımı tek çağrıda geliyor; ürüne tıklandığında ek istek yok.
+    stockApi.getProductBreakdowns().then(r => setBreakdowns(r.data)).catch(() => setBreakdowns([])),
   ]).finally(() => setLoading(false))
 
   useEffect(() => {
@@ -523,6 +602,58 @@ export default function Stock() {
         </div>
       )}
 
+      {/* Ürün / Konum Dağılımı — ürün adına tıklayınca konum kırılımı açılır */}
+      <div className="card overflow-hidden">
+        <div className="px-5 py-4" style={{ borderBottom:'1px solid #1A1A1A' }}>
+          <h2 className="text-sm font-semibold" style={{ color:'#888', textTransform:'uppercase', letterSpacing:'.05em' }}>{t('stock.distribution.title')}</h2>
+          <p className="text-xs mt-1" style={{ color:'#7D7D7D' }}>{t('stock.distribution.hint')}</p>
+        </div>
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ borderBottom:'1px solid #1A1A1A' }}>
+              {[t('stock.distribution.columns.product'), t('stock.distribution.columns.category'), t('stock.distribution.columns.purity'), t('stock.distribution.columns.total'), t('stock.distribution.columns.locations')].map(h => (
+                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color:'#888', fontSize:11, textTransform:'uppercase', letterSpacing:'.05em' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {loading
+              ? <tr><td colSpan={5} className="px-4 py-8 text-center" style={{ color:'#888' }}>{t('stock.distribution.loading')}</td></tr>
+              : breakdowns.length === 0
+                ? <tr><td colSpan={5} className="px-4 py-8 text-center" style={{ color:'#888' }}>{t('stock.distribution.empty')}</td></tr>
+                : breakdowns.map(b => (
+                  <tr key={b.productId} className="table-row">
+                    <td className="px-4 py-3 font-medium text-white">
+                      <button type="button" onClick={() => setOpenBreakdown(b)}
+                        className="hover:underline" style={{ textUnderlineOffset: 3 }}>
+                        {b.productName}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3" style={{ color:'#888' }}>{b.categoryName}</td>
+                    <td className="px-4 py-3"><span className="badge-gold">{purityLabels[b.purity]}</span></td>
+                    <td className="px-4 py-3 font-bold" style={{ color:'#D4AF37' }}>{formatQty(b.totalQuantity)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {b.locations.map(l => (
+                          <span key={l.locationId ?? 'unassigned'}
+                            className="px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap"
+                            style={l.locationId
+                              ? { background:'rgba(212,175,55,0.1)', color:'#D4AF37', border:'1px solid rgba(212,175,55,0.2)' }
+                              : { background:'rgba(255,255,255,0.04)', color:'#7D7D7D', border:'1px solid #1F1F1F' }}>
+                            {l.locationId ? l.locationName : t('stock.distribution.unassigned')} · {formatQty(l.quantity)}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+            }
+          </tbody>
+        </table>
+        </div>
+      </div>
+
       {/* Movements */}
       <div className="card overflow-hidden">
         <div className="px-5 py-4" style={{ borderBottom:'1px solid #1A1A1A' }}>
@@ -568,6 +699,12 @@ export default function Stock() {
         onDone={load}
         products={products}
         locations={locations}
+      />
+
+      <ProductBreakdownModal
+        open={openBreakdown !== null}
+        breakdown={openBreakdown}
+        onClose={() => setOpenBreakdown(null)}
       />
 
       <QRScanModal
