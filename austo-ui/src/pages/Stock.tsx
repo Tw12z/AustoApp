@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeftRight, QrCode, X, Plus, Minus, Search, Package, Printer, AlertTriangle } from 'lucide-react'
+import { ArrowLeftRight, QrCode, X, Plus, Minus, Search, Package, Printer, AlertTriangle, Camera } from 'lucide-react'
 import { stockApi, stockItemsApi, productsApi, locationsApi } from '../api/client'
 import type { StockMovement, StockValuation, StockItem, Product, Location } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
 import { formatQty } from '../utils/formatQty'
+import QrScanner from '../components/QrScanner'
+import { normalizeScan } from '../utils/scanLookup'
 
 function Modal({ open, onClose, children, title, maxWidth = 440 }: any) {
   const { t } = useTranslation()
@@ -230,12 +232,13 @@ function QRScanModal({ open, onClose, onDone, locations }: {
   const [saving, setSaving]           = useState(false)
   const [error, setError]             = useState('')
   const [success, setSuccess]         = useState('')
+  const [cameraOpen, setCameraOpen]   = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (open) {
       setScanInput(''); setFound(null); setAction(null)
-      setToLocationId(''); setNotes(''); setError(''); setSuccess('')
+      setToLocationId(''); setNotes(''); setError(''); setSuccess(''); setCameraOpen(false)
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }, [open])
@@ -288,6 +291,7 @@ function QRScanModal({ open, onClose, onDone, locations }: {
 
   if (!open) return null
   return (
+    <>
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 500 }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom:'1px solid #1A1A1A' }}>
@@ -318,6 +322,10 @@ function QRScanModal({ open, onClose, onDone, locations }: {
                 {searching ? t('stock.scanModal.searching') : t('stock.scanModal.search')}
               </button>
             </div>
+            <button type="button" className="btn-outline w-full mt-2 py-2 flex items-center justify-center gap-2 text-sm"
+              onClick={() => setCameraOpen(true)}>
+              <Camera size={15} /> {t('stock.scanModal.camera')}
+            </button>
             <p className="text-xs mt-1.5" style={{ color:'#7D7D7D' }}>{t('stock.scanModal.hint')}</p>
           </div>
 
@@ -432,6 +440,13 @@ function QRScanModal({ open, onClose, onDone, locations }: {
         </div>
       </div>
     </div>
+
+    <QrScanner
+      open={cameraOpen}
+      onClose={() => setCameraOpen(false)}
+      onScan={text => { const code = normalizeScan(text); setScanInput(code); handleScan(code) }}
+    />
+    </>
   )
 }
 
