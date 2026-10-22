@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, QrCode, Search, Edit2, Trash2, X } from 'lucide-react'
+import { Plus, QrCode, Search, Edit2, Trash2, X, Camera } from 'lucide-react'
 import { productsApi, categoriesApi } from '../api/client'
 import type { Product, Category } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
 import { formatQty } from '../utils/formatQty'
+import QrScanner from '../components/QrScanner'
+import { lookupScan } from '../utils/scanLookup'
 
 const PURITIES = [0, 8, 14, 18, 21, 22, 24]
 
@@ -96,6 +98,8 @@ export default function Products() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
+  const [scanOpen, setScanOpen] = useState(false)
+  const [scanError, setScanError] = useState('')
   const [modal, setModal] = useState<'create' | 'edit' | null>(null)
   const [selected, setSelected] = useState<Product | null>(null)
   const [saving, setSaving] = useState(false)
@@ -123,6 +127,20 @@ export default function Products() {
     await productsApi.remove(p.id); load()
   }
 
+  // Scanning a label filters the table down to that product, whether the code
+  // came off a product QR or off one of its pieces.
+  const handleScan = async (text: string) => {
+    setScanError('')
+    const result = await lookupScan(text)
+    const name = result.kind === 'product'
+      ? result.product.name
+      : result.kind === 'stockItem'
+        ? result.item.productName
+        : null
+    if (!name) { setScanError(t('products.scanNotFound')); return }
+    setSearch(name)
+  }
+
   const handleQR = async (p: Product) => {
     const res = await productsApi.qr(p.id)
     const url = URL.createObjectURL(res.data)
@@ -140,9 +158,22 @@ export default function Products() {
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#888' }} />
-        <input className="input pl-9" placeholder={t('products.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#888' }} />
+            <input className="input pl-9" placeholder={t('products.searchPlaceholder')} value={search} onChange={e => { setSearch(e.target.value); setScanError('') }} />
+          </div>
+          <button type="button" className="btn-outline px-4 flex items-center gap-2 whitespace-nowrap"
+            onClick={() => { setScanError(''); setScanOpen(true) }}>
+            <Camera size={15} /> <span className="hidden sm:inline">{t('products.scanFind')}</span>
+          </button>
+        </div>
+        {scanError && (
+          <div className="text-sm px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+            {scanError}
+          </div>
+        )}
       </div>
 
       {/* Table */}
@@ -188,6 +219,13 @@ export default function Products() {
       <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('products.editTitle') : t('products.newTitle')}>
         <ProductForm initial={selected ?? undefined} categories={categories} onSave={handleSave} onClose={() => setModal(null)} loading={saving} />
       </Modal>
+
+      <QrScanner
+        open={scanOpen}
+        onClose={() => setScanOpen(false)}
+        onScan={handleScan}
+        title={t('products.scanFind')}
+      />
     </div>
   )
 }

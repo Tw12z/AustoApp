@@ -1,9 +1,11 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, X, Ban, Eye, Percent, Receipt, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { Plus, X, Ban, Eye, Percent, Receipt, ChevronUp, ChevronDown, ChevronsUpDown, QrCode } from 'lucide-react'
 import { salesApi, customersApi, productsApi } from '../api/client'
 import type { Sale, Customer, Product } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
+import QrScanner from '../components/QrScanner'
+import { lookupScan } from '../utils/scanLookup'
 
 function fmt(n: number, locale = 'tr-TR') {
   return '₺' + n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -60,6 +62,11 @@ export default function Sales() {
   const [extraCosts, setExtraCosts] = useState<ExtraCost[]>([])
   const [discountVal,  setDiscountVal]  = useState<number>(0)
   const [discountMode, setDiscountMode] = useState<'pct' | 'fixed'>('pct')
+  const [scanOpen,     setScanOpen]     = useState(false)
+  const [scanFeedback, setScanFeedback] = useState('')
+  // Piece codes are unique, so one physical piece counts once however long
+  // its label sits in front of the lens.
+  const scannedCodes = useRef<Set<string>>(new Set())
 
   const load = () => salesApi.getAll().then(r => setSales(r.data)).finally(() => setLoading(false))
 
@@ -94,6 +101,45 @@ export default function Sales() {
     setItems(prev => prev.map((it, n) =>
       n === idx ? { ...it, productId: id, unitPriceTRY: p ? p.salePrice : 0 } : it
     ))
+  }
+
+  /**
+   * A scanned label resolves to a product either directly (product QR) or
+   * through the piece it belongs to (item QR). Either way the sale line is the
+   * product, so a second scan of the same model bumps the quantity instead of
+   * opening a duplicate row.
+   */
+  const handleScan = async (text: string) => {
+    setScanFeedback(t('qrScanner.scanning'))
+    const result = await lookupScan(text)
+    if (result.kind === 'none') { setScanFeedback(t('qrScanner.notFound', { code: text })); return }
+    if (result.kind === 'stockItem') {
+      if (result.item.status !== 1) {
+        setScanFeedback(t('sales.form.scanSold', { code: result.item.itemCode })); return
+      }
+      if (scannedCodes.current.has(result.item.itemCode)) {
+        setScanFeedback(t('sales.form.scanDuplicate', { code: result.item.itemCode })); return
+      }
+      scannedCodes.current.add(result.item.itemCode)
+    }
+
+    const product = result.kind === 'product'
+      ? result.product
+      : products.find(p => p.id === result.productId)
+    if (!product) { setScanFeedback(t('qrScanner.notFound', { code: text })); return }
+    if (!product.isActive) { setScanFeedback(t('sales.form.scanInactive', { name: product.name })); return }
+
+    setItems(prev => {
+      const existing = prev.findIndex(it => it.productId === product.id)
+      if (existing >= 0) {
+        return prev.map((it, n) => n === existing ? { ...it, quantity: it.quantity + 1 } : it)
+      }
+      const line: SaleItem = { productId: product.id, quantity: 1, unitPriceTRY: product.salePrice }
+      // The form starts with one blank row — fill it before appending.
+      const blank = prev.findIndex(it => !it.productId)
+      return blank >= 0 ? prev.map((it, n) => n === blank ? line : it) : [...prev, line]
+    })
+    setScanFeedback(t('sales.form.scanAdded', { name: product.name }))
   }
 
   // ── Extra cost helpers ───────────────────────────────────
@@ -293,7 +339,13 @@ export default function Sales() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="label mb-0">{t('sales.form.products')}</label>
-                <button type="button" className="btn-outline px-3 py-1 text-xs" onClick={addItem}>{t('sales.form.addProduct')}</button>
+                <div className="flex items-center gap-2">
+                  <button type="button" className="btn-outline px-3 py-1 text-xs flex items-center gap-1.5"
+                    onClick={() => { setScanFeedback(''); scannedCodes.current.clear(); setScanOpen(true) }}>
+                    <QrCode size={13} /> {t('sales.form.scanAdd')}
+                  </button>
+                  <button type="button" className="btn-outline px-3 py-1 text-xs" onClick={addItem}>{t('sales.form.addProduct')}</button>
+                </div>
               </div>
               <div className="space-y-2">
                 {/* Header row — labels double as placeholders on mobile, where fields stack instead */}
@@ -519,6 +571,15 @@ export default function Sales() {
           </div>
         )}
       </Modal>
+
+      <QrScanner
+        open={scanOpen}
+        onClose={() => setScanOpen(false)}
+        onScan={handleScan}
+        title={t('sales.form.scanTitle')}
+        feedback={scanFeedback}
+        continuous
+      />
     </div>
   )
 }
