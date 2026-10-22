@@ -9,5 +9,5 @@ Kuyumcular için stok ve işlem yönetim sistemi. Karar ve canlı ortam notları
 - Gizli bilgiyi (`Token__SecurityKey`, bağlantı dizesi, SMTP parolası) `appsettings.json`'a, koda ya da sohbete yazma; ortam değişkeniyle verilir. `.env.docker` gitignore'dadır.
 - Npgsql `DateTime.Kind` hatalarında önce `Program.cs`'teki `Npgsql.EnableLegacyTimestampBehavior` anahtarına ve `AppDbContext.ConfigureConventions`'a bak.
 - Arayüzde API adresi `VITE_API_URL` ile derleme anında gömülür; değişirse yeniden build gerekir.
-- Kayıt kapatma anahtarı: `Auth__AllowRegistration` (`ALLOW_REGISTRATION`).
+- Kayıt kapatma anahtarı: `Auth__AllowRegistration` (`ALLOW_REGISTRATION`) ve arayüzde `REGISTRATION_ENABLED`. Kayıt şu an kapalı, ziyaretçiler "Demo Talep Et" formunu kullanır (`DemoRequests`).
 - Commit ve push yalnızca kullanıcı isteyince yapılır.

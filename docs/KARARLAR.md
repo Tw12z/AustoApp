@@ -1,6 +1,6 @@
 # Austo Proje Kararları ve Canlı Ortam Notları
 
-Bu dosya `DEPLOYMENT.md`, `README.md`, `docker-compose.yml`, `Dockerfile` ve git geçmişinden (71 commit, 2026-04-09 – 2026-09-11) derlendi. Eski geliştirme konuşmasına ulaşılamadığı için tasarım ve iş kararlarının "neden"i çoğunlukla yoktur. Kodda ya da commit mesajında açıkça yazan şeyler yazıldı; olmayanlar `[belirsiz]` olarak bırakıldı.
+Bu dosya `DEPLOYMENT.md`, `README.md`, `docker-compose.yml`, `Dockerfile` ve git geçmişinden (72 commit, 2026-04-09 – 2026-09-19) derlendi. Eski geliştirme konuşmasına ulaşılamadığı için tasarım ve iş kararlarının "neden"i çoğunlukla yoktur. Kodda ya da commit mesajında açıkça yazan şeyler yazıldı; olmayanlar `[belirsiz]` olarak bırakıldı.
 
 ## Canlı ortam
 
@@ -13,7 +13,7 @@ Uygulama canlıda (kullanıcı bildirdi). Aşağıdaki alanlar repoda yoktur ve 
 | Arayüz barındırma | [belirsiz] (Vercel / Netlify / Cloudflare Pages / nginx seçenekleri belgelendi) |
 | TLS / ters vekil | [belirsiz] (nginx veya Caddy önerildi) |
 | SMTP sağlayıcısı | [belirsiz] (kodda MailKit kullanılıyor; bir commit "gmail mail entegrasyonu" diyor) |
-| `ALLOW_REGISTRATION` şu anki değeri | [belirsiz] |
+| `ALLOW_REGISTRATION` şu anki değeri | Commit mesajına göre `false` (faturalama bağlanana kadar); sunucudaki gerçek değer doğrulanmadı |
 | Yedekleme | [belirsiz] (repoda yedekleme tanımı yok) |
 | İzleme / log | [belirsiz] |
 
@@ -33,7 +33,9 @@ Uygulama canlıda (kullanıcı bildirdi). Aşağıdaki alanlar repoda yoktur ve 
 - **Mail ayarsızsa:** `MailSettings` boşsa doğrulama ve şifre sıfırlama e-postaları sessizce gönderilmez; API bunun yerine geliştirme amaçlı bir token döndürür (`devVerifyToken`). Canlıda `ClientUrl` `localhost` kalırsa e-postadaki bağlantılar çalışmaz.
 - **Arayüz API adresi:** `VITE_API_URL` (örn. `https://api.alanadi.com/api`) Vite tarafından **derleme anında** gömülür; deploy sonrası dosya düzenlemekle değişmez, yeniden build gerekir. Ayarlı değilse `client.ts` `http://localhost:5202/api` adresine döner. `austo-ui/.env.example`.
 - **SPA yönlendirmesi:** Arayüz istemci tarafı yönlendirmeli olduğu için barındırmanın bilinmeyen yollarda `index.html` döndürmesi gerekir (nginx: `try_files $uri /index.html;`).
-- **Kayıt kapatma anahtarı:** `Auth:AllowRegistration` (`Auth__AllowRegistration`). Değer ayarlı değil ya da çözümlenemezse kayıt **açık** sayılır. Girişler ve mevcut hesaplar etkilenmez. Commit "Temporarily disable public registration" bu anahtarı kapatmak için kullanıldı. `Infrastructure/Austo26.Persistence/Services/AuthService.cs`, `docker-compose.yml`.
+- **Kayıt kapatma anahtarı:** `Auth:AllowRegistration` (`Auth__AllowRegistration`). Değer ayarlı değil ya da çözümlenemezse kayıt **açık** sayılır. Girişler ve mevcut hesaplar etkilenmez. Commit "Temporarily disable public registration" ile kapatıldı; 2026-09-19 commit mesajına göre kayıt `Auth:AllowRegistration=false` ile kapalı ve faturalama (billing) bağlanana kadar kapalı kalacak. `Infrastructure/Austo26.Persistence/Services/AuthService.cs`, `docker-compose.yml`.
+- **Demo Talep Et (lead toplama):** Kayıt kapalıyken kayıt tarafı çıkmaz sokaktı, bu yüzden 2026-09-19'da `DemoRequests` kaynağı eklendi. `POST /api/demo-requests` anonim ve herkese açık; `GET /api/demo-requests` ve `PATCH /api/demo-requests/{id}/status` yalnızca `[Authorize(Roles="Admin")]` (API'deki ilk rol kısıtlı uç; dışarıdan gelen kişilerin iletişim bilgisini ifşa ettiği için). Durumlar: New / Contacted / Converted / Declined. Yeni talepte admine best-effort e-posta gider (`IMailService`), e-posta hatası kaydı engellemez. Migration `AddDemoRequests`. Dosyalar: `Core/Austo26.Domain/DemoRequests/DemoRequest.cs`, `Infrastructure/Austo26.Persistence/Services/DemoRequestService.cs`, `Presentation/Austo26.API/Controllers/DemoRequestsController.cs`.
+- **Arayüzde kayıt/demo ayrımı:** `REGISTRATION_ENABLED` bayrağı yerinde duruyor; eski kayıt formunun JSX, state ve `handleRegister` kodu dokunulmadan duruyor, demo formu aynı yerde yan dal olarak çiziliyor. Bayrak `true` yapılınca eski kayıt akışı geri gelir. Açılış sayfası CTA'ları `/login?mode=demo` adresine gider ve "Hemen Başla" / "Ücretsiz Başla" yerine "Demo Talep Et" yazar. Yeni yönetici sayfası "Demo Talepleri" (`austo-ui/src/pages/DemoRequests.tsx`), menüde role göre gizlenir.
 - **Yasal belgeler ve onay kaydı:** Kayıtta kullanıcının koşulları kabul ettiği ve hangi sürümü kabul ettiği saklanır (`User.TermsAcceptedAt`, `RecordTermsAcceptance`, migration `AddTermsAcceptance`). `Core/Austo26.Domain/Users/User.cs`, `AuthService.cs` (`CurrentLegalVersion`).
 - **Günlük altın fiyatı kaydı:** Arka plan servisi günlük fiyatı otomatik kaydeder (`GoldPriceLog`); sonradan döviz ve tam altın türleri de fiyat geçmişine eklendi. Canlı fiyat kaynağı `finans.truncgil.com` API'sidir.
 - **QR takibi:** Her ürün kalemi için ayrı QR (`StockItem` entity'si, commit 2026-04-18).
@@ -66,6 +68,7 @@ Kodda ve commit'lerde görünenler (nedenleri bilinmiyor):
 
 ## Yarım kalan işler / bilinen eksikler
 
+- Faturalama (billing) henüz bağlanmadı; herkese açık kayıt buna bağlı olarak kapalı. Kayıt tekrar açılırken `Auth__AllowRegistration` ve arayüzdeki `REGISTRATION_ENABLED` bayrağı birlikte `true` yapılmalı.
 - Otomatik test yok. `DEPLOYMENT.md` bölüm 7.
 - CI/CD yok, deploy elle yapılıyor.
 - `Microsoft.IdentityModel.Tokens`, `System.IdentityModel.Tokens.Jwt` ve `Scalar.AspNetCore` paketleri `.csproj` içinde sabitlenenden birkaç küçük sürüm üstüne çözülüyor (kozmetik `NU1603` uyarısı). Lansmandan önce test edilmemiş bir kimlik doğrulama kütüphanesi güncellemesinden kaçınmak için bilerek bırakıldı.
