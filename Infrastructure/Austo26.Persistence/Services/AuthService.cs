@@ -86,6 +86,16 @@ public class AuthService : IAuthService
         if (!HashingHelper.VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
             throw new Exception("Şifre hatalı.");
 
+        // Login is the only moment the plaintext is in hand, so it's where an
+        // account still on the old un-iterated HMAC hash gets moved to PBKDF2 —
+        // silently, without anyone having to reset their password. Saved below
+        // along with the refresh token.
+        if (HashingHelper.NeedsUpgrade(user.PasswordHash))
+        {
+            HashingHelper.CreatePasswordHash(model.Password, out byte[] newHash, out byte[] newSalt);
+            user.UpgradePasswordHash(newHash, newSalt);
+        }
+
         var token = _tokenHandler.CreateAccessToken(86400, user);
         user.UpdateRefreshToken(_tokenHandler.CreateRefreshToken(), DateTime.UtcNow.AddDays(7));
         await _userRepo.SaveChangesAsync();

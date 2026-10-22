@@ -1,5 +1,6 @@
 using Austo26.Application.Abstractions.Services;
 using Austo26.Application.DTOs.Finance;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Austo26.API.Controllers;
@@ -17,7 +18,12 @@ public class FinanceController : ControllerBase
         _goldPriceService = goldPriceService;
     }
 
+    /// <summary>
+    /// Public — the landing page's live rate ticker calls this before anyone logs
+    /// in. It returns third-party market rates (gold, FX), no shop data of ours.
+    /// </summary>
     [HttpGet("live")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetLiveRates() => Ok(await _financeService.GetLiveRatesAsync());
 
     [HttpGet("gold-price/latest")]
