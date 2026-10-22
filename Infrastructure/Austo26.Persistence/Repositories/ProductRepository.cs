@@ -10,6 +10,11 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
 {
     public ProductRepository(AppDbContext context) : base(context, context.Products) { }
 
+    // Kategori adı hem stok değerlemesinde hem konum bazlı dağılımda
+    // gösteriliyor; Include'suz çağrıda hepsi "Kategorisiz" görünüyordu.
+    public override async Task<IEnumerable<Product>> GetAllAsync()
+        => await _dbSet.Include(p => p.Category).ToListAsync();
+
     public async Task<Product?> GetByIdAsync(Guid id)
         => await _dbSet.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
 

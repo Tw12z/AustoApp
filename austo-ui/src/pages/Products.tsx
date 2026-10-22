@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, QrCode, Search, Edit2, Trash2, X } from 'lucide-react'
-import { productsApi, categoriesApi } from '../api/client'
-import type { Product, Category } from '../types'
+import { Plus, QrCode, Search, Edit2, Trash2, X, AlertTriangle } from 'lucide-react'
+import { productsApi, categoriesApi, locationsApi } from '../api/client'
+import type { Product, Category, Location } from '../types'
 import { useEnumLabels } from '../hooks/useEnumLabels'
 import { formatQty } from '../utils/formatQty'
 
@@ -24,8 +24,9 @@ function Modal({ open, onClose, title, children }: any) {
   )
 }
 
-function ProductForm({ initial, categories, onSave, onClose, loading }: {
-  initial?: Partial<Product>; categories: Category[]; onSave: (d: any) => void; onClose: () => void; loading: boolean
+function ProductForm({ initial, categories, locations, isEdit, error, onSave, onClose, loading }: {
+  initial?: Partial<Product>; categories: Category[]; locations: Location[]; isEdit: boolean
+  error: string; onSave: (d: any) => void; onClose: () => void; loading: boolean
 }) {
   const { t } = useTranslation()
   const { purityLabels } = useEnumLabels()
@@ -34,13 +35,34 @@ function ProductForm({ initial, categories, onSave, onClose, loading }: {
     purity: initial?.purity ?? 14, purchasePrice: initial?.purchasePrice ?? 0,
     salePrice: initial?.salePrice ?? 0, stockQuantity: initial?.stockQuantity ?? 0,
     barcode: initial?.barcode ?? '',
+    // Sadece yeni üründe sorulur: seçilirse adet kadar parça bu konumda oluşur.
+    locationId: '',
   })
+  // Pasif kategoriler listelenmiyor; düzenlenen ürün pasif bir kategorideyse
+  // kendi kategorisi listede kalsın ki alan boş görünmesin.
+  const selectableCategories = categories.filter(c => c.isActive || c.id === form.categoryId)
+  // Kategori zorunlu ve <select> required — hiç kategori yokken form hiçbir
+  // şekilde gönderilemiyor, üstelik sebebi de görünmüyordu.
+  const noCategories = selectableCategories.length === 0
   const set = (k: string) => (e: any) => setForm(f => ({ ...f, [k]: e.target.type === 'number' ? +e.target.value : e.target.value }))
   const setNum = (k: string) => (e: any) => setForm(f => ({ ...f, [k]: +e.target.value }))
 
   return (
     <form onSubmit={e => { e.preventDefault(); onSave(form) }}>
       <div className="px-6 py-5 space-y-4">
+        {noCategories && (
+          <div className="text-sm px-3 py-2.5 rounded-lg flex items-start gap-2"
+            style={{ background: 'rgba(234,179,8,0.1)', color: '#EAB308', border: '1px solid rgba(234,179,8,0.2)' }}>
+            <AlertTriangle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
+            <span>{t('products.form.noCategories')}</span>
+          </div>
+        )}
+        {error && (
+          <div className="text-sm px-3 py-2.5 rounded-lg"
+            style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+            {error}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="label">{t('products.form.name')}</label>
@@ -50,7 +72,7 @@ function ProductForm({ initial, categories, onSave, onClose, loading }: {
             <label className="label">{t('products.form.category')}</label>
             <select className="select" value={form.categoryId} onChange={set('categoryId')} required>
               <option value="">{t('products.form.selectCategory')}</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {selectableCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
@@ -79,11 +101,21 @@ function ProductForm({ initial, categories, onSave, onClose, loading }: {
             <label className="label">{t('products.form.barcode')}</label>
             <input className="input" value={form.barcode} onChange={set('barcode')} placeholder={t('products.form.barcodeOptional')} />
           </div>
+          {!isEdit && (
+            <div className="col-span-2">
+              <label className="label">{t('products.form.location')}</label>
+              <select className="select" value={form.locationId} onChange={set('locationId')}>
+                <option value="">{t('products.form.locationNotSelected')}</option>
+                {locations.filter(l => l.isActive).map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+              </select>
+              <p className="text-xs mt-1.5" style={{ color: '#7D7D7D' }}>{t('products.form.locationHint')}</p>
+            </div>
+          )}
         </div>
       </div>
       <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: '1px solid #1A1A1A' }}>
         <button type="button" className="btn-ghost" onClick={onClose}>{t('products.form.cancel')}</button>
-        <button type="submit" className="btn-gold" disabled={loading}>{loading ? t('products.form.saving') : t('products.form.save')}</button>
+        <button type="submit" className="btn-gold" disabled={loading || noCategories}>{loading ? t('products.form.saving') : t('products.form.save')}</button>
       </div>
     </form>
   )
@@ -95,14 +127,20 @@ export default function Products() {
   const priceLocale = i18n.resolvedLanguage === 'en' ? 'en-US' : 'tr-TR'
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [locations, setLocations] = useState<Location[]>([])
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState<'create' | 'edit' | null>(null)
   const [selected, setSelected] = useState<Product | null>(null)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [saveError, setSaveError] = useState('')
 
   const load = () => productsApi.getAll().then(r => setProducts(r.data)).finally(() => setLoading(false))
-  useEffect(() => { load(); categoriesApi.getAll().then(r => setCategories(r.data)) }, [])
+  useEffect(() => {
+    load()
+    categoriesApi.getAll().then(r => setCategories(r.data))
+    locationsApi.getAll().then(r => setLocations(r.data))
+  }, [])
 
   const filtered = products.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -110,11 +148,20 @@ export default function Products() {
   )
 
   const handleSave = async (data: any) => {
-    setSaving(true)
+    setSaving(true); setSaveError('')
     try {
-      if (modal === 'edit' && selected) await productsApi.update(selected.id, data)
-      else await productsApi.create(data)
+      if (modal === 'edit' && selected) {
+        // locationId sadece yeni üründe anlamlı; düzenlemede gönderilmiyor.
+        const { locationId: _ignored, ...rest } = data
+        await productsApi.update(selected.id, rest)
+      } else {
+        await productsApi.create({ ...data, locationId: data.locationId || null })
+      }
       setModal(null); setSelected(null); load()
+    } catch (err: any) {
+      // Eskiden catch yoktu: sunucu isteği reddettiğinde modal açık kalıyor,
+      // hiçbir şey olmuyor ve kullanıcı sebebini göremiyordu.
+      setSaveError(err?.response?.data?.message ?? t('products.form.saveFailed'))
     } finally { setSaving(false) }
   }
 
@@ -134,7 +181,7 @@ export default function Products() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title gold-text">{t('products.pageTitle')}</h1>
-        <button className="btn-gold flex items-center gap-2" onClick={() => { setSelected(null); setModal('create') }}>
+        <button className="btn-gold flex items-center gap-2" onClick={() => { setSelected(null); setSaveError(''); setModal('create') }}>
           <Plus size={16} /> {t('products.newProduct')}
         </button>
       </div>
@@ -174,7 +221,7 @@ export default function Products() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
                       <button className="btn-ghost px-2 py-1 text-xs" onClick={() => handleQR(p)} title={t('products.qr')}><QrCode size={14} /></button>
-                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => { setSelected(p); setModal('edit') }} title={t('products.edit')}><Edit2 size={14} /></button>
+                      <button className="btn-ghost px-2 py-1 text-xs" onClick={() => { setSelected(p); setSaveError(''); setModal('edit') }} title={t('products.edit')}><Edit2 size={14} /></button>
                       <button className="btn-danger px-2 py-1 text-xs" onClick={() => handleDelete(p)} title={t('products.deactivate')}><Trash2 size={14} /></button>
                     </div>
                   </td>
@@ -186,7 +233,16 @@ export default function Products() {
       </div>
 
       <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'edit' ? t('products.editTitle') : t('products.newTitle')}>
-        <ProductForm initial={selected ?? undefined} categories={categories} onSave={handleSave} onClose={() => setModal(null)} loading={saving} />
+        <ProductForm
+          initial={selected ?? undefined}
+          categories={categories}
+          locations={locations}
+          isEdit={modal === 'edit'}
+          error={saveError}
+          onSave={handleSave}
+          onClose={() => setModal(null)}
+          loading={saving}
+        />
       </Modal>
     </div>
   )
